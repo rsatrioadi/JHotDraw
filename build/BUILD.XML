@@ -21,6 +21,8 @@
   <property name="build.classes" value="${dest.dir}"/>
   <property name="build.jar.name" value="jhotdraw.jar"/>
   <property name="build.jar" value="${dest.dir}/${build.jar.name}"/>
+  <property name="deploy.dir" value="${dest.dir}/deploy"/>
+  <property name="zip.file" value="${deploy.dir}/jhotdraw.zip"/>
 
   <property name="src.dir" value="${dest.dir}/src"/>
   <property name="images.dir" value="CH/ifa/draw/images"/>
@@ -30,12 +32,12 @@
   <property name="javadoc.dir" value="${dest.dir}/javadoc"/>
   <property name="mk.dir" value="${dest.dir}/build"/>
   <property name="testsuite.package.name" value="CH.ifa.draw.test"/>
-  <property name="testsuite" value="${testsuite.package.name}.JHDTestCase"/>
+  <property name="testsuite" value="${testsuite.package.name}.AllTests"/>
   
   <property name="javac.deprecation" value="off"/>
   <property name="javac.includes" value="**/*.java"/>
 
-  <property name="manifest.name" value="JHotdraw.mf"/>
+  <property name="manifest.name" value="jhotdraw.mf"/>
 
   <!-- Dependencies on optional packages                                   -->  
   <!--<property name="needs.batik.src" value="CH/ifa/draw/contrib/SVG*.java"/>
@@ -72,7 +74,7 @@
   <!-- =================================================================== -->
   <!-- Builds a complete package with all files from scratch               -->
   <!-- =================================================================== -->
-  <target name="all" depends="clean, main, javadoc, junit_test">
+  <target name="all" depends="clean, main, javadoc, junit_test, deploy">
   </target>
 
   <!-- =================================================================== -->
@@ -84,14 +86,26 @@
   <!-- =================================================================== -->
   <!-- Compiles the source code                                            -->
   <!-- =================================================================== -->
-  <target name="compile" depends="check_for_optional_packages, delete_dependants">
+  <target name="compile" 
+          depends="check_for_optional_packages, delete_dependants" 
+          description="Compiles the source code">
+     <javac srcdir="${src.dir}"
+           destdir="${build.classes}"
+           debug="${javac.debug}"
+           deprecation="${javac.deprecation}"
+           optimize="${javac.optimize}"
+           fork="${javac.fork}">
+      <include name="CH/ifa/draw/framework/**"/>
+    </javac>
     <javac srcdir="${src.dir}"
            destdir="${build.classes}"
            debug="${javac.debug}"
            deprecation="${javac.deprecation}"
-           optimize="${javac.optimize}">
+           optimize="${javac.optimize}"
+           fork="${javac.fork}">
       <include name="${javac.includes}"/>
-      <!-- <exclude name="${needs.batik.src}" unless="batik.available"/> -->
+      <exclude name="CH/ifa/draw/framework/**"/>
+      <exclude name="${needs.batik.src}" unless="batik.available"/>
       <exclude name="${needs.jdo.src}" unless="jdo.available"/>
       <exclude name="${needs.junit.src}"/>
       <classpath>
@@ -124,12 +138,15 @@
     <echo>using standard doclet...</echo>
     <mkdir dir="${javadoc.dir}"/>
     <javadoc
-      packagenames = "CH.*"
-      sourcepath   = "${src.dir}"
       destdir      = "${javadoc.dir}"
       classpath    = "${dest.dir}"
       author       = "false"
       version      = "true">
+      <fileset dir="${src.dir}" >
+        <include name="${javac.includes}"/>
+        <exclude name="${needs.junit.src}"/>
+      </fileset>
+
     </javadoc>
   </target>
 
@@ -137,18 +154,21 @@
     <echo>using version doclet...</echo>
     <mkdir dir="${javadoc.dir}"/>
     <javadoc
-      packagenames = "CH.*"
-      sourcepath   = "${src.dir}"
       destdir      = "${javadoc.dir}"
       classpath    = "${dest.dir}"
       author       = "false"
       version      = "true">
+      <fileset dir="${src.dir}" >
+        <include name="${javac.includes}"/>
+        <exclude name="${needs.junit.src}"/>
+      </fileset>
       <doclet name="org.jhotdraw.tools.versiondoclet.VersionDoclet">
         <param name="-versionfile" value="${mk.dir}/${manifest.name}"/>
         <param name="-version" value=""/>
         <path>
           <pathelement path="${versiondoclet.class.path}"/>
         </path>
+
       </doclet>
     </javadoc>
   </target>
@@ -166,6 +186,7 @@
     <pathelement path = "${junitdoclet.class.path}"/>
     <pathelement path = "${namingstrategy.class.path}"/>
     <pathelement path = "${jdo.class.path}"/>
+    <pathelement path = "${batik.class.path}"/>
     <pathelement path = "${java.class.path}"/>
   </path>
   
@@ -257,10 +278,11 @@
   <!-- =================================================================== -->
   <!-- Cleans up generated stuff                                           -->
   <!-- =================================================================== -->
-  <target name="clean">
+  <target name="clean" description="Cleans up generated stuff.">
     <delete dir="${dest.dir}/CH"/>
     <delete dir="${javadoc.dir}"/>
     <delete file="${build.jar}"/>
+    <delete dir="${deploy.dir}"/>
   </target>
 
   <!-- =================================================================== -->
@@ -275,6 +297,25 @@
         <exclude name="CH/ifa/draw/test/**"/>
       </fileset>
 	</jar>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Create a zip file with all deployable content                       -->
+  <!-- =================================================================== -->
+  <target name="deploy">
+    <delete dir="${deploy.dir}"/>
+    <mkdir dir="${deploy.dir}"/>
+    <zip zipfile="${zip.file}">
+      <fileset dir="${dest.dir}">
+        <include name="*/**"/>
+        <exclude name="**/CVS/**"/>
+        <exclude name="${deploy.dir}/**"/>
+        <exclude name=".project"/>
+        <exclude name=".classpath"/>
+        <exclude name="**/.cvsignore"/>
+        <exclude name="*/bin/**"/>
+      </fileset>
+	</zip>
   </target>
 
   <!-- =================================================================== -->

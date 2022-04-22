@@ -58,7 +58,7 @@ public class BouncingDrawing extends StandardDrawing implements Animatable {
 		FigureEnumeration fe = figures();
 		while (fe.hasNextFigure()) {
 			Figure f = fe.nextFigure();
-
+			
 			if(!(f instanceof ConnectionFigure)) {
 				((AnimationDecorator) f).animationStep();
 			}
