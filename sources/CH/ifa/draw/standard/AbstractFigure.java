@@ -1,5 +1,5 @@
 /*
- * @(#)AbstractFigure.java 5.1
+ * @(#)AbstractFigure.java 5.2
  *
  */
 
@@ -59,7 +59,7 @@ public abstract class AbstractFigure implements Figure {
      * Moves the figure. This is the
      * method that subclassers override. Clients usually
      * call displayBox.
-     * @see moveBy
+     * @see #moveBy
      */
     protected abstract void basicMoveBy(int dx, int dy);
 
@@ -69,7 +69,7 @@ public abstract class AbstractFigure implements Figure {
      * and announces the corresponding change.
      * @param origin the new origin
      * @param corner the new corner
-     * @see displayBox
+     * @see #displayBox
      */
     public void displayBox(Point origin, Point corner) {
         willChange();
@@ -81,7 +81,7 @@ public abstract class AbstractFigure implements Figure {
      * Sets the display box of a figure. This is the
      * method that subclassers override. Clients usually
      * call displayBox.
-     * @see displayBox
+     * @see #displayBox
      */
     public abstract void basicDisplayBox(Point origin, Point corner);
 
@@ -148,7 +148,7 @@ public abstract class AbstractFigure implements Figure {
      * Changes the display box of a figure. This is a
      * convenience method. Implementors should only
      * have to override basicDisplayBox
-     * @see displayBox
+     * @see #displayBox
      */
     public void displayBox(Rectangle r) {
         displayBox(new Point(r.x, r.y), new Point(r.x+r.width, r.y+r.height));

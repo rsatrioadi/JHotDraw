@@ -1,5 +1,5 @@
 /*
- * @(#)CompositeFigure.java 5.1
+ * @(#)CompositeFigure.java 5.2
  *
  */
 
@@ -115,7 +115,7 @@ public abstract class CompositeFigure
     /**
      * Removes a vector of figures from the figure's list
      * without releasing the figures.
-     * @see orphan
+     * @see #orphan
      */
     public void orphanAll(Vector newFigures) {
         Enumeration k = newFigures.elements();
@@ -322,7 +322,7 @@ public abstract class CompositeFigure
      * Moves all the given figures by x and y. Doesn't announce
      * any changes. Subclassers override
      * basicMoveBy. Clients usually call moveBy.
-     * @see moveBy
+     * @see #moveBy
      */
     protected void basicMoveBy(int x, int y) {
         FigureEnumeration k = figures();

@@ -1,5 +1,5 @@
 /*
- * @(#)Drawing.java 5.1
+ * @(#)Drawing.java 5.2
  *
  */
 
@@ -139,13 +139,13 @@ public interface Drawing
     /**
      * Removes a vector of figures from the figure's list
      * without releasing the figures.
-     * @see orphan
+     * @see #orphan
      */
     public void orphanAll(Vector newFigures);
 
     /**
      * Removes a vector of figures .
-     * @see remove
+     * @see #remove
      */
     public void removeAll(Vector figures);
 
