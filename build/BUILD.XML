@@ -22,16 +22,16 @@
   <property name="build.jar.name" value="jhotdraw.jar"/>
   <property name="build.jar" value="${dest.dir}/${build.jar.name}"/>
   <property name="deploy.dir" value="${dest.dir}/deploy"/>
-  <property name="zip.file" value="${deploy.dir}/jhotdraw.zip"/>
+  <property name="zip.file" value="${deploy.dir}/jhotdraw6.zip"/>
 
   <property name="src.dir" value="${dest.dir}/src"/>
-  <property name="images.dir" value="CH/ifa/draw/images"/>
-  <property name="javadraw.images.dir" value="CH/ifa/draw/samples/javadraw/sampleimages"/>
-  <property name="pert.images.dir" value="CH/ifa/draw/samples/pert/images"/>
+  <property name="images.dir" value="org/jhotdraw/images"/>
+  <property name="javadraw.images.dir" value="org/jhotdraw/samples/javadraw/sampleimages"/>
+  <property name="pert.images.dir" value="org/jhotdraw/samples/pert/images"/>
 
   <property name="javadoc.dir" value="${dest.dir}/javadoc"/>
   <property name="mk.dir" value="${dest.dir}/build"/>
-  <property name="testsuite.package.name" value="CH.ifa.draw.test"/>
+  <property name="testsuite.package.name" value="org.jhotdraw.test"/>
   <property name="testsuite" value="${testsuite.package.name}.AllTests"/>
   
   <property name="javac.deprecation" value="off"/>
@@ -40,18 +40,18 @@
   <property name="manifest.name" value="jhotdraw.mf"/>
 
   <!-- Dependencies on optional packages                                   -->  
-  <!--<property name="needs.batik.src" value="CH/ifa/draw/contrib/SVG*.java"/>
-  <property name="needs.jdo.src" value="CH/ifa/draw/util/JDOStorageFormat.java"/>
+  <!--<property name="needs.batik.src" value="org/jhotdraw/contrib/SVG*.java"/>
+  <property name="needs.jdo.src" value="org/jhotdraw/util/JDOStorageFormat.java"/>
   -->
   <property name="needs.batik.src" value="**/SVG*.java"/>
   <property name="needs.jdo.src" value="**/JDOStorageFormat.java"/>
-  <property name="needs.junit.src" value="CH/ifa/draw/test/**"/>
+  <property name="needs.junit.src" value="org/jhotdraw/test/**"/>
 
-  <property name="needs.batik.class" value="CH.ifa.draw.contrib.SVG*"/>
-  <property name="needs.jdo.class" value="CH.ifa.draw.util.JDOStorageFormat"/>
-  <property name="needs.junit.class" value="CH.ifa.draw.test.*"/>
+  <property name="needs.batik.class" value="org.jhotdraw.contrib.SVG*"/>
+  <property name="needs.jdo.class" value="org.jhotdraw.util.JDOStorageFormat"/>
+  <property name="needs.junit.class" value="org.jhotdraw.test.*"/>
   
-  <property name="test.packages" value="CH.ifa.draw.test.*"/>
+  <property name="test.packages" value="org.jhotdraw.test.*"/>
 
   <property environment="env"/>
 
@@ -65,10 +65,10 @@
   <target name="check_for_optional_packages">
 	<available property="batik.available" file="${batik.class.path}"/>
 	<available property="jdo.available" file="{jdo.class.path}"/>
-    <available property="versiondoclet.available" file="${versiondoclet.class.path}"/>
-    <available property="junit.available" file="${junit.class.path}"/>
+	<available property="versiondoclet.available" file="${versiondoclet.class.path}"/>
+	<available property="junit.available" file="${junit.class.path}"/>
 	<available property="junitdoclet.available" file="${junitdoclet.class.path}"/>
-    <available property="namingstrategy.available" file="${namingstrategy.class.path}"/>
+	<available property="namingstrategy.available" file="${namingstrategy.class.path}"/>
   </target>
 
   <!-- =================================================================== -->
@@ -79,7 +79,7 @@
 
   <!-- =================================================================== -->
   <!-- Builds a package with all essential files                           -->
-  <!-- =================================================================== -->
+  <!-- ================================================================== -->
   <target name="main" depends="init, compile, copy_resources, jar">
   </target>
 
@@ -95,7 +95,7 @@
            deprecation="${javac.deprecation}"
            optimize="${javac.optimize}"
            fork="${javac.fork}">
-      <include name="CH/ifa/draw/framework/**"/>
+      <include name="org/jhotdraw/framework/**"/>
     </javac>
     <javac srcdir="${src.dir}"
            destdir="${build.classes}"
@@ -104,7 +104,7 @@
            optimize="${javac.optimize}"
            fork="${javac.fork}">
       <include name="${javac.includes}"/>
-      <exclude name="CH/ifa/draw/framework/**"/>
+      <exclude name="org/jhotdraw/framework/**"/>
       <exclude name="${needs.batik.src}" unless="batik.available"/>
       <exclude name="${needs.jdo.src}" unless="jdo.available"/>
       <exclude name="${needs.junit.src}"/>
@@ -146,7 +146,6 @@
         <include name="${javac.includes}"/>
         <exclude name="${needs.junit.src}"/>
       </fileset>
-
     </javadoc>
   </target>
 
@@ -158,18 +157,17 @@
       classpath    = "${dest.dir}"
       author       = "false"
       version      = "true">
-      <fileset dir="${src.dir}" >
-        <include name="${javac.includes}"/>
-        <exclude name="${needs.junit.src}"/>
-      </fileset>
       <doclet name="org.jhotdraw.tools.versiondoclet.VersionDoclet">
         <param name="-versionfile" value="${mk.dir}/${manifest.name}"/>
         <param name="-version" value=""/>
         <path>
           <pathelement path="${versiondoclet.class.path}"/>
         </path>
-
       </doclet>
+      <fileset dir="${src.dir}" >
+        <include name="${javac.includes}"/>
+        <exclude name="${needs.junit.src}"/>
+      </fileset>
     </javadoc>
   </target>
 
@@ -195,7 +193,7 @@
       classpath           = "${dest.dir}"
       sourcepath          = "${src.dir}"
       defaultexcludes     = "yes">
-      <package name="CH.ifa.draw.util.*"/>
+      <package name="org.jhotdraw.util.*"/>
       <excludepackage name="${needs.batik.class}"/>
       <excludepackage name="${needs.jdo.class}"/>
       <excludepackage name="${test.packages}"/>
@@ -215,14 +213,14 @@
     </javadoc>
   </target>
 
-  <target name="junit_compile" depends="junit_doclet">
+  <target name="junit_compile" depends="compile, junit_doclet">
  	<javac srcdir="${src.dir}"
            destdir="${dest.dir}"
            debug="${javac.debug}"
            deprecation="${javac.deprecation}"
            optimize="${javac.optimize}">
       <!-- <include name="${needs.junit.src}"/> -->
-      <include name="CH/ifa/draw/test/**/*.java"/>
+      <include name="${javac.includes}"/>
       <exclude name="${needs.batik.src}" unless="batik.available"/>
       <exclude name="${needs.jdo.src}" unless="jdo.available"/>
       <classpath>
@@ -279,7 +277,7 @@
   <!-- Cleans up generated stuff                                           -->
   <!-- =================================================================== -->
   <target name="clean" description="Cleans up generated stuff.">
-    <delete dir="${dest.dir}/CH"/>
+    <delete dir="${dest.dir}/org"/>
     <delete dir="${javadoc.dir}"/>
     <delete file="${build.jar}"/>
     <delete dir="${deploy.dir}"/>
@@ -293,8 +291,8 @@
          manifest="${mk.dir}/${manifest.name}"
         >
       <fileset dir="${build.classes}">
-        <include name="CH/**"/>
-        <exclude name="CH/ifa/draw/test/**"/>
+        <include name="org/jhotdraw/**"/>
+        <exclude name="org/jhotdraw/test/**"/>
       </fileset>
 	</jar>
   </target>
@@ -317,7 +315,7 @@
       </fileset>
 	</zip>
   </target>
-
+  
   <!-- =================================================================== -->
   <!-- Run examples (and compile if necessary).                            -->
   <!-- =================================================================== -->
@@ -327,7 +325,7 @@
   </path>
   
   <target name="javadraw" depends="main">
-     <java classname="CH.ifa.draw.samples.javadraw.JavaDrawApp" fork="yes">
+     <java classname="org.jhotdraw.samples.javadraw.JavaDrawApp" fork="yes">
        <classpath>
          <path refid="example_path"/>
        </classpath>
@@ -335,7 +333,7 @@
   </target>
 
   <target name="pert" depends="main">
-     <java classname="CH.ifa.draw.samples.pert.PertApplication" fork="yes">
+     <java classname="org.jhotdraw.samples.pert.PertApplication" fork="yes">
        <classpath>
          <path refid="example_path"/>
        </classpath>
@@ -343,7 +341,7 @@
   </target>
 
   <target name="net" depends="main">
-     <java classname="CH.ifa.draw.samples.net.NetApp" fork="yes">
+     <java classname="org.jhotdraw.samples.net.NetApp" fork="yes">
        <classpath>
          <path refid="example_path"/>
        </classpath>
@@ -351,7 +349,7 @@
   </target>
 
   <target name="nothing" depends="main">
-     <java classname="CH.ifa.draw.samples.nothing.NothingApp" fork="yes">
+     <java classname="org.jhotdraw.samples.nothing.NothingApp" fork="yes">
        <classpath>
          <path refid="example_path"/>
        </classpath>
@@ -359,7 +357,7 @@
   </target>
 
   <target name="svgdraw" depends="main" if="batik.available">
-     <java classname="CH.ifa.draw.contrib.SVGDrawApp" fork="yes">
+     <java classname="org.jhotdraw.contrib.SVGDrawApp" fork="yes">
        <classpath>
          <path refid="example_path"/>
          <pathelement path="${env.CLASSPATH}"/>
