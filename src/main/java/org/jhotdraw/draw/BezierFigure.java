@@ -26,8 +26,10 @@ import org.jhotdraw.geom.*;
 import org.jhotdraw.xml.DOMInput;
 import org.jhotdraw.xml.DOMOutput;
 /**
- * A BezierFigure can be used to draw arbitrary shapes using a BezierPath.
+ * A BezierFigure can be used to draw arbitrary shapes using a <code>BezierPath</code>.
  * It can be used to draw an open path or a closed shape.
+ *
+ * @see org.jhotdraw.geom.BezierPath
  *
  * @version 2.1.1 2006-06-08 Fixed caps drawing.
  * <br>2.1 2006-04-21 Improved caps drawing.
@@ -35,7 +37,7 @@ import org.jhotdraw.xml.DOMOutput;
  * <br>1.0 March 14, 2004.
  * @author Werner Randelshofer
  */
-public class BezierFigure extends AttributedFigure {
+public class BezierFigure extends AbstractAttributedFigure {
     public final static AttributeKey<Boolean> CLOSED = new AttributeKey<Boolean>("closed", false);
     /**
      * The BezierPath.
@@ -48,11 +50,25 @@ public class BezierFigure extends AttributedFigure {
     private transient BezierPath cappedPath;
     
     
-    /** Creates a new instance. */
+    /**
+     * Creates an empty <code>BezierFigure</code>, for example without any
+     * <code>BezierPath.Node</code>s.
+     * The BezierFigure will not draw anything, if at least two nodes
+     * are added to it. The <code>BezierPath</code> created by this constructor
+     * is not closed.
+     */
     public BezierFigure() {
         this(false);
     }
-    /** Creates a new instance. */
+    /**
+     * Creates an empty BezierFigure, for example without any
+     * <code>BezierPath.Node</code>s.
+     * The BezierFigure will not draw anything, unless at least two nodes
+     * are added to it.
+     *
+     * @param isClosed Specifies whether the <code>BezierPath</code> shall
+     * be closed.
+     */
     public BezierFigure(boolean isClosed) {
         path = new BezierPath();
         CLOSED.set(this, isClosed);
@@ -87,7 +103,7 @@ public class BezierFigure extends AttributedFigure {
             } else {
                 GrowStroke gs = new GrowStroke((float) grow,
                         (float) (AttributeKeys.getStrokeTotalWidth(this) *
-                        STROKE_MITER_LIMIT_FACTOR.get(this))
+                        STROKE_MITER_LIMIT.get(this))
                         );
                 g.draw(gs.createStrokedShape(path));
             }
@@ -128,7 +144,7 @@ public class BezierFigure extends AttributedFigure {
             } else {
                 GrowStroke gs = new GrowStroke((float) grow,
                         (float) (AttributeKeys.getStrokeTotalWidth(this) *
-                        STROKE_MITER_LIMIT_FACTOR.get(this))
+                        STROKE_MITER_LIMIT.get(this))
                         );
                 g.fill(gs.createStrokedShape(path));
             }
@@ -136,19 +152,32 @@ public class BezierFigure extends AttributedFigure {
     }
     
     public boolean contains(Point2D.Double p) {
-        if (isClosed()) {
+        double tolerance = Math.max(2f, AttributeKeys.getStrokeTotalWidth(this) / 2);
+        if (isClosed() || FILL_COLOR.get(this) != null) {
             double grow = AttributeKeys.getPerpendicularHitGrowth(this);
             if (grow == 0d) {
-                return path.contains(p);
+                if (path.contains(p)) {
+                    return true;
+                } else {
+                    if (isClosed()) {
+                        return false;
+                    }
+                }
             } else {
                 GrowStroke gs = new GrowStroke((float) grow,
                         (float) (AttributeKeys.getStrokeTotalWidth(this) *
-                        STROKE_MITER_LIMIT_FACTOR.get(this))
+                        STROKE_MITER_LIMIT.get(this))
                         );
-                return gs.createStrokedShape(path).contains(p);
+                if (gs.createStrokedShape(path).contains(p)) {
+                    return true;
+                } else {
+                    if (isClosed()) {
+                        return false;
+                    }
+                }
             }
-        } else {
-        double tolerance = Math.max(2f, AttributeKeys.getStrokeTotalWidth(this) / 2);
+        }
+        if (! isClosed()) {
             if (getCappedPath().outlineContains(p, tolerance)) {
                 return true;
             }
@@ -170,8 +199,8 @@ public class BezierFigure extends AttributedFigure {
                     return true;
                 }
             }
-            return false;
         }
+        return false;
     }
     /**
      * Checks if this figure can be connected. By default
@@ -203,8 +232,8 @@ public class BezierFigure extends AttributedFigure {
         bounds.height = Math.max(1, bounds.height);
         return bounds;
     }
-    public Rectangle2D.Double getFigureDrawBounds() {
-        Rectangle2D.Double r = super.getFigureDrawBounds();
+    public Rectangle2D.Double getDrawingArea() {
+        Rectangle2D.Double r = super.getDrawingArea();
         
         if (getNodeCount() > 1) {
             if (START_DECORATION.get(this) != null) {
@@ -258,10 +287,18 @@ public class BezierFigure extends AttributedFigure {
     public void basicSetAttribute(AttributeKey key, Object newValue) {
         if (key == CLOSED) {
             path.setClosed((Boolean) newValue);
+        } else if (key == WINDING_RULE) {
+            path.setWindingRule(newValue == AttributeKeys.WindingRule.EVEN_ODD ? GeneralPath.WIND_EVEN_ODD : GeneralPath.WIND_NON_ZERO);
         }
         super.basicSetAttribute(key, newValue);
     }
     
+    /**
+     * Sets the location of the first and the last <code>BezierPath.Node</code>
+     * of the BezierFigure.
+     * If the BezierFigure has not at least two nodes, nodes are added
+     * to the figure until the BezierFigure has at least two nodes.
+     */
     public void basicSetBounds(Point2D.Double anchor, Point2D.Double lead) {
         basicSetStartPoint(anchor);
         basicSetEndPoint(lead);
@@ -447,14 +484,26 @@ public class BezierFigure extends AttributedFigure {
     }
     /**
      * Convenience method for setting the point coordinate of the start point.
+     * If the BezierFigure has not at least two nodes, nodes are added
+     * to the figure until the BezierFigure has at least two nodes.
      */
     public void basicSetStartPoint(Point2D.Double p) {
+        // Add two nodes if we haven't at least two nodes
+        for (int i=getNodeCount(); i < 2; i++) {
+            basicAddNode(0, new BezierPath.Node(p.x, p.y));
+        }
         basicSetPoint(0, p);
     }
     /**
      * Convenience method for setting the point coordinate of the end point.
+     * If the BezierFigure has not at least two nodes, nodes are added
+     * to the figure until the BezierFigure has at least two nodes.
      */
     public void basicSetEndPoint(Point2D.Double p) {
+        // Add two nodes if we haven't at least two nodes
+        for (int i=getNodeCount(); i < 2; i++) {
+            basicAddNode(0, new BezierPath.Node(p.x, p.y));
+        }
         basicSetPoint(getPointCount() - 1, p);
     }
     /**
@@ -596,11 +645,11 @@ public class BezierFigure extends AttributedFigure {
         return that;
     }
     
-    public void restoreTo(Object geometry) {
+    public void restoreTransformTo(Object geometry) {
         path.setTo((BezierPath) geometry);
     }
     
-    public Object getRestoreData() {
+    public Object getTransformRestoreData() {
         return path.clone();
     }
     
@@ -612,7 +661,7 @@ public class BezierFigure extends AttributedFigure {
             } else {
                 GrowStroke gs = new GrowStroke((float) grow,
                         (float) (AttributeKeys.getStrokeTotalWidth(this) *
-                        STROKE_MITER_LIMIT_FACTOR.get(this))
+                        STROKE_MITER_LIMIT.get(this))
                         );
                 return Geom.chop(gs.createStrokedShape(path), p);
             }
@@ -709,7 +758,7 @@ public class BezierFigure extends AttributedFigure {
         out.closeElement();
     }
     
-   @Override public void read(DOMInput in) throws IOException {
+    @Override public void read(DOMInput in) throws IOException {
         readPoints(in);
         readAttributes(in);
     }

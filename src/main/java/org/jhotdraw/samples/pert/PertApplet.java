@@ -1,7 +1,7 @@
 /*
  * @(#)PertApplet.java  1.0  2006-07-15
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2007 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
  * All rights reserved.
  *
@@ -16,6 +16,7 @@ package org.jhotdraw.samples.pert;
 
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.action.*;
+import org.jhotdraw.gui.*;
 import org.jhotdraw.util.*;
 
 import java.awt.*;
@@ -34,7 +35,7 @@ import org.jhotdraw.xml.*;
  * @version 1.0 2006-07-15 Created.
  */
 public class PertApplet extends JApplet {
-    private final static String VERSION = "0.5";
+    private final static String VERSION = "7.0.8";
     private final static String NAME = "JHotDraw Pert";
     private PertPanel drawingPanel;
     
@@ -75,22 +76,20 @@ public class PertApplet extends JApplet {
         
         // We load the data using a worker thread
         // --------------------------------------
-        new SwingWorker() {
+        new Worker() {
             public Object construct() {
                 Object result;
                 try {
                         System.out.println("getParameter.datafile:"+getParameter("datafile"));
                     if (getParameter("data") != null) {
-                        NanoXMLLiteDOMInput domi = new NanoXMLLiteDOMInput(new PertFactory(), new StringReader(getParameter("data")));
-                        domi.openElement("PertDiagram");
+                        NanoXMLDOMInput domi = new NanoXMLDOMInput(new PertFactory(), new StringReader(getParameter("data")));
                         result = domi.readObject(0);
                     } else if (getParameter("datafile") != null) {
                         InputStream in = null;
                         try {
                             URL url = new URL(getDocumentBase(), getParameter("datafile"));
                             in = url.openConnection().getInputStream();
-                            NanoXMLLiteDOMInput domi = new NanoXMLLiteDOMInput(new PertFactory(), in);
-                            domi.openElement("PertDiagram");
+                            NanoXMLDOMInput domi = new NanoXMLDOMInput(new PertFactory(), in);
                             result = domi.readObject(0);
                         } finally {
                             if (in != null) in.close();
@@ -103,16 +102,15 @@ public class PertApplet extends JApplet {
                 }
                 return result;
             }
-            public void finished() {
-                if (getValue() instanceof Throwable) {
-                    ((Throwable) getValue()).printStackTrace();
+            public void finished(Object result) {
+                if (result instanceof Throwable) {
+                    ((Throwable) result).printStackTrace();
                 }
                 Container c = getContentPane();
                 c.setLayout(new BorderLayout());
                 c.removeAll();
                 c.add(drawingPanel = new PertPanel());
                 
-                Object result = getValue();
                 initComponents();
                 if (result != null) {
                     if (result instanceof Drawing) {
@@ -141,9 +139,7 @@ public class PertApplet extends JApplet {
         if (text != null && text.length() > 0) {
             StringReader in = new StringReader(text);
             try {
-                NanoXMLLiteDOMInput domi = new NanoXMLLiteDOMInput(new PertFactory(), in);
-                domi.openElement("Pert");
-                
+                NanoXMLDOMInput domi = new NanoXMLDOMInput(new PertFactory(), in);
                 setDrawing((Drawing) domi.readObject(0));
             } catch (Throwable e) {
                 getDrawing().clear();
@@ -160,10 +156,8 @@ public class PertApplet extends JApplet {
     public String getData() {
         CharArrayWriter out = new CharArrayWriter();
         try {
-            NanoXMLLiteDOMOutput domo = new NanoXMLLiteDOMOutput(new PertFactory());
-            domo.openElement("Pert");
+            NanoXMLDOMOutput domo = new NanoXMLDOMOutput(new PertFactory());
             domo.writeObject(getDrawing());
-            domo.closeElement();
             domo.save(out);
         } catch (IOException e) {
             TextFigure tf = new TextFigure();
@@ -184,16 +178,11 @@ public class PertApplet extends JApplet {
         };
     }
     public String getAppletInfo() {
-        return NAME+"\nVersion "+VERSION
-        +"\n\nCopyright \u00a9 2004-2006, \u00a9 Werner Randelshofer"
-        +"\nAlle Rights Reserved."
-        +"\n\nThis software is based on"
-        +"\nJHotDraw \u00a9 1996-1997, IFA Informatik und Erich Gamma"
-        +"\nNanoXML \u00a9 2000-2002 Marc De Scheemaecker"
-        +"\n"
-        +"\nJavaScript code can access the drawing data using the setData() and getData() methods."
-                
-        ;
+        return NAME +
+                "\nVersion "+VERSION +
+                "\n\nCopyright 1996-2007 (c) by the authors of JHotDraw" +
+                "\nThis software is licensed under LGPL or" +
+                "\nCreative Commons 2.5 BY";
     }
     /** This method is called from within the init() method to
      * initialize the form.

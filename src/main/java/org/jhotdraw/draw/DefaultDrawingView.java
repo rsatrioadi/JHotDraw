@@ -1,5 +1,5 @@
 /*
- * @(#)DefaultDrawingView.java  3.0.2  2006-07-03
+ * @(#)DefaultDrawingView.java  3.2  2006-12-26
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
@@ -10,14 +10,14 @@
  * such Confidential Information and shall use it only in accordance
  * with the terms of the license agreement you entered into with
  * JHotDraw.org.
-�
  */
 
 package org.jhotdraw.draw;
 
-import org.jhotdraw.gui.datatransfer.CompositeTransferable;
+import org.jhotdraw.gui.datatransfer.*;
 import org.jhotdraw.util.*;
 import org.jhotdraw.undo.*;
+import org.jhotdraw.io.*;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.geom.*;
@@ -31,10 +31,13 @@ import org.jhotdraw.geom.*;
 import org.jhotdraw.xml.*;
 import org.jhotdraw.xml.XMLTransferable;
 /**
- * DefaultDrawingView.
+ * The DefaultDrawingView is suited for viewing drawings with a small number
+ * of Figures.
  *
  * @author Werner Randelshofer
- * @version 3.0.2 2006-07-03 Constrainer must be a bound property.
+ * @version 3.2 2006-12-26 Rewrote storage and clipboard support.
+ * <br>3.1 2006-12-17 Added printing support.
+ * <br>3.0.2 2006-07-03 Constrainer must be a bound property.
  * <br>3.0.1 2006-06-11 Draw handles when this DrawingView is the focused
  * drawing view of the DrawingEditor.
  * <br>3.0 2006-02-17 Reworked to support multiple drawing views in a
@@ -58,15 +61,14 @@ public class DefaultDrawingView
     private double scaleFactor = 1;
     private Point2D.Double translate = new Point2D.Double(0,0);
     private int detailLevel;
-    private DOMFactory domFactory;
     private DrawingEditor editor;
     private Constrainer constrainer = new GridConstrainer(1,1);
     private JLabel emptyDrawingLabel;
-    //private boolean hasPermanentFocus;
     
     /** Creates new instance. */
     public DefaultDrawingView() {
         initComponents();
+        setToolTipText("dummy"); // Set a dummy tool tip text to turn tooltips on
         setFocusable(true);
         addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
@@ -95,7 +97,15 @@ public class DefaultDrawingView
         return drawing;
     }
     
-    public java.util.Set getTools() {
+    public String getToolTipText(MouseEvent evt) {
+        Handle handle = findHandle(evt.getPoint());
+        if (handle != null) {
+            return handle.getToolTipText(evt.getPoint());
+        }
+        Figure figure = findFigure(evt.getPoint());
+        if (figure != null) {
+            return figure.getToolTipText(viewToDrawing(evt.getPoint()));
+        }
         return null;
     }
     
@@ -114,13 +124,47 @@ public class DefaultDrawingView
         return (emptyDrawingLabel == null) ? null : emptyDrawingLabel.getText();
     }
     
+    /**
+     * Paints the drawing view.
+     * Uses rendering hints for fast painting. Paints the background, the
+     * grid, the drawing, the handles and the current tool.
+     */
     public void paintComponent(Graphics gr) {
         
         Graphics2D g = (Graphics2D) gr;
         
+        // Set rendering hints for speed
         g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         //g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
+        //g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, (Options.isFractionalMetrics()) ? RenderingHints.VALUE_FRACTIONALMETRICS_ON : RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, (Options.isTextAntialiased()) ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        
+        
+        drawBackground(g);
+        drawGrid(g);
+        drawDrawing(g);
+        
+        drawHandles(g);
+        drawTool(g);
+    }
+    /**
+     * Prints the drawing view.
+     * Uses high quality rendering hints for printing. Only prints the drawing.
+     * Doesn't print the background, the grid, the handles and the tool.
+     */
+    public void printComponent(Graphics gr) {
+        
+        Graphics2D g = (Graphics2D) gr;
+        
+        // Set rendering hints for quality
+        g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
         //g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, (Options.isFractionalMetrics()) ? RenderingHints.VALUE_FRACTIONALMETRICS_ON : RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
@@ -129,12 +173,13 @@ public class DefaultDrawingView
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, (Options.isTextAntialiased()) ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         
-        drawBackground(g);
-        drawGrid(g);
+        
+        //drawBackground(g);
+        //drawGrid(g);
         drawDrawing(g);
         
-        drawHandles(g);
-        drawTool(g);
+        //drawHandles(g);
+        //drawTool(g);
     }
     
     protected void drawBackground(Graphics2D g) {
@@ -305,6 +350,12 @@ public class DefaultDrawingView
         invalidateHandles();
         repaint();
     }
+    
+    public void setEnabled(boolean b) {
+        super.setEnabled(b);
+        setCursor(Cursor.getPredefinedCursor(b ? Cursor.DEFAULT_CURSOR : Cursor.WAIT_CURSOR));
+    }
+    
     
     /**
      * Selects all figures.
@@ -539,7 +590,7 @@ public class DefaultDrawingView
     }
     
     public void setConstrainer(Constrainer newValue) {
-       Constrainer oldValue = constrainer;
+        Constrainer oldValue = constrainer;
         constrainer = newValue;
         repaint();
         firePropertyChange("constrainer", oldValue, newValue);
@@ -556,7 +607,7 @@ public class DefaultDrawingView
                 translate.x = 0;
                 translate.y = 0;
                 for (Figure f : drawing.getFigures()) {
-                    Rectangle2D.Double r = f.getDrawBounds();
+                    Rectangle2D.Double r = f.getDrawingArea();
                     d.width = Math.max(d.width, r.x + r.width);
                     d.height = Math.max(d.height, r.y + r.height);
                     translate.x = Math.min(translate.x, r.x);
@@ -607,7 +658,7 @@ public class DefaultDrawingView
                 );
     }
     
-    public Container getContainer() {
+    public JComponent getComponent() {
         return this;
     }
     
@@ -666,50 +717,35 @@ public class DefaultDrawingView
         t.translate(- translate.x, - translate.y);
         return t;
     }
-    public void setDOMFactory(DOMFactory newValue) {
-        DOMFactory oldValue = domFactory;
-        this.domFactory = newValue;
-        firePropertyChange("DOMFactory", oldValue, newValue);
-    }
-    public DOMFactory getDOMFactory() {
-        return domFactory;
-    }
     
     public void copy() {
-        if (domFactory == null) {
+        if (drawing.getOutputFormats() == null ||
+                drawing.getOutputFormats().size() == 0) {
             getToolkit().beep();
             return;
         }
         
-        HashSet<Figure> toBeCopied = new HashSet<Figure>(getSelectedFigures());
-        if (toBeCopied.size() == 0) return;
-        
-        
-        
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
-            NanoXMLLiteDOMOutput domo = new NanoXMLLiteDOMOutput(domFactory);
-            domo.openElement("DrawingClip");
-            for (Figure f : getDrawing().getFigures()) {
-                if (toBeCopied.contains(f)) {
-                    domo.writeObject(f);
+        java.util.List<Figure> toBeCopied = drawing.sort(getSelectedFigures());
+        if (toBeCopied.size() > 0) {
+            try {
+                CompositeTransferable transfer = new CompositeTransferable();
+                for (OutputFormat format : drawing.getOutputFormats()) {
+                    Transferable t = format.createTransferable(toBeCopied, scaleFactor);
+                    if (! transfer.isDataFlavorSupported(t.getTransferDataFlavors()[0])) {
+                    transfer.add(t);
+                    }
                 }
+                getToolkit().getSystemClipboard().setContents(transfer, transfer);
+            } catch (IOException e) {
+                e.printStackTrace();
+                getToolkit().beep();
             }
-            domo.closeElement();
-            domo.save(out);
-            byte[] data = out.toByteArray();
-            CompositeTransferable transfer = new CompositeTransferable();
-            transfer.add(new XMLTransferable(data, "application/x-drawing-clip", "DrawingClip"));
-            transfer.add(new XMLTransferable(data, "text/xml", "DrawingClip"));
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transfer, transfer);
-        } catch (IOException e) {
-            e.printStackTrace();
-            getToolkit().beep();
         }
     }
     
     public void cut() {
-        if (domFactory == null) {
+        if (drawing.getOutputFormats() == null ||
+                drawing.getOutputFormats().size() == 0) {
             getToolkit().beep();
             return;
         }
@@ -724,40 +760,30 @@ public class DefaultDrawingView
     }
     
     public void paste() {
-        if (domFactory == null) {
+        if (drawing.getInputFormats() == null ||
+                drawing.getInputFormats().size() == 0) {
             getToolkit().beep();
             return;
         }
+        
         try {
-            ArrayList<Figure> toBeSelected = new ArrayList<Figure>();
-            DataFlavor flavor = new DataFlavor("application/x-drawing-clip", "Drawing Clip");
-            Transferable transfer = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this);
-            if (transfer.isDataFlavorSupported(flavor)) {
-                CompositeEdit ce = new CompositeEdit("Paste");
-                getDrawing().fireUndoableEditHappened(ce);
-                for (Figure f : new LinkedList<Figure>(getSelectedFigures())) {
-                    getDrawing().remove(f);
+            Transferable transfer = getToolkit().getSystemClipboard().getContents(this);
+            // Search for a suitable input format
+           ImportLoop: for (InputFormat format : drawing.getInputFormats()) {
+                for (DataFlavor flavor : transfer.getTransferDataFlavors()) {
+                if (format.isDataFlavorSupported(flavor)) {
+                    CompositeEdit ce = new CompositeEdit("Paste");
+                    getDrawing().fireUndoableEditHappened(ce);
+                    java.util.List<Figure> toBeSelected = format.readFigures(transfer);
+                    clearSelection();
+                    getDrawing().addAll(toBeSelected); 
+                    addToSelection(toBeSelected);
+                    getDrawing().fireUndoableEditHappened(ce);
+                    break ImportLoop;
                 }
-                
-                InputStream in = null;
-                try {
-                    in = (InputStream) transfer.getTransferData(flavor);
-                    NanoXMLLiteDOMInput domi = new NanoXMLLiteDOMInput(domFactory, in);
-                    domi.openElement("DrawingClip");
-                    for (int i=0, n=domi.getElementCount(); i < n; i++) {
-                        Figure f = (Figure) domi.readObject(i);
-                        getDrawing().add(f);
-                        toBeSelected.add(f);
-                    }
-                } finally {
-                    if (in != null) in.close();
                 }
-                clearSelection();
-                addToSelection(toBeSelected);
-                getDrawing().fireUndoableEditHappened(ce);
-            } else {
-                Toolkit.getDefaultToolkit().beep();
             }
+            
             
         } catch (Throwable e) {
             e.printStackTrace();

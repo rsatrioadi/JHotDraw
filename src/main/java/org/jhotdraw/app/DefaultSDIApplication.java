@@ -23,27 +23,7 @@ import java.io.*;
 import java.util.*;
 import java.util.prefs.*;
 import javax.swing.*;
-import org.jhotdraw.app.action.AboutAction;
-import org.jhotdraw.app.action.Actions;
-import org.jhotdraw.app.action.ClearAction;
-import org.jhotdraw.app.action.ClearRecentFilesAction;
-import org.jhotdraw.app.action.CloseAction;
-import org.jhotdraw.app.action.CopyAction;
-import org.jhotdraw.app.action.CutAction;
-import org.jhotdraw.app.action.DeleteAction;
-import org.jhotdraw.app.action.DuplicateAction;
-import org.jhotdraw.app.action.ExitAction;
-import org.jhotdraw.app.action.ExportAction;
-import org.jhotdraw.app.action.LoadAction;
-import org.jhotdraw.app.action.LoadRecentAction;
-import org.jhotdraw.app.action.NewAction;
-import org.jhotdraw.app.action.PasteAction;
-import org.jhotdraw.app.action.RedoAction;
-import org.jhotdraw.app.action.SaveAction;
-import org.jhotdraw.app.action.SaveAsAction;
-import org.jhotdraw.app.action.SelectAllAction;
-import org.jhotdraw.app.action.ToggleVisibleAction;
-import org.jhotdraw.app.action.UndoAction;
+import org.jhotdraw.app.action.*;
 
 /**
  * A DefaultSDIApplication can handle the life cycle of a single document window being
@@ -90,6 +70,7 @@ public class DefaultSDIApplication extends AbstractApplication {
         System.setProperty("apple.laf.useScreenMenuBar","false");
         System.setProperty("com.apple.macos.useScreenMenuBar","false");
         System.setProperty("apple.awt.graphics.UseQuartz","false");
+        System.setProperty("swing.aatext","true");
         try {
             String lafName = UIManager.getSystemLookAndFeelClassName();
             UIManager.setLookAndFeel(lafName);
@@ -115,6 +96,7 @@ public class DefaultSDIApplication extends AbstractApplication {
         m.putAction(SaveAction.ID, new SaveAction(this));
         m.putAction(SaveAsAction.ID, new SaveAsAction(this));
         m.putAction(CloseAction.ID, new CloseAction(this));
+        m.putAction(PrintAction.ID, new PrintAction(this));
         
         m.putAction(UndoAction.ID, new UndoAction(this));
         m.putAction(RedoAction.ID, new RedoAction(this));
@@ -321,6 +303,10 @@ public class DefaultSDIApplication extends AbstractApplication {
         m.add(model.getAction(SaveAsAction.ID));
         if (model.getAction(ExportAction.ID) != null) {
             mi = m.add(model.getAction(ExportAction.ID));
+        }
+        if (model.getAction(PrintAction.ID) != null) {
+            m.addSeparator();
+            m.add(model.getAction(PrintAction.ID));
         }
         m.addSeparator();
         m.add(model.getAction(ExitAction.ID));

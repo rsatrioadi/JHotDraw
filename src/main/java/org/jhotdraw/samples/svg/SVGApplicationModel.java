@@ -15,6 +15,7 @@
 package org.jhotdraw.samples.svg;
 
 import java.awt.*;
+import java.awt.geom.*;
 import org.jhotdraw.app.action.*;
 import org.jhotdraw.samples.svg.action.*;
 import org.jhotdraw.samples.svg.figures.*;
@@ -52,6 +53,10 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         if (a.isSharingToolsAmongProjects()) {
             ((SVGProject) p).setEditor(getSharedEditor());
         }
+    }
+
+    public void initApplication(Application a) {
+putAction(ExportAction.ID, new ExportAction(a));
     }
     /**
      * Creates toolbars for the application.
@@ -101,8 +106,8 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         a.add(new DuplicateAction());
         
         a.add(null); // separator
-        a.add(new GroupAction(editor, new SVGGroup()));
-        a.add(new UngroupAction(editor, new SVGGroup()));
+        a.add(new GroupAction(editor, new SVGGroupFigure()));
+        a.add(new UngroupAction(editor, new SVGGroupFigure()));
         a.add(new CombineAction(editor));
         a.add(new SplitAction(editor));
         
@@ -123,22 +128,26 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         tb.addSeparator();
         
         attributes = new HashMap<AttributeKey,Object>();
-        attributes.put(AttributeKeys.FILL_COLOR, Color.white);
-        attributes.put(AttributeKeys.STROKE_COLOR, Color.black);
-        ToolBarButtonFactory.addToolTo(tb, editor, new CreationTool(new SVGRect(), attributes), "createRectangle", drawLabels);
-        ToolBarButtonFactory.addToolTo(tb, editor, new CreationTool(new SVGEllipse(), attributes), "createEllipse", drawLabels);
-        ToolBarButtonFactory.addToolTo(tb, editor, new PathTool(new SVGPath(), new BezierFigure(true), attributes), "createPolygon", drawLabels);
+        //attributes.put(AttributeKeys.FILL_COLOR, Color.white);
+        //attributes.put(AttributeKeys.STROKE_COLOR, Color.black);
+        ToolBarButtonFactory.addToolTo(tb, editor, new CreationTool(new SVGRectFigure(), attributes), "createRectangle", drawLabels);
+        ToolBarButtonFactory.addToolTo(tb, editor, new CreationTool(new SVGEllipseFigure(), attributes), "createEllipse", drawLabels);
+        ToolBarButtonFactory.addToolTo(tb, editor, new PathTool(new SVGPathFigure(), new BezierFigure(true), attributes), "createPolygon", drawLabels);
         attributes = new HashMap<AttributeKey,Object>();
         attributes.put(AttributeKeys.FILL_COLOR, null);
         attributes.put(AttributeKeys.STROKE_COLOR, Color.black);
-        ToolBarButtonFactory.addToolTo(tb, editor, new CreationTool(new SVGLine(), attributes), "createLine", drawLabels);
-        ToolBarButtonFactory.addToolTo(tb, editor, new PathTool(new SVGPath(), new BezierFigure(false), attributes), "createScribble", drawLabels);
+        ToolBarButtonFactory.addToolTo(tb, editor, new CreationTool(new SVGPathFigure(), attributes), "createLine", drawLabels);
+        ToolBarButtonFactory.addToolTo(tb, editor, new PathTool(new SVGPathFigure(), new BezierFigure(false), attributes), "createScribble", drawLabels);
         attributes = new HashMap<AttributeKey,Object>();
         attributes.put(AttributeKeys.FILL_COLOR, Color.black);
         attributes.put(AttributeKeys.STROKE_COLOR, null);
-        ToolBarButtonFactory.addToolTo(tb, editor, new CreationTool(new SVGText(), attributes), "createText", drawLabels);
-    }
-    
+        ToolBarButtonFactory.addToolTo(tb, editor, new TextTool(new SVGTextFigure(), attributes), "createText", drawLabels);
+        ToolBarButtonFactory.addToolTo(tb, editor, new TextAreaTool(new SVGTextAreaFigure(), attributes), "createTextArea", drawLabels);
+        attributes = new HashMap<AttributeKey,Object>();
+        attributes.put(AttributeKeys.FILL_COLOR, null);
+        attributes.put(AttributeKeys.STROKE_COLOR, null);
+        ToolBarButtonFactory.addToolTo(tb, editor, new ImageTool(new SVGImageFigure(), attributes), "createImage", drawLabels);
+    }    
     /**
      * Creates toolbar buttons and adds them to the specified JToolBar
      */
@@ -166,6 +175,8 @@ addColorButtonsTo(bar, editor);
     private void addStrokeButtonsTo(JToolBar bar, DrawingEditor editor) {
         ToolBarButtonFactory.addStrokeWidthButtonTo(bar, editor);
         ToolBarButtonFactory.addStrokeDashesButtonTo(bar, editor);
+        ToolBarButtonFactory.addStrokeCapButtonTo(bar, editor);
+        ToolBarButtonFactory.addStrokeJoinButtonTo(bar, editor);
     }
 
 }

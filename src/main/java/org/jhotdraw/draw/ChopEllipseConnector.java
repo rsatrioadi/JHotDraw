@@ -10,12 +10,10 @@
  * such Confidential Information and shall use it only in accordance
  * with the terms of the license agreement you entered into with
  * JHotDraw.org.
-�
  */
 
 package org.jhotdraw.draw;
 
-import com.sun.tools.javac.jvm.Gen;
 import org.jhotdraw.util.*;
 import java.awt.*;
 import java.awt.geom.*;
@@ -31,7 +29,7 @@ import org.jhotdraw.geom.*;
  * <br>2.0 2006-01-14 Changed to support double precison coordinates.
  * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
  */
-public class ChopEllipseConnector extends ChopBoxConnector {
+public class ChopEllipseConnector extends ChopRectangleConnector {
     /** 
      * Only used for DOMStorable input.
      */

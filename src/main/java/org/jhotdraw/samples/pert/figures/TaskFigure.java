@@ -89,7 +89,7 @@ public class TaskFigure extends GraphicalCompositeFigure {
         add(separator1);
         add(attributeCompartment);
         
-        Insets2DDouble insets = new Insets2DDouble(4,8,4,8);
+        Insets2D.Double insets = new Insets2D.Double(4,8,4,8);
         LAYOUT_INSETS.set(nameCompartment, insets);
         LAYOUT_INSETS.set(attributeCompartment, insets);
         
@@ -203,7 +203,7 @@ public class TaskFigure extends GraphicalCompositeFigure {
     }
     
     private void applyAttributes(Figure f) {
-        Map<AttributeKey,Object> attr = ((AttributedFigure) getPresentationFigure()).getAttributes();
+        Map<AttributeKey,Object> attr = ((AbstractAttributedFigure) getPresentationFigure()).getAttributes();
         for (Map.Entry<AttributeKey, Object> entry : attr.entrySet()) {
             f.setAttribute(entry.getKey(), entry.getValue());
         }

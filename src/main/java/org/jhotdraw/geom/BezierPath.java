@@ -1,5 +1,5 @@
 /*
- * @(#)BezierPath.java  1.1  2006-03-22
+ * @(#)BezierPath.java  1.2.1  2007-01-05
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
@@ -28,17 +28,23 @@ import java.util.*;
  * away from C0.
  *
  * @author Werner Randelshofer
- * @version 1.1 2006-03-22 Methods moveTo, lineTo and quadTo  added.
+ * @version 1.2.1 Issue #1628647: Method splitSegment created incorrect control
+ * point masks.
+ * <br>1.2 2006-12-09 Method setWindingRule added.
+ * <br>1.1 2006-03-22 Methods moveTo, lineTo and quadTo  added.
  * <br>1.0 January 20, 2006 Created.
  */
 public class BezierPath extends ArrayList<BezierPath.Node>
         implements Shape {
-    /** Constant for control point C1.
+    /** Constant for having only control point C0 in effect. */
+    public final static int C0_MASK = 0;
+    /** Constant for having control point C1 in effect (in addition
+     * to C0).
      * */
     public final static int C1_MASK = 1;
-    /** Constant for control point C2. */
+    /** Constant for having control point C2 in effect (in addition to C0). */
     public final static int C2_MASK = 2;
-    /** Convenience constant for control point C1 and C2. */
+    /** Constant for having control points C1 and C2 in effect (in addition to C0). */
     public final static int C1C2_MASK = C1_MASK | C2_MASK;
     
     /**
@@ -47,7 +53,7 @@ public class BezierPath extends ArrayList<BezierPath.Node>
     private transient GeneralPath generalPath;
     
     /**
-     * We cache the index of the outermost node to speed up method indexOfOutermostNode(); 
+     * We cache the index of the outermost node to speed up method indexOfOutermostNode();
      */
     private int outer = -1;
     
@@ -55,6 +61,11 @@ public class BezierPath extends ArrayList<BezierPath.Node>
      * If this value is set to true, closes the bezier path.
      */
     private boolean isClosed;
+    
+    /**
+     * The winding rule for filling the bezier path.
+     */
+    private int windingRule = GeneralPath.WIND_EVEN_ODD;
     
     /**
      * Defines a vertex (node) of the bezier path.
@@ -197,6 +208,19 @@ public class BezierPath extends ArrayList<BezierPath.Node>
             buf.append(']');
             return buf.toString();
         }
+        
+        public int hashCode() {
+            return mask | Arrays.hashCode(x) | Arrays.hashCode(y);
+        }
+        public boolean equals(Object o) {
+            if (o instanceof BezierPath.Node) {
+                BezierPath.Node that = (BezierPath.Node) o;
+                return that.mask == this.mask &&
+                        Arrays.equals(that.x, this.x) &&
+                        Arrays.equals(that.y, this.y);
+            }
+            return false;
+        }
     }
     
     /** Creates a new instance. */
@@ -259,7 +283,7 @@ public class BezierPath extends ArrayList<BezierPath.Node>
     /** Converts the BezierPath into a GeneralPath. */
     public GeneralPath toGeneralPath() {
         GeneralPath gp = new GeneralPath();
-        gp.setWindingRule(GeneralPath.WIND_EVEN_ODD);
+        gp.setWindingRule(windingRule);
         if (size() == 0) {
             gp.moveTo(0,0);
             gp.lineTo(0,0 + 1);
@@ -505,12 +529,12 @@ public class BezierPath extends ArrayList<BezierPath.Node>
         return Geom.chop(generalPath, p);
         /*
         Point2D.Double ctr = getCenter();
-        
+         
         // Chopped point
         double cx = -1;
         double cy = -1;
         double len = Double.MAX_VALUE;
-        
+         
         // Try for points along edge
         validatePath();
         PathIterator i = generalPath.getPathIterator(new AffineTransform(), 1);
@@ -527,7 +551,7 @@ public class BezierPath extends ArrayList<BezierPath.Node>
                     p.x, p.y,
                     ctr.x, ctr.y
                     );
-            
+         
             if (chop != null) {
                 double cl = Geom.length2(chop.x, chop.y, p.x, p.y);
                 if (cl < len) {
@@ -536,11 +560,11 @@ public class BezierPath extends ArrayList<BezierPath.Node>
                     cy = chop.y;
                 }
             }
-            
+         
             prevX = coords[0];
             prevY = coords[1];
         }
-        
+         
         //
         if (isClosed() && size() > 1) {
             Node first = get(0);
@@ -560,8 +584,8 @@ public class BezierPath extends ArrayList<BezierPath.Node>
                 }
             }
         }
-        
-        
+         
+         
         // if none found, pick closest vertex
         if (len == Double.MAX_VALUE) {
             for (int j = 0, n = size(); j < n; j++) {
@@ -743,9 +767,9 @@ public class BezierPath extends ArrayList<BezierPath.Node>
             } else if ((get(i).mask & C2_MASK) == 0 &&
                     (get(nextI).mask & C1_MASK) == C1_MASK) {
                 // quadto
-                add(i + 1, new Node(C2_MASK, split, split, split));
+                add(i + 1, new Node(C1_MASK, split, split, split));
             } else if ((get(i).mask & C2_MASK) == C2_MASK &&
-                    (get(nextI).mask & C1_MASK) == C2_MASK) {
+                    (get(nextI).mask & C1_MASK) == C1_MASK) {
                 // cubicto
                 add(i + 1, new Node(C1_MASK | C2_MASK, split, split, split));
             } else {
@@ -789,6 +813,176 @@ public class BezierPath extends ArrayList<BezierPath.Node>
         add(new Node(C1_MASK, x3, y3, x2, y2, x3, y3));
     }
     
+    /**
+     * Adds an elliptical arc, defined by two radii, an angle from the
+     * x-axis, a flag to choose the large arc or not, a flag to
+     * indicate if we increase or decrease the angles and the final
+     * point of the arc.
+     * <p>
+     * As specified in http://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands
+     * <p>
+     * The implementation of this method has been derived from
+     * Apache Batik class org.apache.batik.ext.awt.geom.ExtendedGeneralPath#computArc
+     *
+     * @param rx the x radius of the ellipse
+     * @param ry the y radius of the ellipse
+     *
+     * @param xAxisRotation the angle from the x-axis of the current
+     * coordinate system to the x-axis of the ellipse in degrees.
+     *
+     * @param largeArcFlag the large arc flag. If true the arc
+     * spanning less than or equal to 180 degrees is chosen, otherwise
+     * the arc spanning greater than 180 degrees is chosen
+     *
+     * @param sweepFlag the sweep flag. If true the line joining
+     * center to arc sweeps through decreasing angles otherwise it
+     * sweeps through increasing angles
+     *
+     * @param x the absolute x coordinate of the final point of the arc.
+     * @param y the absolute y coordinate of the final point of the arc.
+     */
+    public void arcTo(double rx, double ry,
+            double xAxisRotation,
+            boolean largeArcFlag, boolean sweepFlag,
+            double x, double y
+            ) {
+        
+        
+        // Ensure radii are valid
+        if (rx == 0 || ry == 0) {
+            lineTo(x, y);
+            return;
+        }
+        
+        // Get the current (x, y) coordinates of the path
+        Node lastPoint = get(size() - 1);
+        double x0 = ((lastPoint.mask & C2_MASK) == C2_MASK) ? lastPoint.x[2] : lastPoint.x[0];
+        double y0 = ((lastPoint.mask & C2_MASK) == C2_MASK) ? lastPoint.y[2] : lastPoint.y[0];
+        
+        if (x0 == x && y0 == y) {
+            // If the endpoints (x, y) and (x0, y0) are identical, then this
+            // is equivalent to omitting the elliptical arc segment entirely.
+            return;
+        }
+        
+        // Compute the half distance between the current and the final point
+        double dx2 = (x0 - x) / 2d;
+        double dy2 = (y0 - y) / 2d;
+        // Convert angle from degrees to radians
+        double angle = Math.toRadians(xAxisRotation);
+        double cosAngle = Math.cos(angle);
+        double sinAngle = Math.sin(angle);
+        
+        //
+        // Step 1 : Compute (x1, y1)
+        //
+        double x1 = (cosAngle * dx2 + sinAngle * dy2);
+        double y1 = (-sinAngle * dx2 + cosAngle * dy2);
+        // Ensure radii are large enough
+        rx = Math.abs(rx);
+        ry = Math.abs(ry);
+        double Prx = rx * rx;
+        double Pry = ry * ry;
+        double Px1 = x1 * x1;
+        double Py1 = y1 * y1;
+        // check that radii are large enough
+        double radiiCheck = Px1/Prx + Py1/Pry;
+        if (radiiCheck > 1) {
+            rx = Math.sqrt(radiiCheck) * rx;
+            ry = Math.sqrt(radiiCheck) * ry;
+            Prx = rx * rx;
+            Pry = ry * ry;
+        }
+        
+        //
+        // Step 2 : Compute (cx1, cy1)
+        //
+        double sign = (largeArcFlag == sweepFlag) ? -1 : 1;
+        double sq = ((Prx*Pry)-(Prx*Py1)-(Pry*Px1)) / ((Prx*Py1)+(Pry*Px1));
+        sq = (sq < 0) ? 0 : sq;
+        double coef = (sign * Math.sqrt(sq));
+        double cx1 = coef * ((rx * y1) / ry);
+        double cy1 = coef * -((ry * x1) / rx);
+        
+        //
+        // Step 3 : Compute (cx, cy) from (cx1, cy1)
+        //
+        double sx2 = (x0 + x) / 2.0;
+        double sy2 = (y0 + y) / 2.0;
+        double cx = sx2 + (cosAngle * cx1 - sinAngle * cy1);
+        double cy = sy2 + (sinAngle * cx1 + cosAngle * cy1);
+        
+        //
+        // Step 4 : Compute the angleStart (angle1) and the angleExtent (dangle)
+        //
+        double ux = (x1 - cx1) / rx;
+        double uy = (y1 - cy1) / ry;
+        double vx = (-x1 - cx1) / rx;
+        double vy = (-y1 - cy1) / ry;
+        double p, n;
+        
+        // Compute the angle start
+        n = Math.sqrt((ux * ux) + (uy * uy));
+        p = ux; // (1 * ux) + (0 * uy)
+        sign = (uy < 0) ? -1d : 1d;
+        double angleStart = Math.toDegrees(sign * Math.acos(p / n));
+        
+        // Compute the angle extent
+        n = Math.sqrt((ux * ux + uy * uy) * (vx * vx + vy * vy));
+        p = ux * vx + uy * vy;
+        sign = (ux * vy - uy * vx < 0) ? -1d : 1d;
+        double angleExtent = Math.toDegrees(sign * Math.acos(p / n));
+        if(!sweepFlag && angleExtent > 0) {
+            angleExtent -= 360f;
+        } else if (sweepFlag && angleExtent < 0) {
+            angleExtent += 360f;
+        }
+        angleExtent %= 360f;
+        angleStart %= 360f;
+        
+        //
+        // We can now build the resulting Arc2D in double precision
+        //
+        Arc2D.Double arc = new Arc2D.Double(
+                cx - rx, cy - ry,
+                rx * 2d, ry * 2d,
+                -angleStart, -angleExtent,
+                Arc2D.OPEN
+                );
+        
+        // Create a path iterator of the rotated arc
+        PathIterator i = arc.getPathIterator(
+                AffineTransform.getRotateInstance(
+                angle, arc.getCenterX(), arc.getCenterY()
+                )
+                );
+        
+        // Add the segments to the bezier path
+        double[] coords = new double[6];
+        i.next(); // skip first moveto
+        while (! i.isDone()) {
+            int type = i.currentSegment(coords);
+            switch (type) {
+                case PathIterator.SEG_CLOSE :
+                    // ignore
+                    break;
+                case PathIterator.SEG_CUBICTO :
+                    curveTo(coords[0], coords[1], coords[2], coords[3], coords[4], coords[5]);
+                    break;
+                case PathIterator.SEG_LINETO :
+                    lineTo(coords[0], coords[1]);
+                    break;
+                case PathIterator.SEG_MOVETO :
+                    // ignore
+                    break;
+                case PathIterator.SEG_QUADTO :
+                    quadTo(coords[0], coords[1], coords[2], coords[3]);
+                    break;
+            }
+            i.next();
+        }
+    }
+    
     public Point2D.Double[] toPolygonArray() {
         Point2D.Double[] points = new Point2D.Double[size()];
         for (int i=0, n = size(); i < n; i++) {
@@ -797,4 +991,22 @@ public class BezierPath extends ArrayList<BezierPath.Node>
         return points;
     }
     
+    /**
+     * Sets winding rule for filling the bezier path.
+     * @param newValue Must be GeneralPath.WIND_EVEN_ODD or GeneralPath.WIND_NON_ZERO.
+     */
+    public void setWindingRule(int newValue) {
+        if (newValue != windingRule) {
+            invalidatePath();
+            int oldValue = windingRule;
+            this.windingRule = newValue;
+        }
+    }
+    /**
+     * Gets winding rule for filling the bezier path.
+     * @return GeneralPath.WIND_EVEN_ODD or GeneralPath.WIND_NON_ZERO.
+     */
+    public int getWindingRule() {
+        return windingRule;
+    }
 }

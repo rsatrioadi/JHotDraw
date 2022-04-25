@@ -1,5 +1,5 @@
 /*
- * @(#)DrawingView.java  3.1  2006-03-15
+ * @(#)DrawingView.java  4.0  2006-12-03
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
@@ -10,7 +10,6 @@
  * such Confidential Information and shall use it only in accordance
  * with the terms of the license agreement you entered into with
  * JHotDraw.org.
-�
  */
 
 
@@ -21,23 +20,20 @@ import java.awt.geom.*;
 import java.awt.event.*;
 import java.util.*;
 import java.beans.*;
+import javax.swing.*;
 /**
  * DrawingView renders a Drawing and listens to its changes.
  * It receives user input and forwards it to registered listeners.
- *
+ * 
  * @author Werner Randelshofer
- * @version 3.1 2006-03-15 Support for enabled state added.
+ * @version 4.0 2006-12-03 Replaced operation getContainer by getComponent. 
+ * <br>3.1 2006-03-15 Support for enabled state added.
  * <br>3.0 2006-02-20 Changed to share a single DrawingEditor by multiple 
  * views.
  * <br>2.0 2006-01-14 Changed to support double precision coordinates.
  * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
  */
 public interface DrawingView {
-    /**
-     * Gets the tools.
-     */
-    public Set getTools();
-    
     /**
      * Gets the drawing.
      */
@@ -182,10 +178,11 @@ public interface DrawingView {
      * Gets the editor's constrainer.
      */
     public Constrainer getConstrainer();
+
     /**
-     * Returns the container of the drawing view.
+     * Returns the JComponent of the drawing view.
      */
-    public Container getContainer();
+    public JComponent getComponent();
     
     /**
      * Gets an transform which can be used to convert

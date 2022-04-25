@@ -10,7 +10,6 @@
  * such Confidential Information and shall use it only in accordance
  * with the terms of the license agreement you entered into with
  * JHotDraw.org.
-�
  */
 
 
@@ -24,26 +23,47 @@ import javax.swing.event.*;
 import java.util.*;
 import org.jhotdraw.geom.*;
 /**
- * Tool to create new or edit existing text figures.
- * The editing behavior is implemented by overlaying the
- * Figure providing the text with a FloatingTextArea.<p>
- * A tool interaction is done once a Figure that is not
- * a TextHolder is clicked.
- *
- * @see TextHolder
- * @see FloatingTextArea
- *
+ * A tool to create new or edit existing figures that implement the TextHolderFigure
+ * interface, such as TextAreaFigure. The figure to be created is specified by a
+ * prototype.
+ * <p>
+ * To create a figure using the TextAreaTool, the user does the following mouse
+ * gestures on a DrawingView:
+ * <ol>
+ * <li>Press the mouse button over the DrawingView. This defines the
+ * start point of the Figure bounds.</li>
+ * <li>Drag the mouse while keeping the mouse button pressed, and then release
+ * the mouse button. This defines the end point of the Figure bounds.</li>
+ * </ol>
+ * When the user has performed these mouse gesture, the TextAreaTool overlays
+ * a text area over the drawing where the user can enter the text for the Figure.
+ * <p>
+ * To edit an existing text figure using the TextAreaTool, the user does the
+ * following mouse gesture on a DrawingView:
+ * <ol>
+ * <li>Press the mouse button over a Figure on the DrawingView.</li>
+ * </ol>
+ * The TextAreaTool then uses Figure.findFigureInside to find a Figure that
+ * implements the TextHolderFigure interface and that is editable. Then it overlays
+ * a text area over the drawing where the user can enter the text for the Figure.
+ * 
  * @author Werner Randelshofer
  * @version 2.0 2006-01-14 Changed to support double precison coordinates.
  * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
+ *
+ * @see TextHolderFigure
+ * @see FloatingTextArea
  */
 public class TextAreaTool extends CreationTool implements ActionListener {
     private FloatingTextArea   textArea;
-    private TextHolder  typingTarget;
+    private TextHolderFigure  typingTarget;
     
     /** Creates a new instance. */
-    public TextAreaTool(TextHolder prototype) {
+    public TextAreaTool(TextHolderFigure prototype) {
         super(prototype);
+    }
+    public TextAreaTool(TextHolderFigure prototype, Map attributes) {
+        super(prototype, attributes);
     }
     
     public void deactivate(DrawingEditor editor) {
@@ -52,14 +72,14 @@ public class TextAreaTool extends CreationTool implements ActionListener {
     }
     
     /**
-     * If the pressed figure is a TextHolder it can be edited otherwise
+     * If the pressed figure is a TextHolderFigure it can be edited otherwise
      * a new text figure is created.
      */
     public void mousePressed(MouseEvent e) {
-        TextHolder textHolder = null;
+        TextHolderFigure textHolder = null;
         Figure pressedFigure = getDrawing().findFigureInside(getView().viewToDrawing(new Point(e.getX(), e.getY())));
-        if (pressedFigure instanceof TextHolder) {
-            textHolder = (TextHolder) pressedFigure;
+        if (pressedFigure instanceof TextHolderFigure) {
+            textHolder = (TextHolderFigure) pressedFigure;
             if (!textHolder.isEditable())
                 textHolder = null;
         }
@@ -80,7 +100,7 @@ public class TextAreaTool extends CreationTool implements ActionListener {
             // when the overlay figure is drawn because a JTextField cannot be scrolled)
             //view().checkDamage();
             /*
-            textHolder = (TextHolder)getCreatedFigure();
+            textHolder = (TextHolderFigure)getCreatedFigure();
             beginEdit(textHolder);*/
         }
     }
@@ -89,7 +109,7 @@ public class TextAreaTool extends CreationTool implements ActionListener {
     }
      */
     
-    protected void beginEdit(TextHolder textHolder) {
+    protected void beginEdit(TextHolderFigure textHolder) {
         if (textArea == null) {
             textArea = new FloatingTextArea();
             
@@ -106,13 +126,11 @@ public class TextAreaTool extends CreationTool implements ActionListener {
     }
     
     
-    private Rectangle2D.Double getFieldBounds(TextHolder figure) {
+    private Rectangle2D.Double getFieldBounds(TextHolderFigure figure) {
         Rectangle2D.Double r = figure.getBounds();
-        Insets2DDouble insets = figure.getInsets();
-        r = new Rectangle2D.Double(r.x + insets.left, r.y + insets.top,
-        r.width - insets.left - insets.right,
-        r.height - insets.top - insets.bottom
-        );
+        Insets2D.Double insets = figure.getInsets();
+        insets.subtractTo(r);
+
         // FIXME - Find a way to determine the parameters for grow.
         //r.grow(1,2);
         //r.width += 16;
@@ -125,7 +143,7 @@ public class TextAreaTool extends CreationTool implements ActionListener {
     
     public void mouseReleased(MouseEvent evt) {
         if (createdFigure != null) {
-            TextHolder textHolder = (TextHolder) createdFigure;
+            TextHolderFigure textHolder = (TextHolderFigure) createdFigure;
             Rectangle2D.Double bounds = createdFigure.getBounds();
             if (bounds.width == 0 && bounds.height == 0) {
                 getDrawing().remove(createdFigure);

@@ -10,7 +10,6 @@
  * such Confidential Information and shall use it only in accordance
  * with the terms of the license agreement you entered into with
  * JHotDraw.org.
-�
  */
 
 package org.jhotdraw.draw;
@@ -24,8 +23,13 @@ import javax.swing.undo.*;
 import org.jhotdraw.util.*;
 import java.util.*;
 /**
- * DefaultDrawing.
- *
+ * DefaultDrawing to be used for drawings that contain only a few figures.
+ * For larger drawings, QuadTreeDrawing should be used.
+ * <p>
+ * FIXME - Maybe we should rename this class to DefaultDrawing or we should
+ * get rid of this class altogether.
+ * 
+ * 
  * @author Werner Randelshofer
  * @version 2.0 2006-01-14 Changed to support double precision coordinates.
  * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
@@ -40,7 +44,7 @@ implements FigureListener, UndoableEditListener {
     public DefaultDrawing() {
     }
     
-    protected int indexOf(Figure figure) {
+    public int indexOf(Figure figure) {
         return figures.indexOf(figure);
     }
     public void basicAdd(int index, Figure figure) {
@@ -63,7 +67,7 @@ implements FigureListener, UndoableEditListener {
         ArrayList<Figure> toDraw = new ArrayList<Figure>(figures.size());
         Rectangle clipRect = g.getClipBounds();
         for (Figure f : figures) {
-            if (f.getDrawBounds().intersects(clipRect)) {
+            if (f.getDrawingArea().intersects(clipRect)) {
                 toDraw.add(f);
             }
         }
@@ -79,7 +83,7 @@ implements FigureListener, UndoableEditListener {
         }
     }
     
-    public Collection<Figure> sort(Collection<Figure> c) {
+    public java.util.List<Figure> sort(Collection<Figure> c) {
         HashSet<Figure> unsorted = new HashSet<Figure>();
         unsorted.addAll(c);
         ArrayList<Figure> sorted = new ArrayList<Figure>(c.size());
@@ -138,8 +142,8 @@ implements FigureListener, UndoableEditListener {
         }
         return null;
     }
-    public Collection<Figure> findFigures(Rectangle2D.Double bounds) {
-        ArrayList<Figure> intersection = new ArrayList<Figure>();
+    public java.util.List<Figure> findFigures(Rectangle2D.Double bounds) {
+        LinkedList<Figure> intersection = new LinkedList<Figure>();
         for (Figure f : figures) {
             if (f.isVisible() && f.getBounds().intersects(bounds)) {
                 intersection.add(f);
@@ -147,8 +151,8 @@ implements FigureListener, UndoableEditListener {
         }
         return intersection;
     }
-    public Collection<Figure> findFiguresWithin(Rectangle2D.Double bounds) {
-        ArrayList<Figure> contained = new ArrayList<Figure>();
+    public java.util.List<Figure> findFiguresWithin(Rectangle2D.Double bounds) {
+        LinkedList<Figure> contained = new LinkedList<Figure>();
         for (Figure f : figures) {
             if (f.isVisible() && bounds.contains(f.getBounds())) {
                 contained.add(f);
@@ -157,8 +161,8 @@ implements FigureListener, UndoableEditListener {
         return contained;
     }
     
-    public Collection<Figure> getFigures() {
-        return Collections.unmodifiableCollection(figures);
+    public java.util.List<Figure> getFigures() {
+        return Collections.unmodifiableList(figures);
     }
     
     public Figure findFigureInside(Point2D.Double p) {
@@ -179,14 +183,14 @@ implements FigureListener, UndoableEditListener {
         if (figures.remove(figure)) {
             figures.add(figure);
             invalidateSortOrder();
-            fireAreaInvalidated(figure.getDrawBounds());
+            fireAreaInvalidated(figure.getDrawingArea());
         }
     }
     public void sendToBack(Figure figure) {
         if (figures.remove(figure)) {
             figures.add(0, figure);
             invalidateSortOrder();
-            fireAreaInvalidated(figure.getDrawBounds());
+            fireAreaInvalidated(figure.getDrawingArea());
         }
     }
     

@@ -1,5 +1,5 @@
 /*
- * @(#)SVGProject.java  1.1  2006-06-10
+ * @(#)SVGProject.java  1.2  2006-12-10
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
@@ -14,8 +14,19 @@
  */
 package org.jhotdraw.samples.svg;
 
+import java.awt.image.BufferedImage;
+import java.awt.print.Pageable;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.prefs.Preferences;
+import org.jhotdraw.draw.ImageInputFormat;
+import org.jhotdraw.draw.ImageOutputFormat;
+import org.jhotdraw.draw.OutputFormat;
 import org.jhotdraw.gui.*;
 import org.jhotdraw.io.*;
+import org.jhotdraw.draw.InputFormat;
+import org.jhotdraw.samples.svg.figures.*;
+import org.jhotdraw.samples.svg.io.*;
 import org.jhotdraw.undo.*;
 import org.jhotdraw.util.*;
 import java.awt.*;
@@ -34,10 +45,12 @@ import org.jhotdraw.xml.*;
  * A drawing project.
  *
  * @author Werner Randelshofer
- * @version 1.1 2006-06-10 Extended to support DefaultDrawApplicationModel.
+ * @version 1.2 2006-12-10 Used SVGStorage for reading SVG drawing (experimental). 
+ * <br>1.1 2006-06-10 Extended to support DefaultDrawApplicationModel.
  * <br>1.0 2006-02-07 Created.
  */
-public class SVGProject extends AbstractProject {
+public class SVGProject extends AbstractProject implements ExportableProject {
+    protected JFileChooser exportChooser;
    
     /**
      * Each SVGProject uses its own undo redo manager.
@@ -50,7 +63,10 @@ public class SVGProject extends AbstractProject {
      * project, or a single shared editor for all projects.
      */
     private DrawingEditor editor;
+   
+    private HashMap<javax.swing.filechooser.FileFilter, OutputFormat> fileFilterOutputFormatMap;
     
+    private Preferences prefs;
     /**
      * Creates a new Project.
      */
@@ -62,6 +78,7 @@ public class SVGProject extends AbstractProject {
      */
     public void init() {
         super.init();
+        prefs = Preferences.userNodeForPackage(getClass());
         
         initComponents();
         
@@ -70,9 +87,8 @@ public class SVGProject extends AbstractProject {
         scrollPane.setBorder(new EmptyBorder(0,0,0,0));
         
         setEditor(new DefaultDrawingEditor());
-        view.setDOMFactory(new SVGFigureFactory());
         undo = new UndoRedoManager();
-        view.setDrawing(new SVGDrawing());
+        view.setDrawing(createDrawing());
         view.getDrawing().addUndoableEditListener(undo);
         initActions();
         undo.addPropertyChangeListener(new PropertyChangeListener() {
@@ -99,6 +115,30 @@ public class SVGProject extends AbstractProject {
         scrollPane.add(placardPanel, JScrollPane.LOWER_LEFT_CORNER);
     }
     
+    /**
+     * Creates a new Drawing for this Project.
+     */
+    protected Drawing createDrawing() {
+        Drawing drawing = new SVGDrawing();
+        LinkedList<InputFormat> inputFormats = new LinkedList<InputFormat>();
+        inputFormats.add(new SVGInputFormat());
+        inputFormats.add(new ImageInputFormat(new SVGImageFigure()));
+        drawing.setInputFormats(inputFormats);
+        LinkedList<OutputFormat> outputFormats = new LinkedList<OutputFormat>();
+        outputFormats.add(new SVGOutputFormat());
+        outputFormats.add(new ImageOutputFormat());
+        outputFormats.add(new ImageOutputFormat("JPG","Joint Photographics Experts Group (JPEG)", "jpg", BufferedImage.TYPE_INT_RGB));
+        outputFormats.add(new ImageOutputFormat("BMP","Windows Bitmap (BMP)", "bmp", BufferedImage.TYPE_BYTE_INDEXED));
+        drawing.setOutputFormats(outputFormats);
+        return drawing;
+    }
+    /**
+     * Creates a Pageable object for printing the project.
+     */
+    public Pageable createPageable() {
+        return new DrawingPageable(view.getDrawing());
+        
+    }
     public DrawingEditor getEditor() {
         return editor;
     }
@@ -132,14 +172,9 @@ public class SVGProject extends AbstractProject {
         OutputStream out = null;
         try {
             out = new BufferedOutputStream(new FileOutputStream(f));
-            NanoXMLDOMOutput domo = new NanoXMLDOMOutput(view.getDOMFactory());
-            domo.setDoctype("svg PUBLIC \"-//W3C//DTD SVG 1.0//EN\" "+
-                    "\"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\"");
-            domo.writeObject(view.getDrawing());
-            domo.save(out);
+            new SVGOutputFormat().write(f, view.getDrawing());
         } finally {
-            if (out != null) try { out.close(); } catch (IOException e) {};
-            //if (out != null) out.close();
+            if (out != null) out.close();
         }
     }
     
@@ -147,12 +182,10 @@ public class SVGProject extends AbstractProject {
      * Reads the project from the specified file.
      */
     public void read(File f) throws IOException {
-        InputStream in = null;
         try {
-            in = new BufferedInputStream(new FileInputStream(f));
-            DOMInput domi = new NanoXMLDOMInput(view.getDOMFactory(), in);
-           
-            final Drawing drawing = (Drawing) domi.readObject();
+            InputFormat sf = new SVGInputFormat();
+            final Drawing drawing = createDrawing();
+            sf.read(f, drawing);
             SwingUtilities.invokeAndWait(new Runnable() { public void run() {
                 view.getDrawing().removeUndoableEditListener(undo);
                 view.setDrawing(drawing);
@@ -167,8 +200,6 @@ public class SVGProject extends AbstractProject {
             InternalError error = new InternalError();
             e.initCause(e);
             throw error;
-        } finally {
-            if (in != null) try { in.close(); } catch (IOException e) {};
         }
     }
     
@@ -192,6 +223,11 @@ public class SVGProject extends AbstractProject {
         return editor;
     }
     
+    public void setEnabled(boolean newValue) {
+        view.setEnabled(newValue);
+        super.setEnabled(newValue);
+    }
+    
     /**
      * Clears the project.
      */
@@ -207,7 +243,37 @@ public class SVGProject extends AbstractProject {
     }
     @Override protected JFileChooser createSaveChooser() {
         JFileChooser c = super.createSaveChooser();
-        c.addChoosableFileFilter(new ExtensionFileFilter("SVG Drawing","svg"));
+        
+        fileFilterOutputFormatMap = new HashMap<javax.swing.filechooser.FileFilter,OutputFormat>();
+      //  c.addChoosableFileFilter(new ExtensionFileFilter("SVG Drawing","svg"));
+        for (OutputFormat format : view.getDrawing().getOutputFormats()) {
+            javax.swing.filechooser.FileFilter ff = format.getFileFilter();
+            fileFilterOutputFormatMap.put(ff, format);
+            c.addChoosableFileFilter(ff);
+            break; // only add the first file filter
+        }
+        
+        return c;
+    }
+    protected JFileChooser createExportChooser() {
+        JFileChooser c = new JFileChooser();
+        
+        fileFilterOutputFormatMap = new HashMap<javax.swing.filechooser.FileFilter,OutputFormat>();
+      //  c.addChoosableFileFilter(new ExtensionFileFilter("SVG Drawing","svg"));
+        javax.swing.filechooser.FileFilter currentFilter = null;
+        for (OutputFormat format : view.getDrawing().getOutputFormats()) {
+            javax.swing.filechooser.FileFilter ff = format.getFileFilter();
+            fileFilterOutputFormatMap.put(ff, format);
+            c.addChoosableFileFilter(ff);
+            if (ff.getDescription().equals(prefs.get("projectExportFormat",""))) {
+                currentFilter = ff;
+            }
+        }
+        if (currentFilter != null) {
+            c.setFileFilter(currentFilter);
+        }
+            c.setSelectedFile(new File(prefs.get("projectExportFile", System.getProperty("user.home"))));
+        
         return c;
     }
     
@@ -230,6 +296,27 @@ public class SVGProject extends AbstractProject {
         add(scrollPane, java.awt.BorderLayout.CENTER);
 
     }// </editor-fold>//GEN-END:initComponents
+
+    public JFileChooser getExportChooser() {
+        if (exportChooser == null) {
+            exportChooser = createSaveChooser();
+        }
+        return exportChooser;
+    }
+
+    public void export(File f, javax.swing.filechooser.FileFilter filter, Component accessory) throws IOException {
+
+                OutputFormat format = fileFilterOutputFormatMap.get(filter);
+                
+                if (! f.getName().endsWith("."+format.getFileExtension())) {
+                    f = new File(f.getPath()+"."+format.getFileExtension());
+                }
+                
+        format.write(f, view.getDrawing());
+        
+           prefs.put("projectExportFile", f.getPath());
+         prefs.put("projectExportFormat", filter.getDescription());
+    }
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -60,6 +60,7 @@ public class DefaultMDIApplication extends AbstractApplication {
         mo.putAction(SaveAction.ID, new SaveAction(this));
         mo.putAction(SaveAsAction.ID, new SaveAsAction(this));
         mo.putAction(CloseAction.ID, new CloseAction(this));
+        mo.putAction(PrintAction.ID, new PrintAction(this));
         
         mo.putAction(UndoAction.ID, new UndoAction(this));
         mo.putAction(RedoAction.ID, new RedoAction(this));
@@ -120,10 +121,11 @@ public class DefaultMDIApplication extends AbstractApplication {
         parentFrame.setVisible(true);
     }
     protected void initLookAndFeel() {
-        if (true) return;
         System.setProperty("apple.laf.useScreenMenuBar","false");
         System.setProperty("com.apple.macos.useScreenMenuBar","false");
         System.setProperty("apple.awt.graphics.UseQuartz","false");
+        System.setProperty("swing.aatext","true");
+        
         try {
             String lafName = UIManager.getSystemLookAndFeelClassName();
             UIManager.setLookAndFeel(lafName);
@@ -328,6 +330,10 @@ public class DefaultMDIApplication extends AbstractApplication {
         if (mo.getAction(ExportAction.ID) != null) {
             mi = m.add(mo.getAction(ExportAction.ID));
         }
+        if (mo.getAction(PrintAction.ID) != null) {
+            m.addSeparator();
+            m.add(mo.getAction(PrintAction.ID));
+        }
         m.addSeparator();
         m.add(mo.getAction(ExitAction.ID));
         mb.add(m);
@@ -375,7 +381,7 @@ public class DefaultMDIApplication extends AbstractApplication {
                 m.add(cbmi);
             }
         }
-                
+        
         mb.add(m);
         
         m = new JMenu();
@@ -394,22 +400,22 @@ public class DefaultMDIApplication extends AbstractApplication {
                     m.add(mo.getAction(ArrangeAction.CASCADE_ID));
                     m.add(mo.getAction(ArrangeAction.VERTICAL_ID));
                     m.add(mo.getAction(ArrangeAction.HORIZONTAL_ID));
-                        
-                        m.addSeparator();
+                    
+                    m.addSeparator();
                     for (Iterator i=projects().iterator(); i.hasNext(); ) {
                         Project pr = (Project) i.next();
                         if (pr.getAction(FocusAction.ID) != null) {
                             m.add(pr.getAction(FocusAction.ID));
                         }
                     }
-                        if (toolBarActions.size() > 0) {
-                            m.addSeparator();
-                            for (Action a: toolBarActions) {
-                                JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem(a);
-                                Actions.configureJCheckBoxMenuItem(cbmi, a);
-                                m.add(cbmi);
-                            }
+                    if (toolBarActions.size() > 0) {
+                        m.addSeparator();
+                        for (Action a: toolBarActions) {
+                            JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem(a);
+                            Actions.configureJCheckBoxMenuItem(cbmi, a);
+                            m.add(cbmi);
                         }
+                    }
                 } else if (name == "recentFiles") {
                     updateOpenRecentMenu(openRecentMenu);
                 }

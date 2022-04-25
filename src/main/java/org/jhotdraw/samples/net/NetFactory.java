@@ -20,14 +20,14 @@ import java.util.*;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.xml.*;
 /**
- * PertFactory.
+ * NetFactory.
  * 
  * @author Werner Randelshofer
  * @version 2006-01-18 Created.
  */
 public class NetFactory extends DefaultDOMFactory {
     private final static Object[][] classTagArray = {
-        { DefaultDrawing.class, "NetDiagram" },
+        { DefaultDrawing.class, "Net" },
         { NodeFigure.class, "node" },
         { LineConnectionFigure.class, "link" },
         { GroupFigure.class, "g" },
@@ -35,16 +35,22 @@ public class NetFactory extends DefaultDOMFactory {
         { TextAreaFigure.class, "ta" },
         
         { LocatorConnector.class, "locConnect" },
-        { ChopBoxConnector.class, "rectConnect" },
+        { ChopRectangleConnector.class, "rectConnect" },
         { ArrowTip.class, "arrowTip" },
-        { Insets2DDouble.class, "insets" },
+        { Insets2D.Double.class, "insets" },
         { RelativeLocator.class, "relativeLoc" },
+        };
+    private final static Object[][] enumTagArray = {
+        { AttributeKeys.StrokeType.class, "strokeType" },
     };
     
     /** Creates a new instance. */
     public NetFactory() {
         for (Object[] o : classTagArray) {
             addStorableClass((String) o[1], (Class) o[0]);
+        }
+        for (Object[] o : enumTagArray) {
+            addEnumClass((String) o[1], (Class) o[0]);
         }
     }
 }

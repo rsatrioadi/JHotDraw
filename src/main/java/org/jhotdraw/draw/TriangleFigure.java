@@ -31,7 +31,7 @@ import org.jhotdraw.geom.*;
  * @version 1.0 2006-03-27 Created.
  */
 
-public class TriangleFigure extends AttributedFigure {
+public class TriangleFigure extends AbstractAttributedFigure {
     
     /**
      * The bounds of the triangle figure.
@@ -97,7 +97,7 @@ public class TriangleFigure extends AttributedFigure {
         if (grow != 0d) {
             GrowStroke gs = new GrowStroke((float) grow,
                     (float) (AttributeKeys.getStrokeTotalWidth(this) *
-                    STROKE_MITER_LIMIT_FACTOR.get(this))
+                    STROKE_MITER_LIMIT.get(this))
                     );
             triangle = gs.createStrokedShape(triangle);
         }
@@ -112,7 +112,7 @@ public class TriangleFigure extends AttributedFigure {
         if (grow != 0d) {
             GrowStroke gs = new GrowStroke((float) grow,
                     (float) (AttributeKeys.getStrokeTotalWidth(this) *
-                    STROKE_MITER_LIMIT_FACTOR.get(this))
+                    STROKE_MITER_LIMIT.get(this))
                     );
             triangle = gs.createStrokedShape(triangle);
         }
@@ -187,7 +187,7 @@ public class TriangleFigure extends AttributedFigure {
         if (grow != 0d) {
             GrowStroke gs = new GrowStroke((float) grow,
                     (float) (AttributeKeys.getStrokeTotalWidth(this) *
-                    STROKE_MITER_LIMIT_FACTOR.get(this))
+                    STROKE_MITER_LIMIT.get(this))
                     );
             triangle =gs.createStrokedShape(triangle);
         }
@@ -199,7 +199,7 @@ public class TriangleFigure extends AttributedFigure {
         rectangle.width = Math.max(0.1, Math.abs(lead.x - anchor.x));
         rectangle.height = Math.max(0.1, Math.abs(lead.y - anchor.y));
     }
-    public Rectangle2D.Double getFigureDrawBounds() {
+    public Rectangle2D.Double getDrawingArea() {
         double totalStrokeWidth = AttributeKeys.getStrokeTotalWidth(this);
         double width = 0d;
         if (STROKE_COLOR.get(this) != null) {
@@ -209,14 +209,14 @@ public class TriangleFigure extends AttributedFigure {
                     break;
                 case OUTSIDE :
                     if (STROKE_JOIN.get(this) == BasicStroke.JOIN_MITER) {
-                        width = totalStrokeWidth * STROKE_MITER_LIMIT_FACTOR.get(this);
+                        width = totalStrokeWidth * STROKE_MITER_LIMIT.get(this);
                     } else {
                         width = totalStrokeWidth;
                     }
                     break;
                 case CENTER :
                     if (STROKE_JOIN.get(this) == BasicStroke.JOIN_MITER) {
-                        width = totalStrokeWidth / 2d * STROKE_MITER_LIMIT_FACTOR.get(this);
+                        width = totalStrokeWidth / 2d * STROKE_MITER_LIMIT.get(this);
                     } else {
                         width = totalStrokeWidth / 2d;
                     }
@@ -236,7 +236,7 @@ public class TriangleFigure extends AttributedFigure {
         if (grow != 0d) {
             GrowStroke gs = new GrowStroke((float) grow,
                     (float) (AttributeKeys.getStrokeTotalWidth(this) *
-                    STROKE_MITER_LIMIT_FACTOR.get(this))
+                    STROKE_MITER_LIMIT.get(this))
                     );
             triangle =gs.createStrokedShape(triangle);
         }
@@ -260,7 +260,7 @@ public class TriangleFigure extends AttributedFigure {
         that.rectangle = (Rectangle2D.Double) this.rectangle.clone();
         return that;
     }
-    public void restoreTo(Object geometry) {
+    public void restoreTransformTo(Object geometry) {
         Rectangle2D.Double r = (Rectangle2D.Double) geometry;
         rectangle.x = r.x;
         rectangle.y = r.y;
@@ -268,7 +268,7 @@ public class TriangleFigure extends AttributedFigure {
         rectangle.height = r.height;
     }
     
-    public Object getRestoreData() {
+    public Object getTransformRestoreData() {
         return rectangle.clone();
     }
 }

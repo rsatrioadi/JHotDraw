@@ -24,7 +24,7 @@ import org.jhotdraw.xml.*;
  * @author Werner Randelshofer
  * @version 1.0 July 8, 2006 Created.
  */
-public class SVGDrawing extends DefaultDrawing {
+public class SVGDrawing extends QuadTreeDrawing {
     private String title;
     private String description;
     
@@ -79,7 +79,7 @@ public class SVGDrawing extends DefaultDrawing {
                 in.closeElement();
                 Object f = (Object) in.readObject(i);
                 if (f instanceof SVGDrawing) {
-                    SVGGroup g = new SVGGroup();
+                    SVGGroupFigure g = new SVGGroupFigure();
                     g.willChange();
                     for (Figure child : ((SVGDrawing) f).getFigures()) {
                         g.basicAdd(child);
