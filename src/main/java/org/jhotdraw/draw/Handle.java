@@ -28,6 +28,9 @@ import java.util.*;
  * Handles are used for user interaction. Unlike figures, a handle works with
  * the user interface coordinates of the DrawingView. The user interface
  * coordinates are expressed in integer pixels.
+ * <p>
+ * A Handle forwards UndoableEdit events to the Drawing object onto which it
+ * is performing changes.
  *
  * @author Werner Randelshofer
  * @version 2.0 2006-01-14 Changed to support double precision coordinates.
@@ -53,12 +56,16 @@ public interface Handle extends KeyListener {
     void removeHandleListener(HandleListener l);
     /**
      * Returns the bounding box of the handle.
+     * Note: The bounding box must be returned in the coordinate 
+     * system of the DrawingView.
      */
-    Rectangle  getBounds();
+    Rectangle getBounds();
     /**
-     * Returns the draw bounds of the handle.
+     * Returns the drawing area of the handle.
+     * Note: The drawing area must be returned in the coordinate 
+     * system of the DrawingView.
      */
-    Rectangle getDrawBounds();
+    Rectangle getDrawingArea();
     
     /**
      * Tests if a point is contained in the handle.
@@ -66,7 +73,9 @@ public interface Handle extends KeyListener {
     public boolean contains(Point p);
     
     /**
-     * Draws this handle.
+     * Draws this handle. 
+     * Note: The handle is drawn with the coordinate system of
+     * the DrawingView.
      */
     public void draw(Graphics2D g);
     /**

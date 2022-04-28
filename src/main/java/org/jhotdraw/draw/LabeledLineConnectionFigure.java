@@ -23,6 +23,16 @@ import javax.swing.undo.*;
 
 /**
  * A LineConnection with labels.
+ * <p>
+ * Usage:
+ * <pre>
+ * LineConnectionFigure lcf = new LineConnectionFigure();
+ * lcf.setLayouter(new LocatorLayouter());
+ * TextFigure label = new TextFigure();
+ * label.setText("Hello");
+ * LocatorLayouter.LAYOUT_LOCATOR.set(label, new BezierLabelLocator(0, -Math.PI / 4, 8));
+ * lcf.add(label);
+ * </pre>
  *
  * @author Werner Randelshofer
  * @version 1.1 2006-02-14 Do not include labels in logical bounds.
@@ -40,19 +50,16 @@ public class LabeledLineConnectionFigure extends LineConnectionFigure
      * Handles figure changes in the children.
      */
     private ChildHandler childHandler = new ChildHandler(this);
-    private static class ChildHandler implements FigureListener, UndoableEditListener {
+    private static class ChildHandler extends FigureAdapter implements UndoableEditListener {
         private LabeledLineConnectionFigure owner;
         private ChildHandler(LabeledLineConnectionFigure owner) {
             this.owner = owner;
         }
-        public void figureRequestRemove(FigureEvent e) {
+        @Override public void figureRequestRemove(FigureEvent e) {
             owner.remove(e.getFigure());
         }
         
-        public void figureRemoved(FigureEvent evt) {
-        }
-        
-        public void figureChanged(FigureEvent e) {
+        @Override public void figureChanged(FigureEvent e) {
             if (! owner.isChanging()) {
                 owner.willChange();
                 owner.fireFigureChanged(e);
@@ -60,17 +67,12 @@ public class LabeledLineConnectionFigure extends LineConnectionFigure
             }
         }
         
-        public void figureAdded(FigureEvent e) {
-        }
-        
-        public void figureAttributeChanged(FigureEvent e) {
-        }
-        
-        public void figureAreaInvalidated(FigureEvent e) {
+        @Override public void figureAreaInvalidated(FigureEvent e) {
             if (! owner.isChanging()) {
                 owner.fireAreaInvalidated(e.getInvalidatedArea());
             }
         }
+
         public void undoableEditHappened(UndoableEditEvent e) {
             owner.fireUndoableEditHappened(e.getEdit());
         }
@@ -95,15 +97,15 @@ public class LabeledLineConnectionFigure extends LineConnectionFigure
     /**
      * Transforms the figure.
      */
-    public void basicTransform(AffineTransform tx) {
-        super.basicTransform(tx);
+    public void transform(AffineTransform tx) {
+        super.transform(tx);
         for (Figure f : children) {
-            f.basicTransform(tx);
+            f.transform(tx);
         }
         invalidateBounds();
     }
-    public void basicSetBounds(Point2D.Double anchor, Point2D.Double lead) {
-        super.basicSetBounds(anchor, lead);
+    public void setBounds(Point2D.Double anchor, Point2D.Double lead) {
+        super.setBounds(anchor, lead);
         invalidate();
     }
     public Rectangle2D.Double getBounds() {
@@ -154,7 +156,6 @@ public class LabeledLineConnectionFigure extends LineConnectionFigure
      * the figure interface.
      */
     public void setAttribute(AttributeKey key, Object newValue) {
-        willChange();
         super.setAttribute(key, newValue);
         if (isAttributeEnabled(key)) {
             if (children != null) {
@@ -163,7 +164,6 @@ public class LabeledLineConnectionFigure extends LineConnectionFigure
                 }
             }
         }
-        changed();
     }
     // EDITING
     public Figure findFigureInside(Point2D.Double p) {
@@ -227,7 +227,6 @@ public class LabeledLineConnectionFigure extends LineConnectionFigure
     public void basicAdd(int index, Figure figure) {
         children.add(index, figure);
         figure.addFigureListener(childHandler);
-        figure.addUndoableEditListener(childHandler);
         invalidate();
     }
     public boolean remove(final Figure figure) {
@@ -265,7 +264,6 @@ public class LabeledLineConnectionFigure extends LineConnectionFigure
     public Figure basicRemoveChild(int index) {
         Figure figure = children.remove(index);
         figure.removeFigureListener(childHandler);
-        figure.removeUndoableEditListener(childHandler);
         
         return figure;
     }
@@ -363,7 +361,6 @@ public class LabeledLineConnectionFigure extends LineConnectionFigure
             Figure thatChild = (Figure) thisChild.clone();
             that.children.add(thatChild);
             thatChild.addFigureListener(that.childHandler);
-            thatChild.addUndoableEditListener(that.childHandler);
         }
         return that;
     }

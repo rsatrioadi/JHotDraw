@@ -1,7 +1,7 @@
 /*
- * @(#)DefaultSDIApplication.java  1.3  2006-05-03
+ * @(#)DefaultSDIApplication.java  1.4  2007-01-11
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2007 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
  * All rights reserved.
  *
@@ -32,7 +32,8 @@ import org.jhotdraw.app.action.*;
  *
  *
  * @author Werner Randelshofer
- * @version 1.3 2006-05-03 Show asterisk in window title, when project has
+ * @version 1.4 2007-01-11 Removed method addStandardActionsTo.
+ * <br>1.3 2006-05-03 Show asterisk in window title, when project has
  * unsaved changes.
  * <br>1.2.1 2006-02-28 Stop application when last project is closed.
  * <br>1.2 2006-02-06 Support for multiple open id added.
@@ -52,10 +53,10 @@ public class DefaultSDIApplication extends AbstractApplication {
         super.launch(args);
     }
     public void init() {
+        initLookAndFeel();
         super.init();
         prefs = Preferences.userNodeForPackage((getModel() == null) ? getClass() : getModel().getClass());
         initLabels();
-        initLookAndFeel();
         initApplicationActions();
     }
     
@@ -66,13 +67,22 @@ public class DefaultSDIApplication extends AbstractApplication {
         }
     }
     
-    protected void initLookAndFeel() {
+    public void configure(String[] args) {
         System.setProperty("apple.laf.useScreenMenuBar","false");
         System.setProperty("com.apple.macos.useScreenMenuBar","false");
         System.setProperty("apple.awt.graphics.UseQuartz","false");
         System.setProperty("swing.aatext","true");
+    }
+    protected void initLookAndFeel() {
         try {
-            String lafName = UIManager.getSystemLookAndFeelClassName();
+            String lafName;
+            if (System.getProperty("os.name").toLowerCase().startsWith("mac os x")) {
+                JFrame.setDefaultLookAndFeelDecorated(true);
+                JDialog.setDefaultLookAndFeelDecorated(true);
+                lafName = UIManager.getCrossPlatformLookAndFeelClassName();
+            } else {
+                lafName = UIManager.getSystemLookAndFeelClassName();
+            }
             UIManager.setLookAndFeel(lafName);
         } catch (Exception e) {
             e.printStackTrace();
@@ -108,6 +118,8 @@ public class DefaultSDIApplication extends AbstractApplication {
         m.putAction(SelectAllAction.ID, new SelectAllAction());
     }
     protected void initProjectActions(Project p) {
+        ApplicationModel m = getModel();
+        p.putAction(LoadAction.ID, m.getAction(LoadAction.ID));
     }
     
     public void show(final Project p) {
@@ -196,7 +208,7 @@ public class DefaultSDIApplication extends AbstractApplication {
      * another component in order to provide additional functionality.
      */
     protected Component wrapProjectComponent(Project p) {
-        Component c = p.getComponent();
+        JComponent c = p.getComponent();
         if (getModel() != null) {
             LinkedList<Action> toolBarActions = new LinkedList();
             
@@ -210,41 +222,9 @@ public class DefaultSDIApplication extends AbstractApplication {
                 PreferencesUtil.installToolBarPrefsHandler(prefs, "toolbar."+id, tb);
                 toolBarActions.addFirst(new ToggleVisibleAction(tb, tb.getName()));
             }
-            JToolBar tb = new JToolBar();
-            tb.setName(labels.getString("standardToolBarTitle"));
-            addStandardActionsTo(tb, p);
-            id++;
-            JPanel panel = new JPanel(new BorderLayout());
-            panel.add(tb, BorderLayout.NORTH);
-            panel.add(c, BorderLayout.CENTER);
-            c = panel;
-            PreferencesUtil.installToolBarPrefsHandler(prefs, "toolbar."+id, tb);
-            toolBarActions.addFirst(new ToggleVisibleAction(tb, tb.getName()));
-            panel.putClientProperty("toolBarActions", toolBarActions);
+            c.putClientProperty("toolBarActions",toolBarActions);
         }
         return c;
-    }
-    protected void addStandardActionsTo(JToolBar tb, Project p) {
-        JButton b;
-        ApplicationModel m = getModel();
-        
-        b = tb.add(m.getAction(ClearAction.ID));
-        b.setFocusable(false);
-        b = tb.add(m.getAction(LoadAction.ID));
-        b.setFocusable(false);
-        b = tb.add(m.getAction(SaveAction.ID));
-        tb.addSeparator();
-        b = tb.add(m.getAction(UndoAction.ID));
-        b.setFocusable(false);
-        b = tb.add(m.getAction(RedoAction.ID));
-        b.setFocusable(false);
-        tb.addSeparator();
-        b = tb.add(m.getAction(CutAction.ID));
-        b.setFocusable(false);
-        b = tb.add(m.getAction(CopyAction.ID));
-        b.setFocusable(false);
-        b = tb.add(m.getAction(PasteAction.ID));
-        b.setFocusable(false);
     }
     
     
@@ -279,13 +259,23 @@ public class DefaultSDIApplication extends AbstractApplication {
      * The default implementation returns a new screen menu bar.
      */
     protected JMenuBar createMenuBar(final Project p, java.util.List<Action> toolBarActions) {
-         ApplicationModel model = getModel();
-       ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        JMenuBar mb = new JMenuBar();
+        mb.add(createFileMenu(p));
+        for (JMenu mm : getModel().createMenus(this, p)) {
+            mb.add(mm);
+        }
+        mb.add(createViewMenu(p, toolBarActions));
+        mb.add(createHelpMenu(p));
+        return mb;
+    }
+    
+    protected JMenu createFileMenu(final Project p) {
+        ApplicationModel model = getModel();
+        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
         
         JMenuBar mb = new JMenuBar();
-        JMenu m, m2;
+        JMenu m;
         JMenuItem mi;
-        JCheckBoxMenuItem cbmi;
         final JMenu openRecentMenu;
         
         m = new JMenu();
@@ -312,46 +302,6 @@ public class DefaultSDIApplication extends AbstractApplication {
         m.add(model.getAction(ExitAction.ID));
         mb.add(m);
         
-        m = new JMenu();
-        labels.configureMenu(m, labels.getString("edit"));
-        m.add(model.getAction(UndoAction.ID));
-        m.add(model.getAction(RedoAction.ID));
-        m.addSeparator();
-        m.add(model.getAction(CutAction.ID));
-        m.add(model.getAction(CopyAction.ID));
-        m.add(model.getAction(PasteAction.ID));
-        m.add(model.getAction(DuplicateAction.ID));
-        m.add(model.getAction(DeleteAction.ID));
-        m.addSeparator();
-        m.add(model.getAction(SelectAllAction.ID));
-        mb.add(m);
-        
-        JMenu viewMenu = null;
-        for (JMenu mm : model.createMenus(this, p)) {
-            mb.add(mm);
-            if (mm.getText().equals(labels.getString("view"))) {
-                viewMenu = mm;
-            }
-        }
-
-        if (toolBarActions != null && toolBarActions.size() > 0) {
-            m = (viewMenu != null) ? viewMenu : new JMenu();
-            m2 = (toolBarActions.size() == 1) ? m : new JMenu(labels.getString("toolBars"));
-            labels.configureMenu(m, labels.getString("view"));
-            for (Action a : toolBarActions) {
-                cbmi = new JCheckBoxMenuItem(a);
-                Actions.configureJCheckBoxMenuItem(cbmi, a);
-                m2.add(cbmi);
-            }
-            if (m2 != m) { m.add(m2); }
-            mb.add(m);
-        }
-        
-        m = new JMenu();
-        labels.configureMenu(m, labels.getString("help"));
-        m.add(model.getAction(AboutAction.ID));
-        mb.add(m);
-        
         addPropertyChangeListener(new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt) {
                 String name = evt.getPropertyName();
@@ -366,9 +316,8 @@ public class DefaultSDIApplication extends AbstractApplication {
             }
         });
         
-        return mb;
+        return m;
     }
-    
     private void updateOpenRecentMenu(JMenu openRecentMenu) {
         if (openRecentMenu.getItemCount() > 0) {
             JMenuItem clearRecentFilesItem = (JMenuItem) openRecentMenu.getItem(
@@ -392,5 +341,43 @@ public class DefaultSDIApplication extends AbstractApplication {
     public Component getComponent() {
         Project p = getCurrentProject();
         return (p == null) ? null : p.getComponent();
+    }
+    protected JMenu createViewMenu(final Project p, java.util.List<Action> toolBarActions) {
+        ApplicationModel model = getModel();
+        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        
+        JMenuBar mb = new JMenuBar();
+        JMenu m, m2;
+        JMenuItem mi;
+        JCheckBoxMenuItem cbmi;
+        final JMenu openRecentMenu;
+        
+        m = new JMenu();
+        if (toolBarActions != null && toolBarActions.size() > 0) {
+            m2 = (toolBarActions.size() == 1) ? m : new JMenu(labels.getString("toolBars"));
+            labels.configureMenu(m, labels.getString("view"));
+            for (Action a : toolBarActions) {
+                cbmi = new JCheckBoxMenuItem(a);
+                Actions.configureJCheckBoxMenuItem(cbmi, a);
+                m2.add(cbmi);
+            }
+            m.add(m2);
+        }
+        
+        return m;
+    }
+    
+    protected JMenu createHelpMenu(Project p) {
+        ApplicationModel model = getModel();
+        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        
+        JMenu m;
+        JMenuItem mi;
+        
+        m = new JMenu();
+        labels.configureMenu(m, labels.getString("help"));
+        m.add(model.getAction(AboutAction.ID));
+        
+        return m;
     }
 }

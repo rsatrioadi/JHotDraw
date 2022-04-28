@@ -14,6 +14,7 @@
  */
 package org.jhotdraw.samples.svg;
 
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.Pageable;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import java.util.prefs.Preferences;
 import org.jhotdraw.draw.ImageInputFormat;
 import org.jhotdraw.draw.ImageOutputFormat;
 import org.jhotdraw.draw.OutputFormat;
+import org.jhotdraw.geom.Dimension2DDouble;
 import org.jhotdraw.gui.*;
 import org.jhotdraw.io.*;
 import org.jhotdraw.draw.InputFormat;
@@ -45,13 +47,13 @@ import org.jhotdraw.xml.*;
  * A drawing project.
  *
  * @author Werner Randelshofer
- * @version 1.2 2006-12-10 Used SVGStorage for reading SVG drawing (experimental). 
+ * @version 1.2 2006-12-10 Used SVGStorage for reading SVG drawing (experimental).
  * <br>1.1 2006-06-10 Extended to support DefaultDrawApplicationModel.
  * <br>1.0 2006-02-07 Created.
  */
 public class SVGProject extends AbstractProject implements ExportableProject {
     protected JFileChooser exportChooser;
-   
+    
     /**
      * Each SVGProject uses its own undo redo manager.
      * This allows for undoing and redoing actions per project.
@@ -63,9 +65,12 @@ public class SVGProject extends AbstractProject implements ExportableProject {
      * project, or a single shared editor for all projects.
      */
     private DrawingEditor editor;
-   
+    
+    private HashMap<javax.swing.filechooser.FileFilter, InputFormat> fileFilterInputFormatMap;
     private HashMap<javax.swing.filechooser.FileFilter, OutputFormat> fileFilterOutputFormatMap;
     
+    private GridConstrainer visibleConstrainer = new GridConstrainer(10, 10);
+    private GridConstrainer invisibleConstrainer = new GridConstrainer(1, 1);
     private Preferences prefs;
     /**
      * Creates a new Project.
@@ -101,18 +106,21 @@ public class SVGProject extends AbstractProject implements ExportableProject {
         
         JPanel placardPanel = new JPanel(new BorderLayout());
         javax.swing.AbstractButton pButton;
-        pButton = ToolBarButtonFactory.createZoomButton(view);
+        pButton = ButtonFactory.createZoomButton(view);
         pButton.putClientProperty("Quaqua.Button.style","placard");
         pButton.putClientProperty("Quaqua.Component.visualMargin",new Insets(0,0,0,0));
         pButton.setFont(UIManager.getFont("SmallSystemFont"));
         placardPanel.add(pButton, BorderLayout.WEST);
-        pButton = ToolBarButtonFactory.createToggleGridButton(view);
+        pButton = ButtonFactory.createToggleGridButton(view);
         pButton.putClientProperty("Quaqua.Button.style","placard");
         pButton.putClientProperty("Quaqua.Component.visualMargin",new Insets(0,0,0,0));
         pButton.setFont(UIManager.getFont("SmallSystemFont"));
         labels.configureToolBarButton(pButton, "alignGridSmall");
         placardPanel.add(pButton, BorderLayout.EAST);
         scrollPane.add(placardPanel, JScrollPane.LOWER_LEFT_CORNER);
+        
+        propertiesPanel.setVisible(prefs.getBoolean("propertiesPanelVisible", false));
+        propertiesPanel.setView(view);
     }
     
     /**
@@ -121,14 +129,19 @@ public class SVGProject extends AbstractProject implements ExportableProject {
     protected Drawing createDrawing() {
         Drawing drawing = new SVGDrawing();
         LinkedList<InputFormat> inputFormats = new LinkedList<InputFormat>();
-        inputFormats.add(new SVGInputFormat());
+        inputFormats.add(new SVGZInputFormat());
         inputFormats.add(new ImageInputFormat(new SVGImageFigure()));
+        inputFormats.add(new ImageInputFormat(new SVGImageFigure(), "JPG","Joint Photographics Experts Group (JPEG)", "jpg", BufferedImage.TYPE_INT_RGB));
+        inputFormats.add(new ImageInputFormat(new SVGImageFigure(), "GIF","Graphics Interchange Format (GIF)", "gif", BufferedImage.TYPE_INT_ARGB));
+        inputFormats.add(new TextInputFormat(new SVGTextFigure()));
         drawing.setInputFormats(inputFormats);
         LinkedList<OutputFormat> outputFormats = new LinkedList<OutputFormat>();
         outputFormats.add(new SVGOutputFormat());
+        outputFormats.add(new SVGZOutputFormat());
         outputFormats.add(new ImageOutputFormat());
         outputFormats.add(new ImageOutputFormat("JPG","Joint Photographics Experts Group (JPEG)", "jpg", BufferedImage.TYPE_INT_RGB));
         outputFormats.add(new ImageOutputFormat("BMP","Windows Bitmap (BMP)", "bmp", BufferedImage.TYPE_BYTE_INDEXED));
+        outputFormats.add(new ImageMapOutputFormat());
         drawing.setOutputFormats(outputFormats);
         return drawing;
     }
@@ -148,6 +161,7 @@ public class SVGProject extends AbstractProject implements ExportableProject {
             oldValue.remove(view);
         }
         editor = newValue;
+        propertiesPanel.setEditor(editor);
         if (newValue != null) {
             newValue.add(view);
         }
@@ -183,8 +197,13 @@ public class SVGProject extends AbstractProject implements ExportableProject {
      */
     public void read(File f) throws IOException {
         try {
-            InputFormat sf = new SVGInputFormat();
+            JFileChooser fc = getOpenChooser();
+            
             final Drawing drawing = createDrawing();
+            InputFormat sf = fileFilterInputFormatMap.get(fc.getFileFilter());
+            if (sf == null) {
+                sf = drawing.getInputFormats().get(0);
+            }
             sf.read(f, drawing);
             SwingUtilities.invokeAndWait(new Runnable() { public void run() {
                 view.getDrawing().removeUndoableEditListener(undo);
@@ -198,23 +217,11 @@ public class SVGProject extends AbstractProject implements ExportableProject {
             throw error;
         } catch (InvocationTargetException e) {
             InternalError error = new InternalError();
-            e.initCause(e);
+            error.initCause(e);
             throw error;
         }
     }
     
-    /**
-     * Sets a drawing editor for the project.
-     */
-    public void setDrawingEditor(DrawingEditor newValue) {
-        if (editor != null) {
-            editor.remove(view);
-        }
-        editor = newValue;
-        if (editor != null) {
-            editor.add(view);
-        }
-    }
     
     /**
      * Gets the drawing editor of the project.
@@ -223,10 +230,26 @@ public class SVGProject extends AbstractProject implements ExportableProject {
         return editor;
     }
     
+    public Drawing getDrawing() {
+        return view.getDrawing();
+    }
+    
     public void setEnabled(boolean newValue) {
         view.setEnabled(newValue);
         super.setEnabled(newValue);
     }
+    
+    public void setPropertiesPanelVisible(boolean newValue) {
+        boolean oldValue = propertiesPanel.isVisible();
+        propertiesPanel.setVisible(newValue);
+        firePropertyChange("propertiesPanelVisible", oldValue, newValue);
+        prefs.putBoolean("propertiesPanelVisible", newValue);
+        validate();
+    }
+    public boolean isPropertiesPanelVisible() {
+        return propertiesPanel.isVisible();
+    }
+    
     
     /**
      * Clears the project.
@@ -237,15 +260,34 @@ public class SVGProject extends AbstractProject implements ExportableProject {
     }
     
     @Override protected JFileChooser createOpenChooser() {
-        JFileChooser c = super.createOpenChooser();
-        c.addChoosableFileFilter(new ExtensionFileFilter("SVG Drawing","svg"));
+        final JFileChooser c = super.createOpenChooser();
+        fileFilterInputFormatMap = new HashMap<javax.swing.filechooser.FileFilter,InputFormat>();
+        javax.swing.filechooser.FileFilter firstFF = null;
+        for (InputFormat format : view.getDrawing().getInputFormats()) {
+            javax.swing.filechooser.FileFilter ff = format.getFileFilter();
+            if (firstFF == null) {
+                firstFF = ff;
+            }
+            fileFilterInputFormatMap.put(ff, format);
+            c.addChoosableFileFilter(ff);
+        }
+        c.setFileFilter(firstFF);
+        c.addPropertyChangeListener(new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getPropertyName().equals("fileFilterChanged")) {
+                    InputFormat inputFormat = fileFilterInputFormatMap.get(evt.getNewValue());
+                    c.setAccessory((inputFormat == null) ? null : inputFormat.getInputFormatAccessory());
+                }
+            }
+        });
+        
         return c;
     }
     @Override protected JFileChooser createSaveChooser() {
         JFileChooser c = super.createSaveChooser();
         
         fileFilterOutputFormatMap = new HashMap<javax.swing.filechooser.FileFilter,OutputFormat>();
-      //  c.addChoosableFileFilter(new ExtensionFileFilter("SVG Drawing","svg"));
+        //  c.addChoosableFileFilter(new ExtensionFileFilter("SVG Drawing","svg"));
         for (OutputFormat format : view.getDrawing().getOutputFormats()) {
             javax.swing.filechooser.FileFilter ff = format.getFileFilter();
             fileFilterOutputFormatMap.put(ff, format);
@@ -259,7 +301,7 @@ public class SVGProject extends AbstractProject implements ExportableProject {
         JFileChooser c = new JFileChooser();
         
         fileFilterOutputFormatMap = new HashMap<javax.swing.filechooser.FileFilter,OutputFormat>();
-      //  c.addChoosableFileFilter(new ExtensionFileFilter("SVG Drawing","svg"));
+        //  c.addChoosableFileFilter(new ExtensionFileFilter("SVG Drawing","svg"));
         javax.swing.filechooser.FileFilter currentFilter = null;
         for (OutputFormat format : view.getDrawing().getOutputFormats()) {
             javax.swing.filechooser.FileFilter ff = format.getFileFilter();
@@ -272,7 +314,7 @@ public class SVGProject extends AbstractProject implements ExportableProject {
         if (currentFilter != null) {
             c.setFileFilter(currentFilter);
         }
-            c.setSelectedFile(new File(prefs.get("projectExportFile", System.getProperty("user.home"))));
+        c.setSelectedFile(new File(prefs.get("projectExportFile", System.getProperty("user.home"))));
         
         return c;
     }
@@ -286,6 +328,7 @@ public class SVGProject extends AbstractProject implements ExportableProject {
     private void initComponents() {
         scrollPane = new javax.swing.JScrollPane();
         view = new org.jhotdraw.draw.DefaultDrawingView();
+        propertiesPanel = new org.jhotdraw.samples.svg.SVGPropertiesPanel();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -295,31 +338,55 @@ public class SVGProject extends AbstractProject implements ExportableProject {
 
         add(scrollPane, java.awt.BorderLayout.CENTER);
 
-    }// </editor-fold>//GEN-END:initComponents
+        add(propertiesPanel, java.awt.BorderLayout.SOUTH);
 
+    }// </editor-fold>//GEN-END:initComponents
+    
     public JFileChooser getExportChooser() {
         if (exportChooser == null) {
-            exportChooser = createSaveChooser();
+            exportChooser = createExportChooser();
         }
         return exportChooser;
     }
-
+    
     public void export(File f, javax.swing.filechooser.FileFilter filter, Component accessory) throws IOException {
-
-                OutputFormat format = fileFilterOutputFormatMap.get(filter);
-                
-                if (! f.getName().endsWith("."+format.getFileExtension())) {
-                    f = new File(f.getPath()+"."+format.getFileExtension());
-                }
-                
+        
+        OutputFormat format = fileFilterOutputFormatMap.get(filter);
+        
+        if (! f.getName().endsWith("."+format.getFileExtension())) {
+            f = new File(f.getPath()+"."+format.getFileExtension());
+        }
+        
         format.write(f, view.getDrawing());
         
-           prefs.put("projectExportFile", f.getPath());
-         prefs.put("projectExportFormat", filter.getDescription());
+        prefs.put("projectExportFile", f.getPath());
+        prefs.put("projectExportFormat", filter.getDescription());
+    }
+    public void setGridVisible(boolean newValue) {
+        boolean oldValue = isGridVisible();
+        Constrainer c = (newValue) ? visibleConstrainer : invisibleConstrainer;
+        view.setConstrainer(c);
+        
+        firePropertyChange("gridVisible", oldValue, newValue);
+        prefs.putBoolean("project.gridVisible", newValue);
+    }
+    public boolean isGridVisible() {
+        return view.getConstrainer() == visibleConstrainer;
+    }
+    public double getScaleFactor() {
+        return view.getScaleFactor();
+    }
+    public void setScaleFactor(double newValue) {
+        double oldValue = getScaleFactor();
+        view.setScaleFactor(newValue);
+        
+        firePropertyChange("scaleFactor", oldValue, newValue);
+        prefs.putDouble("project.scaleFactor", newValue);
     }
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private org.jhotdraw.samples.svg.SVGPropertiesPanel propertiesPanel;
     private javax.swing.JScrollPane scrollPane;
     private org.jhotdraw.draw.DefaultDrawingView view;
     // End of variables declaration//GEN-END:variables

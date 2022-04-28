@@ -1,5 +1,5 @@
 /*
- * @(#)ConnectingFiguresSample_1.java   1.0  November 9, 2006
+ * @(#)EditorSample.java   1.0  March 8, 2007
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
@@ -19,13 +19,11 @@ import org.jhotdraw.draw.*;
 import org.jhotdraw.geom.*;
 
 /**
- * Example showing how to create a drawing and displaying it in an editor 
- * with a "delegation selection tool".
- * We don't make use of a toolbar, so users are not able to add new figure
- * to the drawing, they can just play around with the figures that are there.
+ * Example showing how to create an editor that can edit multiple
+ * drawing views. For simplicity, the editor can create rectangle figures only.
  *
  * @author Werner Randelshofer
- * @version 1.0 November 9, 2006 Created.
+ * @version 1.0 March 8, 2007 Created.
  */
 public class EditorSample {
     public static void main(String[] args) {
@@ -35,11 +33,11 @@ public class EditorSample {
                 // Create a simple drawing consisting of three
                 // text areas and an elbow connection.
                 TextAreaFigure ta = new TextAreaFigure();
-                ta.basicSetBounds(new Point2D.Double(10,10),new Point2D.Double(100,100));
+                ta.setBounds(new Point2D.Double(10,10),new Point2D.Double(100,100));
                 TextAreaFigure tb = new TextAreaFigure();
-                tb.basicSetBounds(new Point2D.Double(220,120),new Point2D.Double(310,210));
+                tb.setBounds(new Point2D.Double(220,120),new Point2D.Double(310,210));
                 TextAreaFigure tc = new TextAreaFigure();
-                tc.basicSetBounds(new Point2D.Double(220,10),new Point2D.Double(310,100));
+                tc.setBounds(new Point2D.Double(220,10),new Point2D.Double(310,100));
                 ConnectionFigure cf = new LineConnectionFigure();
                 cf.setLiner(new ElbowLiner());
                 cf.setStartConnector(ta.findConnector(Geom.center(ta.getBounds()), cf));

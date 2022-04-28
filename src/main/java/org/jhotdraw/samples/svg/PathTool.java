@@ -14,6 +14,7 @@
 
 package org.jhotdraw.samples.svg;
 
+import javax.swing.undo.*;
 import org.jhotdraw.samples.svg.figures.*;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.util.*;
@@ -31,16 +32,20 @@ import org.jhotdraw.geom.*;
  */
 public class PathTool extends BezierTool {
     /**
+     * Set this to true to turn on debugging output on System.out.
+     */
+    private final static boolean DEBUG = false;
+    /**
      * The path prototype for new figures.
      */
     private SVGPathFigure pathPrototype;
     
     /** Creates a new instance. */
-    public PathTool(SVGPathFigure pathPrototype, BezierFigure bezierPrototype) {
+    public PathTool(SVGPathFigure pathPrototype, SVGBezierFigure bezierPrototype) {
         this(pathPrototype, bezierPrototype, null);
     }
     /** Creates a new instance. */
-    public PathTool(SVGPathFigure pathPrototype, BezierFigure bezierPrototype, Map attributes) {
+    public PathTool(SVGPathFigure pathPrototype, SVGBezierFigure bezierPrototype, Map attributes) {
         super(bezierPrototype, attributes);
         this.pathPrototype = pathPrototype;
     }
@@ -49,17 +54,19 @@ public class PathTool extends BezierTool {
         getEditor().applyDefaultAttributesTo(f);
         if (attributes != null) {
             for (Map.Entry<AttributeKey, Object> entry : attributes.entrySet()) {
-                f.setAttribute(entry.getKey(), entry.getValue());
+                entry.getKey().basicSet(f, entry.getValue());
             }
         }
         return f;
     }
-    protected void finishCreation(BezierFigure createdFigure) {
+    @Override protected void finishCreation(BezierFigure createdFigure) {
+        if (DEBUG) System.out.println("PathTool.finishCreation "+createdFigure);
         getDrawing().remove(createdFigure);
         SVGPathFigure createdPath = createPath();
         createdPath.removeAllChildren();
         createdPath.add(createdFigure);
         getDrawing().add(createdPath);
         getView().addToSelection(createdPath);
+        fireUndoEvent(createdPath);
     }
 }

@@ -1,5 +1,5 @@
  /*
-  * @(#)SVGImage.java  1.0  July 8, 2006
+  * @(#)SVGImage.java  2.0  2007-04-14
   *
   * Copyright (c) 1996-2006 by the original authors of JHotDraw
   * and all its contributors ("JHotDraw.org")
@@ -38,7 +38,8 @@ import org.jhotdraw.geom.*;
  * FIXME - Implement me
  *
  * @author Werner Randelshofer
- * @version 1.0 July 8, 2006 Created.
+ * @version 2.0 2007-04-14 Adapted for new AttributeKeys.TRANSFORM support.
+ * <br>1.0 July 8, 2006 Created.
  */
 public class SVGImageFigure extends SVGAttributedFigure implements SVGFigure, ImageHolderFigure {
     /**
@@ -71,28 +72,42 @@ public class SVGImageFigure extends SVGAttributedFigure implements SVGFigure, Im
     }
     public SVGImageFigure(double x, double y, double width, double height) {
         rectangle = new Rectangle2D.Double(x, y, width, height);
-       SVGAttributeKeys.setDefaults(this);
+        SVGAttributeKeys.setDefaults(this);
     }
     
     // DRAWING
     public void draw(Graphics2D g) {
-        super.draw(g);
-        BufferedImage image = getBufferedImage();
-        if (image != null) {
-            if (TRANSFORM.get(this) != null) {
-                // FIXME - We should cache the transformed image.
-                //         Drawing a transformed image appears to be very slow.
-                Graphics2D gx = (Graphics2D) g.create();
-                gx.transform(TRANSFORM.get(this));
-                gx.drawImage(image, (int) rectangle.x, (int) rectangle.y, (int) rectangle.width, (int) rectangle.height, null);
-                gx.dispose();
-            } else {
-                g.drawImage(image, (int) rectangle.x, (int) rectangle.y, (int) rectangle.width, (int) rectangle.height, null);
+        //super.draw(g);
+        
+        double opacity = OPACITY.get(this);
+        opacity = Math.min(Math.max(0d, opacity), 1d);
+        if (opacity != 0d) {
+            Composite savedComposite = g.getComposite();
+            if (opacity != 1d) {
+                g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) opacity));
             }
-        } else {
-            Shape shape = getTransformedShape();
-            g.setColor(Color.red);
-            g.draw(shape);
+            
+            BufferedImage image = getBufferedImage();
+            if (image != null) {
+                if (TRANSFORM.get(this) != null) {
+                    // FIXME - We should cache the transformed image.
+                    //         Drawing a transformed image appears to be very slow.
+                    Graphics2D gx = (Graphics2D) g.create();
+                    gx.transform(TRANSFORM.get(this));
+                    gx.drawImage(image, (int) rectangle.x, (int) rectangle.y, (int) rectangle.width, (int) rectangle.height, null);
+                    gx.dispose();
+                } else {
+                    g.drawImage(image, (int) rectangle.x, (int) rectangle.y, (int) rectangle.width, (int) rectangle.height, null);
+                }
+            } else {
+                Shape shape = getTransformedShape();
+                g.setColor(Color.red);
+                g.draw(shape);
+            }
+            
+            if (opacity != 1d) {
+                g.setComposite(savedComposite);
+            }
         }
     }
     protected void drawFill(Graphics2D g) {
@@ -116,15 +131,11 @@ public class SVGImageFigure extends SVGAttributedFigure implements SVGFigure, Im
         return rectangle.height;
     }
     public Rectangle2D.Double getBounds() {
-        Rectangle2D rx = getTransformedShape().getBounds2D();
-        Rectangle2D.Double r = (rx instanceof Rectangle2D.Double) ? (Rectangle2D.Double) rx : new Rectangle2D.Double(rx.getX(), rx.getY(), rx.getWidth(), rx.getHeight());
-        return r;
+        return (Rectangle2D.Double) rectangle.clone();
     }
-    public Rectangle2D.Double getFigureDrawBounds() {
+    @Override public Rectangle2D.Double getDrawingArea() {
         Rectangle2D rx = getTransformedShape().getBounds2D();
         Rectangle2D.Double r = (rx instanceof Rectangle2D.Double) ? (Rectangle2D.Double) rx : new Rectangle2D.Double(rx.getX(), rx.getY(), rx.getWidth(), rx.getHeight());
-        double g = AttributeKeys.getPerpendicularHitGrowth(this) * 2;
-        Geom.grow(r, g, g);
         return r;
     }
     /**
@@ -134,7 +145,7 @@ public class SVGImageFigure extends SVGAttributedFigure implements SVGFigure, Im
         return getHitShape().contains(p);
     }
     
-    public void basicSetBounds(Point2D.Double anchor, Point2D.Double lead) {
+    public void setBounds(Point2D.Double anchor, Point2D.Double lead) {
         invalidateTransformedShape();
         rectangle.x = Math.min(anchor.x, lead.x);
         rectangle.y = Math.min(anchor.y , lead.y);
@@ -167,19 +178,21 @@ public class SVGImageFigure extends SVGAttributedFigure implements SVGFigure, Im
      * Transforms the figure.
      * @param tx The transformation.
      */
-    public void basicTransform(AffineTransform tx) {
+    public void transform(AffineTransform tx) {
         invalidateTransformedShape();
         if (TRANSFORM.get(this) != null ||
                 (tx.getType() & (AffineTransform.TYPE_TRANSLATION | AffineTransform.TYPE_MASK_SCALE)) != tx.getType()) {
             if (TRANSFORM.get(this) == null) {
                 TRANSFORM.basicSet(this, (AffineTransform) tx.clone());
             } else {
-                TRANSFORM.get(this).preConcatenate(tx);
+                AffineTransform t = TRANSFORM.getClone(this);
+                t.preConcatenate(tx);
+                TRANSFORM.basicSet(this, t);
             }
         } else {
             Point2D.Double anchor = getStartPoint();
             Point2D.Double lead = getEndPoint();
-            basicSetBounds(
+            setBounds(
                     (Point2D.Double) tx.transform(anchor, anchor),
                     (Point2D.Double) tx.transform(lead, lead)
                     );
@@ -189,14 +202,14 @@ public class SVGImageFigure extends SVGAttributedFigure implements SVGFigure, Im
     
     
     public void restoreTransformTo(Object geometry) {
-            invalidateTransformedShape();
-            Object[] o = (Object[]) geometry;
-            rectangle = (Rectangle2D.Double) ((Rectangle2D.Double) o[0]).clone();
-            if (o[1] == null) {
-                TRANSFORM.set(this, null);
-            } else {
-            TRANSFORM.set(this, (AffineTransform) ((AffineTransform) o[1]).clone());
-            }
+        invalidateTransformedShape();
+        Object[] o = (Object[]) geometry;
+        rectangle = (Rectangle2D.Double) ((Rectangle2D.Double) o[0]).clone();
+        if (o[1] == null) {
+            TRANSFORM.basicSet(this, null);
+        } else {
+            TRANSFORM.basicSet(this, (AffineTransform) ((AffineTransform) o[1]).clone());
+        }
     }
     
     public Object getTransformRestoreData() {
@@ -207,10 +220,19 @@ public class SVGImageFigure extends SVGAttributedFigure implements SVGFigure, Im
     }
     
     // EDITING
-    public Collection<Handle> createHandles(int detailLevel) {
-        LinkedList<Handle> handles = (LinkedList<Handle>) super.createHandles(detailLevel);
-        handles.add(new RotateHandle(this));
+    @Override public Collection<Handle> createHandles(int detailLevel) {
+        LinkedList<Handle> handles = new LinkedList<Handle>();
         
+        switch (detailLevel % 2) {
+            case 0 :
+                ResizeHandleKit.addResizeHandles(this, handles);
+                break;
+            case 1 :
+                TransformHandleKit.addTransformHandles(this, handles);
+                break;
+            default:
+                break;
+        }
         return handles;
     }
     @Override public Collection<Action> getActions(Point2D.Double p) {
@@ -219,7 +241,7 @@ public class SVGImageFigure extends SVGAttributedFigure implements SVGFigure, Im
         if (TRANSFORM.get(this) != null) {
             actions.add(new AbstractAction(labels.getString("removeTransform")) {
                 public void actionPerformed(ActionEvent evt) {
-                    TRANSFORM.set(SVGImageFigure.this, null);
+                    TRANSFORM.basicSet(SVGImageFigure.this, null);
                 }
             });
         }
@@ -331,8 +353,8 @@ public class SVGImageFigure extends SVGAttributedFigure implements SVGFigure, Im
             }
         }
         return imageData;
-    }    
-
+    }
+    
     public void loadImage(File file) throws IOException {
         InputStream in = null;
         try {

@@ -1,7 +1,7 @@
 /*
- * @(#)Drawing.java  2.1  2006-12-31
+ * @(#)Drawing.java  2.4  2007-05-21
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2007 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
  * All rights reserved.
  *
@@ -15,6 +15,7 @@
 
 package org.jhotdraw.draw;
 
+import org.jhotdraw.geom.*;
 import org.jhotdraw.io.*;
 import org.jhotdraw.xml.*;
 
@@ -32,7 +33,10 @@ import java.io.*;
  * whenever a part of its area was invalidated.
  *
  * @author Werner Randelshofer
- * @version 2.1 2006-12-31 Changed to return lists instead of collections.
+ * @version 2.4 2007-05-21 Added add-methods with index to the interface.
+ * <br>2.3 2007-05-16 Added method findFigureBehind. 
+ * <br>2.2 2007-04-09 Methods setCanvasSize, getCanvasSize added.
+ * <br>2.1 2006-12-31 Changed to return lists instead of collections.
  * <br>2.0 2006-01-14 Changed to support double precision coordinates.
  * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
  */
@@ -43,33 +47,63 @@ public interface Drawing extends Serializable, DOMStorable {
     public void clear();
     /**
      * Adds a figure to the drawing.
-     * The drawing sends an <code>addNotify</code> message to the figure
+     * The drawing sends an {@code addNotify} message to the figure
      * after it has been added.
+     *
+     * @see Figure#addNotify
      *
      * @param figure to be added to the drawing
      */
     public void add(Figure figure);
     /**
-     * Adds a collection of figures to the drawing.
-     * The drawing sends an <code>addNotify</code>  message to each figure
+     * Adds a figure to the drawing.
+     * The drawing sends an {@code addNotify} message to the figure
      * after it has been added.
+     *
+     * @see Figure#addNotify
+     *
+     * @param index The z-index of the figure.
+     * @param figure to be added to the drawing
+     */
+    public void add(int index, Figure figure);
+    /**
+     * Adds a collection of figures to the drawing.
+     * The drawing sends an {@code addNotify}  message to each figure
+     * after it has been added.
+     *
+     * @see Figure#addNotify
      *
      * @param figures to be added to the drawing
      */
     public void addAll(Collection<Figure> figures);
+    /**
+     * Adds a collection of figures to the drawing.
+     * The drawing sends an {@code addNotify}  message to each figure
+     * after it has been added.
+     *
+     * @see Figure#addNotify
+     *
+     * @param index The z-index of the figure.
+     * @param figures to be added to the drawing
+     */
+    public void addAll(int index, Collection<Figure> figures);
     
     /**
      * Removes a figure from the drawing.
-     * The drawing sends a <code>removeNotify</code>  message to the figure
+     * The drawing sends a {@code removeNotify} message to the figure
      * before it is removed.
+     *
+     * @see Figure#removeNotify
      *
      * @param figure that is part of the drawing and should be removed
      */
     public void remove(Figure figure);
     /**
      * Removes the specified figures from the drawing.
-     * The drawing sends a <code>removeNotify</code>  message to each figure
+     * The drawing sends a {@code removeNotify}  message to each figure
      * before it is removed.
+     *
+     * @see Figure#removeNotify
      *
      * @param figures A collection of figures which are part of the drawing
      * and should be removed
@@ -78,15 +112,14 @@ public interface Drawing extends Serializable, DOMStorable {
     
     /**
      * Removes a figure temporarily from the drawing.
-     * The drawing sends no </code>removeNotify</code> message to the figure.
      *
-     * @see #basicAdd(Figure)
+     * @see #basicAdd(Figure
+     * 
      * @param figure that is part of the drawing and should be removed
      */
     public void basicRemove(Figure figure);
     /**
      * Removes the specified figures temporarily from the drawing.
-     * The drawing sends no </code>removeNotify</code> message to the figures.
      *
      * @see #basicAddAll(int, Collection)
      * @param figures A collection of figures which are part of the drawing
@@ -95,15 +128,17 @@ public interface Drawing extends Serializable, DOMStorable {
     public void basicRemoveAll(Collection<Figure> figures);
     /**
      * Reinserts a figure which was temporarily removed using basicRemove.
-     * The drawing sends no <code>addNotify</code> message to the figure.
+     * <p>
+     * This is a convenience method for calling 
+     * {@code basicAdd(getFigureCount(), figure)}.
      *
      * @see #basicRemove(Figure)
+     * @param index The z-index of the figure.
      * @param figure that is part of the drawing and should be removed
      */
     public void basicAdd(Figure figure);
     /**
      * Reinserts a figure which was temporarily removed using basicRemove.
-     * The drawing sends no <code>addNotify</code> message to the figure.
      *
      * @see #basicRemove(Figure)
      * @param figure that is part of the drawing and should be removed
@@ -112,17 +147,18 @@ public interface Drawing extends Serializable, DOMStorable {
     
     /**
      * Returns the index of the specified figure.
+     *
      * Returns -1 if the Figure is not directly contained in this Drawing, for
      * example if the Figure is a child of a CompositeFigure.
      */
     public int indexOf(Figure figure);
     
     /**
-     * Reinserts the specified figures which were temporarily basicRemoveed from
+     * Reinserts the specified figures which were temporarily removed from
      * the drawing.
-     * The drawing sends no <code>addNotify</code> message to the figures.
      *
      * @see #basicRemoveAll(Collection)
+     * @param index The insertion index.
      * @param figures A collection of figures which are part of the drawing
      * and should be reinserted.
      */
@@ -176,6 +212,14 @@ public interface Drawing extends Serializable, DOMStorable {
      * should not descend into the figure's children.
      */
     Figure findFigureExcept(Point2D.Double p, Collection<Figure> ignore);
+    /**
+     * Finds a top level Figure which is behind the specified Figure.
+     */
+    Figure findFigureBehind(Point2D.Double p, Figure figure);
+    /**
+     * Finds a top level Figure which is behind the specified Figures.
+     */
+    Figure findFigureBehind(Point2D.Double p, Collection<Figure> figures);
     
     /**
      * Returns true if this drawing contains the specified figure.
@@ -275,5 +319,67 @@ public interface Drawing extends Serializable, DOMStorable {
      * Gets output formats for the Drawing in order of preferred formats.
      */
     public List<OutputFormat> getOutputFormats();
+    
+    /**
+     * Sets the canvas size for this drawing.
+     * <p>
+     * If <code>canvasSize</code> is </code>null</code>, the size of the canvas 
+     * is expected to be adjusted dynamically to fit the drawing areas of all 
+     * figures contained in the drawing.
+     * <p>
+     * This is a bound property.
+     *
+     * @param canvasSize The canvas size, or null.
+     */
+    public void setCanvasSize(Dimension2DDouble canvasSize);
+    
+    /**
+     * Gets the canvas size of this drawing.
+     * If null is returned, the canvas size needs to be adjusted dynamically
+     * to fit the drawing areas of all figures contained in the drawing.
+     *
+     * @return The canvas size, or null.
+     */
+    public Dimension2DDouble getCanvasSize();
+    
+    // ATTRIBUTES
+    /**
+     * Sets an attribute of the Drawing without firing events.
+     * AttributeKey name and semantics are defined by the class implementing
+     * the Drawing interface.
+     * <p>
+     * Use <code>AttributeKey.set</code> for typesafe access to this 
+     * method.
+     * /
+    public void setAttribute(AttributeKey key, Object value);
+    /**
+     * Gets an attribute from the Drawing.
+     * <p>
+     * Use <code>AttributeKey.get()</code> for typesafe access to this method.
+     * 
+     * @see AttributeKey#get
+     *
+     * @return Returns the attribute value. If the Drawing does not have an
+     * attribute with the specified key, returns key.getDefaultValue().
+     * / 
+    public Object getAttribute(AttributeKey key);
+    /**
+     * Returns a view to all attributes of this drawing.
+     * By convention, an unmodifiable map is returned.
+     * /
+    public Map<AttributeKey, Object> getAttributes();
+    
+    /**
+     * Gets data which can be used to restore the attributes of the drawing 
+     * after a setAttribute has been applied to it.
+     * 
+     * @see #basicSetAttribue(AttributeKey,Object)
+     * /
+    public Object getAttributesRestoreData();
+    /**
+     * Restores the attributes of the drawing to a previously stored state.
+     * /
+    public void restoreAttributesTo(Object restoreData);
+    */
 }
 

@@ -87,13 +87,12 @@ public interface SVGFigureFactory {
 
     public Gradient createLinearGradient(
             double x1, double y1, double x2, double y2, 
-            double[] stopOffsets, Color[] stopColors,
-            boolean isRelativeToFigureBounds);
+            double[] stopOffsets, Color[] stopColors, double[] stopOpacities,
+            boolean isRelativeToFigureBounds, AffineTransform tx);
     
     public Gradient createRadialGradient(
-            double cx, double cy, double r, 
-            double[] stopOffsets, Color[] stopColors,
-            boolean isRelativeToFigureBounds);
-    
+            double cx, double cy, double fx, double fy, double r, 
+            double[] stopOffsets, Color[] stopColors, double[] stopOpacities,
+            boolean isRelativeToFigureBounds, AffineTransform tx);
 
 }

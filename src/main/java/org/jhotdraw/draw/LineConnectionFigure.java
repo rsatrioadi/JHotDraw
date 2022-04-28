@@ -1,7 +1,7 @@
 /*
- * @(#)BezierBezierLineConnection.java  1.0.1  2006-02-06
+ * @(#)BezierBezierLineConnection.java  1.0.2  2007-05-02
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2007 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
  * All rights reserved.
  *
@@ -31,7 +31,9 @@ import org.jhotdraw.xml.DOMOutput;
  *
  *
  * @author Werner Randelshofer
- * @version 1.0.1 2006-02-06 Fixed redo bug.
+ * @version 1.0.2 2007-05-02 Set connector variables directly when reading in
+ * connectors.
+ * <br>1.0.1 2006-02-06 Fixed redo bug.
  * <br>1.0 23. Januar 2006 Created.
  */
 public class LineConnectionFigure extends LineFigure
@@ -45,15 +47,12 @@ public class LineConnectionFigure extends LineFigure
      * end figure.
      */
     private ConnectionHandler connectionHandler = new ConnectionHandler(this);
-    private static class ConnectionHandler implements FigureListener {
+    private static class ConnectionHandler extends FigureAdapter {
         private LineConnectionFigure owner;
         private ConnectionHandler(LineConnectionFigure owner) {
             this.owner = owner;
         }
-        public void figureRequestRemove(FigureEvent e) {
-        }
-        
-        public void figureRemoved(FigureEvent evt) {
+        @Override public void figureRemoved(FigureEvent evt) {
             // The commented lines below must stay commented out.
             // This is because, we must not set our connectors to null,
             // in order to support reconnection using redo.
@@ -66,7 +65,7 @@ public class LineConnectionFigure extends LineFigure
             owner.fireFigureRequestRemove();
         }
         
-        public void figureChanged(FigureEvent e) {
+        @Override public void figureChanged(FigureEvent e) {
             if (e.getSource() == owner.getStartFigure() ||
                     e.getSource() == owner.getEndFigure()) {
                 owner.willChange();
@@ -74,16 +73,6 @@ public class LineConnectionFigure extends LineFigure
                 owner.changed();
             }
         }
-        
-        public void figureAdded(FigureEvent e) {
-        }
-        
-        public void figureAttributeChanged(FigureEvent e) {
-        }
-        
-        public void figureAreaInvalidated(FigureEvent e) {
-        }
-        
     };
     
     /** Creates a new instance. */
@@ -95,8 +84,8 @@ public class LineConnectionFigure extends LineFigure
      * Ensures that a connection is updated if the connection
      * was moved.
      */
-    public void basicTransform(AffineTransform tx) {
-        super.basicTransform(tx);
+    public void transform(AffineTransform tx) {
+        super.transform(tx);
         updateConnection(); // make sure that we are still connected
     }
     // ATTRIBUTES
@@ -112,12 +101,13 @@ public class LineConnectionFigure extends LineFigure
         switch (detailLevel) {
             case 0 :
                 if (getLiner() == null) {
+                    handles.add(new BezierOutlineHandle(this));
                     for (int i = 1, n = getNodeCount() - 1; i < n; i++) {
                         handles.add(new BezierNodeHandle(this, i));
                     }
                 }
-                handles.add(new ChangeConnectionStartHandle(this));
-                handles.add(new ChangeConnectionEndHandle(this));
+                handles.add(new ConnectionStartHandle(this));
+                handles.add(new ConnectionEndHandle(this));
                 break;
         }
         return handles;
@@ -136,17 +126,16 @@ public class LineConnectionFigure extends LineFigure
         if (getStartConnector() != null) {
             Point2D.Double start = getStartConnector().findStart(this);
             if(start != null) {
-                basicSetStartPoint(start);
+                setStartPoint(start);
             }
         }
         if (getEndConnector() != null) {
             Point2D.Double end = getEndConnector().findEnd(this);
             
             if(end != null) {
-                basicSetEndPoint(end);
+                setEndPoint(end);
             }
         }
-        
         changed();
     }
     public void validate() {
@@ -154,13 +143,8 @@ public class LineConnectionFigure extends LineFigure
         lineout();
     }
     
-    public boolean canConnect(Figure start, Figure end) {
-        return start.canConnect() && end.canConnect();
-    }
-    
-    public boolean connectsSame(ConnectionFigure other) {
-        return other.getStartConnector() == getStartConnector()
-        && other.getEndConnector() == getEndConnector();
+    public boolean canConnect(Connector start, Connector end) {
+        return start.getOwner().canConnect() && end.getOwner().canConnect();
     }
     
     public Connector getEndConnector() {
@@ -178,92 +162,42 @@ public class LineConnectionFigure extends LineFigure
     public Figure getStartFigure() {
         return (startConnector == null) ? null : startConnector.getOwner();
     }
-    /**
-     * Note: this method is only final for testing purposes. You can
-     * remove the final keywoard at any time.
-     */
-    public final void setEndConnector(final Connector newEnd) {
-        final Connector oldEnd = endConnector;
-        if (newEnd != oldEnd) {
-            willChange();
-            basicSetEndConnector(newEnd);
-            fireUndoableEditHappened(new AbstractUndoableEdit() {
-                public String getPresentationName() { return "End-Verbindung setzen"; }
-                public void undo() throws CannotUndoException {
-                    super.undo();
-                    willChange();
-                    basicSetEndConnector(oldEnd);
-                    changed();
-                }
-                public void redo()  throws CannotUndoException {
-                    super.redo();
-                    willChange();
-                    basicSetEndConnector(newEnd);
-                    changed();
-                }
-            });
-            changed();
-        }
-    }
-    protected void basicSetEndConnector(Connector newEnd) {
+    public void setEndConnector(Connector newEnd) {
         if (newEnd != endConnector) {
             if (endConnector != null) {
                 getEndFigure().removeFigureListener(connectionHandler);
                 if (getStartFigure() != null) {
-                    handleDisconnect(getStartFigure(), getEndFigure());
+                    if (getDrawing() != null) {
+                        handleDisconnect(getStartConnector(), getEndConnector());
+                    }
                 }
             }
             endConnector = newEnd;
             if (endConnector != null) {
                 getEndFigure().addFigureListener(connectionHandler);
                 if (getStartFigure() != null && getEndFigure() != null) {
-                    handleConnect(getStartFigure(), getEndFigure());
-                    updateConnection();
+                    if (getDrawing() != null) {
+                        handleConnect(getStartConnector(), getEndConnector());
+                        updateConnection();
+                    }
                 }
             }
         }
     }
-    /**
-     * Note: this method is only final for testing purposes. You can
-     * remove the final keywoard at any time.
-     */
-    public final void setStartConnector(final Connector newStart) {
-        final Connector oldStart = startConnector;
-        if (newStart != oldStart) {
-            willChange();
-            basicSetStartConnector(newStart);
-            fireUndoableEditHappened(new AbstractUndoableEdit() {
-                public String getPresentationName() { return "Start-Verbindung setzen"; }
-                public void undo()  throws CannotUndoException {
-                    super.undo();
-                    willChange();
-                    basicSetStartConnector(oldStart);
-                    changed();
-                }
-                public void redo()  throws CannotUndoException {
-                    super.redo();
-                    willChange();
-                    basicSetStartConnector(newStart);
-                    changed();
-                }
-            });
-            changed();
-        }
-    }
     
-    public void basicSetStartConnector(Connector newStart) {
+    public void setStartConnector(Connector newStart) {
         if (newStart != startConnector) {
             if (startConnector != null) {
                 getStartFigure().removeFigureListener(connectionHandler);
                 if (getEndFigure() != null) {
-                    handleDisconnect(getStartFigure(), getEndFigure());
+                    handleDisconnect(getStartConnector(), getEndConnector());
                 }
             }
             startConnector = newStart;
             if (startConnector != null) {
                 getStartFigure().addFigureListener(connectionHandler);
                 if (getStartFigure() != null && getEndFigure() != null) {
-                    handleConnect(getStartFigure(), getEndFigure());
+                    handleConnect(getStartConnector(), getEndConnector());
                     updateConnection();
                 }
             }
@@ -312,36 +246,66 @@ public class LineConnectionFigure extends LineFigure
      */
     // CLONING
     // EVENT HANDLING
+    /**
+     * This method is invoked, when the Figure is being removed from a Drawing.
+     * This method invokes handleConnect, if the Figure is connected.
+     *
+     * @see #handleConnect
+     */
     public void addNotify(Drawing drawing) {
         super.addNotify(drawing);
-        /*
+        
         if (getStartConnector() != null && getEndConnector() != null) {
-            handleConnect(getStartFigure(), getEndFigure());
-        }*/
+            handleConnect(getStartConnector(), getEndConnector());
+            updateConnection();
+        }
     }
+    
+    /**
+     * This method is invoked, when the Figure is being removed from a Drawing.
+     * This method invokes handleDisconnect, if the Figure is connected.
+     *
+     * @see #handleDisconnect
+     */
     public void removeNotify(Drawing drawing) {
+        if (getStartConnector() != null && getEndConnector() != null) {
+            handleDisconnect(getStartConnector(), getEndConnector());
+        }
+        // Note: we do not set the connectors to null here, because we
+        // need them when we are added back to a drawing again. For example,
+        // when an undo is performed, after the LineConnection has been
+        // deleted.
         /*
         setStartConnector(null);
         setEndConnector(null);
-        /*
-        if (getStartConnector() != null && getEndConnector() != null) {
-            handleDisconnect(getStartFigure(), getEndFigure());
-        }*/
+         */
         super.removeNotify(drawing);
     }
     
     /**
      * Handles the disconnection of a connection.
      * Override this method to handle this event.
+     * <p>
+     * Note: This method is only invoked, when the Figure is part of a
+     * Drawing. If the Figure is removed from a Drawing, this method is
+     * invoked on behalf of the removeNotify call to the Figure.
+     *
+     * @see #removeNotify
      */
-    protected void handleDisconnect(Figure start, Figure end) {
+    protected void handleDisconnect(Connector start, Connector end) {
     }
     
     /**
      * Handles the connection of a connection.
      * Override this method to handle this event.
+     * <p>
+     * Note: This method is only invoked, when the Figure is part of a
+     * Drawing. If the Figure is added to a Drawing this method is invoked
+     * on behalf of the addNotify call to the Figure.
+     *
+     * @see #addConnect
      */
-    protected void handleConnect(Figure start, Figure end) {
+    protected void handleConnect(Connector start, Connector end) {
     }
     
     
@@ -351,7 +315,9 @@ public class LineConnectionFigure extends LineFigure
         if (this.liner != null) {
             that.liner = (Liner) this.liner.clone();
         }
-        // That shares the same connectors that this object has.
+        // FIXME - For safety reasons, we clone the connectors, but they would
+        // work, if we continued to use them. Maybe we should state somewhere
+        // whether connectors should be reusable, or not.
         // To work properly, that must be registered as a figure listener
         // to the connected figures.
         if (this.startConnector != null) {
@@ -363,7 +329,7 @@ public class LineConnectionFigure extends LineFigure
             that.getEndFigure().addFigureListener(that.connectionHandler);
         }
         if (that.startConnector != null && that.endConnector != null) {
-            that.handleConnect(that.getStartFigure(), that.getEndFigure());
+            //that.handleConnect(that.getStartConnector(), that.getEndConnector());
             that.updateConnection();
         }
         return that;
@@ -395,8 +361,8 @@ public class LineConnectionFigure extends LineFigure
     }
     
     
-    public boolean canConnect(Figure start) {
-        return start.canConnect();
+    public boolean canConnect(Connector start) {
+        return start.getOwner().canConnect();
     }
     
     /**
@@ -406,21 +372,21 @@ public class LineConnectionFigure extends LineFigure
         if (getLiner() == null &&
                 evt.getClickCount() == 2) {
             willChange();
-            final int index = basicSplitSegment(p, (float) (5f / view.getScaleFactor()));
+            final int index = splitSegment(p, (float) (5f / view.getScaleFactor()));
             if (index != -1) {
                 final BezierPath.Node newNode = getNode(index);
                 fireUndoableEditHappened(new AbstractUndoableEdit() {
                     public void redo() throws CannotRedoException {
                         super.redo();
                         willChange();
-                        basicAddNode(index, newNode);
+                        addNode(index, newNode);
                         changed();
                     }
                     
                     public void undo() throws CannotUndoException {
                         super.undo();
                         willChange();
-                        basicRemoveNode(index);
+                        removeNode(index);
                         changed();
                     }
                     
@@ -442,16 +408,22 @@ public class LineConnectionFigure extends LineFigure
         in.closeElement();
     }
     public void read(DOMInput in) throws IOException {
-        readPoints(in);
         readAttributes(in);
         readLiner(in);
+        
+        // Note: Points must be read after Liner, because Liner influences
+        // the location of the points.
+        readPoints(in);
     }
     protected void readLiner(DOMInput in) throws IOException {
         if (in.getElementCount("liner") > 0) {
             in.openElement("liner");
             liner = (Liner) in.readObject();
             in.closeElement();
+        } else {
+            liner = null;
         }
+        
     }
     public void write(DOMOutput out) throws IOException {
         writePoints(out);
@@ -476,32 +448,31 @@ public class LineConnectionFigure extends LineFigure
     }
     
     public void setLiner(Liner newValue) {
-        willChange();
         this.liner = newValue;
-        changed();
     }
     
-    public void basicSetNode(int index, BezierPath.Node p) {
-        if (index != 0 && index != getPointCount() - 1) {
+    
+    public void setNode(int index, BezierPath.Node p) {
+        if (index != 0 && index != getNodeCount() - 1) {
             if (getStartConnector() != null) {
                 Point2D.Double start = getStartConnector().findStart(this);
                 if(start != null) {
-                    basicSetStartPoint(start);
+                    setStartPoint(start);
                 }
             }
             if (getEndConnector() != null) {
                 Point2D.Double end = getEndConnector().findEnd(this);
                 
                 if(end != null) {
-                    basicSetEndPoint(end);
+                    setEndPoint(end);
                 }
             }
         }
-        super.basicSetNode(index, p);
+        super.setNode(index, p);
     }
     /*
     public void basicSetPoint(int index, Point2D.Double p) {
-        if (index != 0 && index != getPointCount() - 1) {
+        if (index != 0 && index != getNodeCount() - 1) {
             if (getStartConnector() != null) {
                 Point2D.Double start = getStartConnector().findStart(this);
                 if(start != null) {
@@ -545,19 +516,19 @@ public class LineConnectionFigure extends LineFigure
     }
     
     public void setEndPoint(Point2D.Double p) {
-        setPoint(getPointCount() - 1, p);
+        setPoint(getNodeCount() - 1, p);
     }
     
     public void reverseConnection() {
         if (startConnector != null && endConnector != null) {
-            handleDisconnect(startConnector.getOwner(), endConnector.getOwner());
+            handleDisconnect(startConnector, endConnector);
             Connector tmpC = startConnector;
             startConnector = endConnector;
             endConnector = tmpC;
             Point2D.Double tmpP = getStartPoint();
             setStartPoint(getEndPoint());
             setEndPoint(tmpP);
-            handleConnect(startConnector.getOwner(), endConnector.getOwner());
+            handleConnect(startConnector, endConnector);
             updateConnection();
         }
     }

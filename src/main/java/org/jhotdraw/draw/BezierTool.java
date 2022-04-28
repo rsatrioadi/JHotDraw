@@ -14,6 +14,7 @@
 
 package org.jhotdraw.draw;
 
+import javax.swing.undo.*;
 import org.jhotdraw.util.*;
 import org.jhotdraw.undo.*;
 import java.awt.*;
@@ -29,6 +30,10 @@ import org.jhotdraw.geom.*;
  * <br>1.0 2006-01-21 Created.
  */
 public class BezierTool extends AbstractTool {
+    /**
+     * Set this to true to turn on debugging output on System.out.
+     */
+    private final static boolean DEBUG = false;
     private Boolean finishWhenMouseReleased;
     protected Map<AttributeKey, Object> attributes;
     /**
@@ -40,9 +45,12 @@ public class BezierTool extends AbstractTool {
      */
     protected BezierFigure createdFigure;
     
-    private CompositeEdit creationEdit;
-    
     private int nodeCountBeforeDrag;
+    /**
+     * A localized name for this tool. The presentationName is displayed by the
+     * UndoableEdit.
+     */
+    private String presentationName;
     
     /** Creates a new instance. */
     public BezierTool(BezierFigure prototype) {
@@ -50,21 +58,22 @@ public class BezierTool extends AbstractTool {
     }
     /** Creates a new instance. */
     public BezierTool(BezierFigure prototype, Map attributes) {
+        this(prototype, attributes, null);
+    }
+    public BezierTool(BezierFigure prototype, Map attributes, String name) {
         this.prototype = prototype;
         this.attributes = attributes;
-    }
-    /*
-    public void draw(Graphics2D g) {
-        if (createdFigure != null
-        && mouseLocation != null) {
-            Point2D.Double p = createdFigure.getEndPoint();
-            g.setColor(Color.black);
-            g.setStroke(new BasicStroke());
-            g.drawLine(p.x, p.y, mouseLocation.x, mouseLocation.y);
+        if (name == null) {
+            ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
+            name = labels.getString("createFigure");
         }
-     
+        this.presentationName = name;
     }
-     */
+
+    public String getPresentationName() {
+        return presentationName;
+    }
+    
     public void activate(DrawingEditor editor) {
         super.activate(editor);
         getView().clearSelection();
@@ -75,25 +84,25 @@ public class BezierTool extends AbstractTool {
         super.deactivate(editor);
         getView().setCursor(Cursor.getDefaultCursor());
         if (createdFigure != null) {
+           
             finishCreation(createdFigure);
             createdFigure = null;
-            getDrawing().fireUndoableEditHappened(creationEdit);
         }
     }
     
     public void mousePressed(MouseEvent evt) {
+        if (DEBUG) System.out.println("BezierTool.mousePressed "+evt);
         super.mousePressed(evt);
         if (createdFigure == null) {
             finishWhenMouseReleased = null;
             
-            creationEdit = new CompositeEdit("Figur erstellen");
-            getDrawing().fireUndoableEditHappened(creationEdit);
             createdFigure = createFigure();
             createdFigure.addNode(new BezierPath.Node(
                     getView().getConstrainer().constrainPoint(
                     getView().viewToDrawing(anchor)
                     )));
             getDrawing().add(createdFigure);
+            
             nodeCountBeforeDrag = createdFigure.getNodeCount();
         } else {
             if (evt.getClickCount() == 1) {
@@ -127,7 +136,7 @@ public class BezierTool extends AbstractTool {
         
         createdFigure.willChange();
         if (pointCount < 2) {
-            createdFigure.basicAddNode(new BezierPath.Node(newPoint));
+            createdFigure.addNode(new BezierPath.Node(newPoint));
         } else {
             Point2D.Double endPoint = createdFigure.getEndPoint();
             Point2D.Double secondLastPoint = (pointCount <= 1) ?
@@ -136,9 +145,9 @@ public class BezierTool extends AbstractTool {
             if (newPoint.equals(endPoint)) {
                 // nothing to do
             } else if (pointCount > 1 && Geom.lineContainsPoint(newPoint.x, newPoint.y, secondLastPoint.x, secondLastPoint.y, endPoint.x, endPoint.y, 0.9f / getView().getScaleFactor())) {
-                createdFigure.basicSetPoint(pointCount - 1, 0, newPoint);
+                createdFigure.setPoint(pointCount - 1, 0, newPoint);
             } else {
-                createdFigure.basicAddNode(new BezierPath.Node(newPoint));
+                createdFigure.addNode(new BezierPath.Node(newPoint));
             }
         }
         createdFigure.changed();
@@ -153,9 +162,8 @@ public class BezierTool extends AbstractTool {
                         r.grow(2,2);
                         if (r.contains(evt.getX(), evt.getY())) {
                             createdFigure.setClosed(true);
-                            // getView().addToSelection(createdFigure);
+                           
                             finishCreation(createdFigure);
-                            getDrawing().fireUndoableEditHappened(creationEdit);
                             createdFigure = null;
                             fireToolDone();
                         }
@@ -163,27 +171,49 @@ public class BezierTool extends AbstractTool {
                     break;
                 case 2 :
                     finishWhenMouseReleased = null;
+                   
                     finishCreation(createdFigure);
                     /*
                     getView().addToSelection(createdFigure);
                      */
-                    getDrawing().fireUndoableEditHappened(creationEdit);
                     createdFigure = null;
                     fireToolDone();
                     break;
             }
         }
     }
+    
+    protected void fireUndoEvent(Figure createdFigure) {
+        final Figure addedFigure = createdFigure;
+        final Drawing addedDrawing = getDrawing();
+        final DrawingView addedView = getView();
+        getDrawing().fireUndoableEditHappened(new AbstractUndoableEdit() {
+            public String getPresentationName() {
+                return presentationName;
+            }
+            public void undo() throws CannotUndoException {
+                super.undo();
+                addedDrawing.remove(addedFigure);
+            }
+            public void redo() throws CannotRedoException {
+                super.redo();
+                addedView.clearSelection();
+                addedDrawing.add(addedFigure);
+                addedView.addToSelection(addedFigure);
+            }
+        });
+    }
     public void mouseReleased(MouseEvent evt) {
+        if (DEBUG) System.out.println("BezierTool.mouseReleased "+evt);
         if (finishWhenMouseReleased == Boolean.TRUE) {
             if (createdFigure.getNodeCount() > 2) {
                 BezierPath fittedPath = Bezier.fitBezierCurve(createdFigure.getBezierPath(), 1);
                 createdFigure.willChange();
-                createdFigure.basicSetBezierPath(fittedPath);
+                createdFigure.setBezierPath(fittedPath);
                 createdFigure.changed();
+               
                 finishCreation(createdFigure);
                 createdFigure = null;
-                getDrawing().fireUndoableEditHappened(creationEdit);
                 finishWhenMouseReleased = null;
                 fireToolDone();
                 return;
@@ -197,11 +227,11 @@ public class BezierTool extends AbstractTool {
             BezierPath fittedPath = new BezierPath();
             for (int i=nodeCountBeforeDrag, n = createdFigure.getNodeCount(); i < n; i++) {
                 fittedPath.add(createdFigure.getNode(nodeCountBeforeDrag));
-                createdFigure.basicRemoveNode(nodeCountBeforeDrag);
+                createdFigure.removeNode(nodeCountBeforeDrag);
             }
             fittedPath = Bezier.fitBezierCurve(fittedPath, 1);
             for (BezierPath.Node node : fittedPath) {
-                createdFigure.basicAddNode(node);
+                createdFigure.addNode(node);
             }
             nodeCountBeforeDrag = createdFigure.getNodeCount();
             createdFigure.changed();
@@ -211,6 +241,7 @@ public class BezierTool extends AbstractTool {
     
     protected void finishCreation(BezierFigure createdFigure) {
         getView().addToSelection(createdFigure);
+        fireUndoEvent(createdFigure);
     }
     
     public void mouseDragged(MouseEvent evt) {

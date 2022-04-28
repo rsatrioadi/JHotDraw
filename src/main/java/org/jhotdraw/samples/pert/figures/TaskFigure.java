@@ -15,7 +15,6 @@
 package org.jhotdraw.samples.pert.figures;
 
 import java.io.IOException;
-import org.jhotdraw.samples.*;
 import java.awt.geom.*;
 import java.beans.*;
 import static org.jhotdraw.draw.AttributeKeys.*;
@@ -42,7 +41,7 @@ public class TaskFigure extends GraphicalCompositeFigure {
      * This adapter is used, to connect a TextFigure with the name of
      * the TaskFigure model.
      */
-    private static class NameAdapter extends AbstractFigureListener {
+    private static class NameAdapter extends FigureAdapter {
         private TaskFigure target;
         public NameAdapter(TaskFigure target) {
             this.target = target;
@@ -53,7 +52,7 @@ public class TaskFigure extends GraphicalCompositeFigure {
             //target.firePropertyChange("name", e.getOldValue(), e.getNewValue());
         }
     }
-    private static class DurationAdapter extends AbstractFigureListener {
+    private static class DurationAdapter extends FigureAdapter {
         private TaskFigure target;
         public DurationAdapter(TaskFigure target) {
             this.target = target;
@@ -75,9 +74,9 @@ public class TaskFigure extends GraphicalCompositeFigure {
         setLayouter(new VerticalLayouter());
         
         RectangleFigure nameCompartmentPF = new RectangleFigure();
-        STROKE_COLOR.set(nameCompartmentPF, null);
+        STROKE_COLOR.basicSet(nameCompartmentPF, null);
         nameCompartmentPF.setAttributeEnabled(STROKE_COLOR, false);
-        FILL_COLOR.set(nameCompartmentPF, null);
+        FILL_COLOR.basicSet(nameCompartmentPF, null);
         nameCompartmentPF.setAttributeEnabled(FILL_COLOR, false);
         ListFigure nameCompartment = new ListFigure(nameCompartmentPF);
         ListFigure attributeCompartment = new ListFigure();
@@ -90,17 +89,17 @@ public class TaskFigure extends GraphicalCompositeFigure {
         add(attributeCompartment);
         
         Insets2D.Double insets = new Insets2D.Double(4,8,4,8);
-        LAYOUT_INSETS.set(nameCompartment, insets);
-        LAYOUT_INSETS.set(attributeCompartment, insets);
+        LAYOUT_INSETS.basicSet(nameCompartment, insets);
+        LAYOUT_INSETS.basicSet(attributeCompartment, insets);
         
         TextFigure nameFigure;
         nameCompartment.add(nameFigure = new TextFigure());
-        FONT_BOLD.set(nameFigure, true);
+        FONT_BOLD.basicSet(nameFigure, true);
         nameFigure.setAttributeEnabled(FONT_BOLD, false);
         
         TextFigure durationFigure;
         attributeCompartment.add(durationFigure = new TextFigure());
-        FONT_BOLD.set(durationFigure, true);
+        FONT_BOLD.basicSet(durationFigure, true);
         durationFigure.setText("0");
         durationFigure.setAttributeEnabled(FONT_BOLD, false);
         
@@ -133,7 +132,7 @@ public class TaskFigure extends GraphicalCompositeFigure {
             handles.add(new MoveHandle(this, RelativeLocator.northEast()));
             handles.add(new MoveHandle(this, RelativeLocator.southWest()));
             handles.add(new MoveHandle(this, RelativeLocator.southEast()));
-            handles.add(new ConnectionHandle(this, RelativeLocator.east(), new DependencyFigure()));
+            handles.add(new ConnectorHandle(new LocatorConnector(this, RelativeLocator.east()), new DependencyFigure()));
         }
         return handles;
     }
@@ -161,6 +160,7 @@ public class TaskFigure extends GraphicalCompositeFigure {
         }
     }
     public void updateStartTime() {
+        willChange();
         int oldValue = getStartTime();
         int newValue = 0;
         for (TaskFigure pre : getPredecessors()) {
@@ -178,9 +178,7 @@ public class TaskFigure extends GraphicalCompositeFigure {
                 }
             }
         }
-        if (oldValue != newValue) {
-            fireAreaInvalidated();
-        }
+        changed();
     }
     public int getStartTime() {
         try {
@@ -205,7 +203,7 @@ public class TaskFigure extends GraphicalCompositeFigure {
     private void applyAttributes(Figure f) {
         Map<AttributeKey,Object> attr = ((AbstractAttributedFigure) getPresentationFigure()).getAttributes();
         for (Map.Entry<AttributeKey, Object> entry : attr.entrySet()) {
-            f.setAttribute(entry.getKey(), entry.getValue());
+            entry.getKey().basicSet(f, entry.getValue());
         }
     }
     

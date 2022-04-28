@@ -10,7 +10,6 @@
  * such Confidential Information and shall use it only in accordance
  * with the terms of the license agreement you entered into with
  * JHotDraw.org.
-�
  */
 
 package org.jhotdraw.draw;
@@ -39,6 +38,9 @@ public abstract class AbstractHandle implements Handle, FigureListener {
     
     /** Creates a new instance. */
     public AbstractHandle(Figure owner) {
+        if (owner == null) {
+            throw new IllegalArgumentException("owner must not be null");
+        }
         this.owner = owner;
         owner.addFigureListener(this);
     }
@@ -62,9 +64,12 @@ public abstract class AbstractHandle implements Handle, FigureListener {
     }
     public Figure getOwner() {
         return owner;
-        }
+    }
     public void setView(DrawingView view) {
         this.view = view;
+    }
+    public DrawingView getView() {
+        return view;
     }
     /**
      *  Notify all listenerList that have registered interest for
@@ -92,21 +97,6 @@ public abstract class AbstractHandle implements Handle, FigureListener {
      */
     protected void fireUndoableEditHappened(UndoableEdit edit) {
         view.getDrawing().fireUndoableEditHappened(edit);
-        /*
-        UndoableEditEvent event = null;
-        // Notify all listeners that have registered interest for
-        // Guaranteed to return a non-null array
-        Object[] listeners = listenerList.getListenerList();
-        // Process the listeners last to first, notifying
-        // those that are interested in this event
-        for (int i = listeners.length-2; i>=0; i-=2) {
-            if (listeners[i] == UndoableEditListener.class) {
-                // Lazily create the event:
-                if (event == null)
-                    event = new UndoableEditEvent(this, edit);
-                ((UndoableEditListener)listeners[i+1]).undoableEditHappened(event);
-            }
-        }*/
     }
     /**
      *  Notify all listenerList that have registered interest for
@@ -157,21 +147,27 @@ public abstract class AbstractHandle implements Handle, FigureListener {
     }
     protected void drawCircle(Graphics2D g, Color fill, Color stroke) {
         Rectangle r = getBounds();
-        
+        if (fill != null) {
         g.setColor(fill);
         g.fillOval(r.x, r.y, r.width, r.height);
+        }
+        if (stroke != null) {
         g.setStroke(new BasicStroke());
         g.setColor(stroke);
         g.drawOval(r.x, r.y, r.width, r.height);
+        }
     }
     protected void drawRectangle(Graphics2D g, Color fill, Color stroke) {
         Rectangle r = getBounds();
-        
+        if (fill != null) {
         g.setColor(fill);
         g.fill(r);
+        }
+        if (stroke != null) {
         g.setStroke(new BasicStroke());
         g.setColor(stroke);
         g.draw(r);
+        }
     }
     protected void drawDiamond(Graphics2D g, Color fill, Color stroke) {
         Rectangle r = getBounds();
@@ -183,12 +179,16 @@ public abstract class AbstractHandle implements Handle, FigureListener {
         p.addPoint(r.x + r.width / 2, r.y + r.height);
         p.addPoint(r.x, r.y + r.height / 2);
         p.addPoint(r.x + r.width / 2, r.y);
-       
+        
+        if (fill != null) {
         g.setColor(fill);
         g.fill(p);
+        }
+        if (stroke != null) {
         g.setStroke(new BasicStroke());
         g.setColor(stroke);
         g.draw(p);
+        }
     }
     
     public boolean contains(Point p) {
@@ -196,7 +196,7 @@ public abstract class AbstractHandle implements Handle, FigureListener {
     }
     
     public void invalidate() {
-        fireAreaInvalidated(getDrawBounds());
+        bounds = null;
     }
     
     public void dispose() {
@@ -267,18 +267,19 @@ public abstract class AbstractHandle implements Handle, FigureListener {
         }
         return (Rectangle) bounds.clone();
     }
-    public Rectangle getDrawBounds() {
+    public Rectangle getDrawingArea() {
         Rectangle r = getBounds();
         r.grow(2,2); // grow by two pixels to take antialiasing into account
         return r;
     }
     protected abstract Rectangle basicGetBounds();
+    
     protected void updateBounds() {
         Rectangle newBounds = basicGetBounds();
         if (bounds == null || ! newBounds.equals(bounds)) {
-            if (bounds != null) fireAreaInvalidated(getDrawBounds());
+            if (bounds != null) fireAreaInvalidated(getDrawingArea());
             bounds = newBounds;
-            fireAreaInvalidated(getDrawBounds());
+            fireAreaInvalidated(getDrawingArea());
         }
     }
     /**
@@ -289,16 +290,19 @@ public abstract class AbstractHandle implements Handle, FigureListener {
     
     public void figureAttributeChanged(FigureEvent e) {
     }
-
+    
     public void viewTransformChanged() {
-        bounds = null;
+        invalidate();
     }
-
+    
     public Collection<Handle> createSecondaryHandles() {
         return Collections.emptyList();
     }
     
     public String getToolTipText(Point p) {
         return null;
+    }
+    
+    public void figureHandlesChanged(FigureEvent e) {
     }
 }

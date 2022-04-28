@@ -17,12 +17,10 @@ package org.jhotdraw.samples.net;
 import java.awt.print.Pageable;
 import java.util.*;
 import java.util.prefs.*;
-import org.jhotdraw.draw.ImageOutputFormat;
-import org.jhotdraw.draw.InputFormat;
-import org.jhotdraw.draw.OutputFormat;
+import org.jhotdraw.draw.*;
 import org.jhotdraw.gui.*;
 import org.jhotdraw.io.*;
-import org.jhotdraw.draw.DOMStorableInputOutputFormat;
+import org.jhotdraw.samples.net.figures.*;
 import org.jhotdraw.undo.*;
 import org.jhotdraw.util.*;
 import java.awt.*;
@@ -98,12 +96,12 @@ public class NetProject extends AbstractProject {
         
         JPanel placardPanel = new JPanel(new BorderLayout());
         javax.swing.AbstractButton pButton;
-        pButton = ToolBarButtonFactory.createZoomButton(view);
+        pButton = ButtonFactory.createZoomButton(view);
         pButton.putClientProperty("Quaqua.Button.style","placard");
         pButton.putClientProperty("Quaqua.Component.visualMargin",new Insets(0,0,0,0));
         pButton.setFont(UIManager.getFont("SmallSystemFont"));
         placardPanel.add(pButton, BorderLayout.WEST);
-        toggleGridButton = pButton = ToolBarButtonFactory.createToggleGridButton(view);
+        toggleGridButton = pButton = ButtonFactory.createToggleGridButton(view);
         pButton.putClientProperty("Quaqua.Button.style","placard");
         pButton.putClientProperty("Quaqua.Component.visualMargin",new Insets(0,0,0,0));
         pButton.setFont(UIManager.getFont("SmallSystemFont"));
@@ -138,6 +136,7 @@ public class NetProject extends AbstractProject {
                 new DOMStorableInputOutputFormat(new NetFactory());
         LinkedList<InputFormat> inputFormats = new LinkedList<InputFormat>();
         inputFormats.add(ioFormat);
+        inputFormats.add(new TextInputFormat(new NodeFigure()));
         drawing.setInputFormats(inputFormats);
         LinkedList<OutputFormat> outputFormats = new LinkedList<OutputFormat>();
         outputFormats.add(ioFormat);

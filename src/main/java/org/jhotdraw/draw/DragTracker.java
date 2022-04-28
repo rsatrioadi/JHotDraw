@@ -10,7 +10,6 @@
  * such Confidential Information and shall use it only in accordance
  * with the terms of the license agreement you entered into with
  * JHotDraw.org.
-�
  */
 
 package org.jhotdraw.draw;
@@ -21,7 +20,14 @@ import java.awt.event.*;
 import java.util.*;
 
 /**
- * DragTracker.
+ * <code>DragTracker</code> implements interactions with the content area of a
+ * <code>Figure</code>.
+ * <p>
+ * The <code>DragTracker</code> handles one of the three states of the
+ * <code>SelectionTool</code>. It comes into action, when the user presses
+ * the mouse button over the content area of a <code>Figure</code>.
+ *
+ * @see SelectionTool
  *
  * @author Werner Randelshofer
  * @version 2.0 2006-01-14 Changed to support double precision coordinates.
@@ -57,7 +63,7 @@ public class DragTracker extends AbstractTool {
             view.clearSelection();
             view.addToSelection(anchorFigure);
         }
-
+        
         Point2D.Double origin = new Point2D.Double(Double.MAX_VALUE, Double.MAX_VALUE);
         for (Figure f : view.getSelectedFigures()) {
             Rectangle2D.Double b = f.getBounds();
@@ -75,8 +81,8 @@ public class DragTracker extends AbstractTool {
     public void mouseDragged(MouseEvent evt) {
         DrawingView view = getView();
         if (isDragging = false) {
-        isDragging = true;
-        updateCursor(editor.findView((Container) evt.getSource()),new Point(evt.getX(), evt.getY()));
+            isDragging = true;
+            updateCursor(editor.findView((Container) evt.getSource()),new Point(evt.getX(), evt.getY()));
         }
         
         Point2D.Double newPoint = view.getConstrainer().constrainPoint(
@@ -86,7 +92,7 @@ public class DragTracker extends AbstractTool {
         tx.translate(newPoint.x - oldPoint.x,newPoint.y - oldPoint.y);
         for (Figure f : view.getSelectedFigures()) {
             f.willChange();
-            f.basicTransform(tx);
+            f.transform(tx);
             f.changed();
         }
         oldPoint = newPoint;
@@ -101,7 +107,7 @@ public class DragTracker extends AbstractTool {
         Point2D.Double p = getView().getConstrainer().constrainPoint(getView().viewToDrawing(new Point(x,y)));
         Collection<Figure> draggedFigures = new LinkedList(getView().getSelectedFigures());
         Figure dropTarget = getDrawing().findFigureExcept(p, draggedFigures);
-       
+        
         if (dropTarget != null) {
             boolean snapBack = dropTarget.handleDrop(p, draggedFigures, getView());
             if (snapBack) {
@@ -109,25 +115,25 @@ public class DragTracker extends AbstractTool {
                 tx.translate(anchorPoint.x - oldPoint.x, anchorPoint.y - oldPoint.y);
                 for (Figure f : draggedFigures) {
                     f.willChange();
-                    f.basicTransform(tx);
+                    f.transform(tx);
                     f.changed();
                 }
             } else {
                 AffineTransform tx = new AffineTransform();
                 tx.translate(-anchorPoint.x + oldPoint.x, -anchorPoint.y + oldPoint.y);
                 if (! tx.isIdentity()) {
-                getDrawing().fireUndoableEditHappened(new TransformEdit(
-                        draggedFigures, tx
-                        ));
+                    getDrawing().fireUndoableEditHappened(new TransformEdit(
+                            draggedFigures, tx
+                            ));
                 }
             }
         } else {
             AffineTransform tx = new AffineTransform();
             tx.translate(-anchorPoint.x + oldPoint.x, -anchorPoint.y + oldPoint.y);
-                if (! tx.isIdentity()) {
-            getDrawing().fireUndoableEditHappened(new TransformEdit(
-                    draggedFigures, tx
-                    ));
+            if (! tx.isIdentity()) {
+                getDrawing().fireUndoableEditHappened(new TransformEdit(
+                        draggedFigures, tx
+                        ));
             }
         }
         fireToolDone();

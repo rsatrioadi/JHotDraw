@@ -15,7 +15,6 @@
 package org.jhotdraw.samples.pert.figures;
 
 import java.awt.*;
-import org.jhotdraw.samples.*;
 import java.beans.*;
 import static org.jhotdraw.draw.AttributeKeys.*;
 import org.jhotdraw.draw.*;
@@ -30,27 +29,27 @@ import org.jhotdraw.xml.*;
 public class DependencyFigure extends LineConnectionFigure {
     /** Creates a new instance. */
     public DependencyFigure() {
-        STROKE_COLOR.set(this, new Color(0x000099));
-        STROKE_WIDTH.set(this, 1d);
-        END_DECORATION.set(this, new ArrowTip());
+        STROKE_COLOR.basicSet(this, new Color(0x000099));
+        STROKE_WIDTH.basicSet(this, 1d);
+        END_DECORATION.basicSet(this, new ArrowTip());
         
         setAttributeEnabled(END_DECORATION, false);
         setAttributeEnabled(START_DECORATION, false);
         setAttributeEnabled(STROKE_DASHES, false);
         setAttributeEnabled(FONT_ITALIC, false);
-        setAttributeEnabled(FONT_UNDERLINED, false);
+        setAttributeEnabled(FONT_UNDERLINE, false);
     }
     
     /**
      * Checks if two figures can be connected. Implement this method
      * to constrain the allowed connections between figures.
      */
-    public boolean canConnect(Figure start, Figure end) {
-        if ((start instanceof TaskFigure)
-        && (end instanceof TaskFigure)) {
+   @Override public boolean canConnect(Connector start, Connector end) {
+        if ((start.getOwner() instanceof TaskFigure)
+        && (end.getOwner() instanceof TaskFigure)) {
             
-            TaskFigure sf = (TaskFigure) start;
-            TaskFigure ef = (TaskFigure) end;
+            TaskFigure sf = (TaskFigure) start.getOwner();
+            TaskFigure ef = (TaskFigure) end.getOwner();
             
             // Disallow multiple connections to same dependent
             if (ef.getPredecessors().contains(sf)) {
@@ -63,8 +62,8 @@ public class DependencyFigure extends LineConnectionFigure {
         
         return false;
     }
-    public boolean canConnect(Figure start) {
-        return (start instanceof TaskFigure);
+    @Override public boolean canConnect(Connector start) {
+        return (start.getOwner() instanceof TaskFigure);
     }
     
     
@@ -72,9 +71,9 @@ public class DependencyFigure extends LineConnectionFigure {
      * Handles the disconnection of a connection.
      * Override this method to handle this event.
      */
-    protected void handleDisconnect(Figure start, Figure end) {
-        TaskFigure sf = (TaskFigure) start;
-        TaskFigure ef = (TaskFigure) end;
+    @Override protected void handleDisconnect(Connector start, Connector end) {
+        TaskFigure sf = (TaskFigure) start.getOwner();
+        TaskFigure ef = (TaskFigure) end.getOwner();
         
         sf.removeDependency(this);
         ef.removeDependency(this);
@@ -84,9 +83,9 @@ public class DependencyFigure extends LineConnectionFigure {
      * Handles the connection of a connection.
      * Override this method to handle this event.
      */
-    protected void handleConnect(Figure start, Figure end) {
-        TaskFigure sf = (TaskFigure) start;
-        TaskFigure ef = (TaskFigure) end;
+    @Override protected void handleConnect(Connector start, Connector end) {
+        TaskFigure sf = (TaskFigure) start.getOwner();
+        TaskFigure ef = (TaskFigure) end.getOwner();
         
         sf.addDependency(this);
         ef.addDependency(this);

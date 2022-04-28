@@ -1,7 +1,7 @@
 /*
- * @(#)SVGText.java  1.0  July 8, 2006
+ * @(#)SVGText.java  2.1  2007-05-13
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2007 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
  * All rights reserved.
  *
@@ -37,7 +37,9 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * Cache outline to improve performance.
  *
  * @author Werner Randelshofer
- * @version 1.0 July 8, 2006 Created.
+ * @version 2.1 2007-05-13 Fixed transformation issues.
+ * <br>2.0 2007-04-14 Adapted for new AttributeKeys.TRANSFORM support.
+ * <br>1.0 July 8, 2006 Created.
  */
 public class SVGTextFigure
         extends SVGAttributedFigure
@@ -50,7 +52,9 @@ public class SVGTextFigure
     /**
      * This is used to perform faster drawing and hit testing.
      */
-    private Shape cachedTransformedShape;
+    private Shape cachedTextShape;
+    private Rectangle2D.Double cachedBounds;
+    private Rectangle2D.Double cachedDrawingArea;
     
     /** Creates a new instance. */
     public SVGTextFigure() {
@@ -65,17 +69,17 @@ public class SVGTextFigure
     protected void drawText(java.awt.Graphics2D g) {
     }
     protected void drawFill(Graphics2D g) {
-        g.fill(getTransformedShape());
+        g.fill(getTextShape());
     }
     
     protected void drawStroke(Graphics2D g) {
-        g.draw(getTransformedShape());
+        g.draw(getTextShape());
     }
     
     // SHAPE AND BOUNDS
-    public void basicSetCoordinates(Point2D.Double[] coordinates) {
+    public void setCoordinates(Point2D.Double[] coordinates) {
         this.coordinates = coordinates;
-        // invalidate();
+        invalidate();
     }
     
     public Point2D.Double[] getCoordinates() {
@@ -86,38 +90,54 @@ public class SVGTextFigure
         return c;
     }
     
-    public void basicSetRotates(double[] rotates) {
+    public void setRotates(double[] rotates) {
         this.rotates = rotates;
-        // invalidate();
+        invalidate();
     }
     public double[] getRotates() {
         return (double[]) rotates.clone();
     }
     
     public Rectangle2D.Double getBounds() {
-        Rectangle2D rx = getTransformedShape().getBounds2D();
-        Rectangle2D.Double r = (rx instanceof Rectangle2D.Double) ? (Rectangle2D.Double) rx : new Rectangle2D.Double(rx.getX(), rx.getY(), rx.getWidth(), rx.getHeight());
-        return r;
+        if (cachedBounds == null) {
+            cachedBounds = new Rectangle2D.Double();
+            cachedBounds.setRect(getTextShape().getBounds2D());
+        }
+        return (Rectangle2D.Double) cachedBounds.clone();
     }
-    public Rectangle2D.Double getFigureDrawBounds() {
-        Rectangle2D rx = getTransformedShape().getBounds2D();
-        Rectangle2D.Double r = (rx instanceof Rectangle2D.Double) ? (Rectangle2D.Double) rx : new Rectangle2D.Double(rx.getX(), rx.getY(), rx.getWidth(), rx.getHeight());
-        double g = AttributeKeys.getPerpendicularHitGrowth(this);
-        Geom.grow(r, g, g);
-        return r;
+    @Override public Rectangle2D.Double getDrawingArea() {
+        if (cachedDrawingArea == null) {
+            Rectangle2D rx = getBounds();
+            Rectangle2D.Double r = (rx instanceof Rectangle2D.Double) ?
+                (Rectangle2D.Double) rx :
+                new Rectangle2D.Double(rx.getX(), rx.getY(), rx.getWidth(), rx.getHeight());
+            double g = SVGAttributeKeys.getPerpendicularHitGrowth(this);
+            Geom.grow(r, g, g);
+            if (TRANSFORM.get(this) == null) {
+                cachedDrawingArea = r;
+            } else {
+                cachedDrawingArea = new Rectangle2D.Double();
+                cachedDrawingArea.setRect(TRANSFORM.get(this).createTransformedShape(r).getBounds2D());
+            }
+        }
+        return cachedDrawingArea;
     }
     /**
      * Checks if a Point2D.Double is inside the figure.
      */
     public boolean contains(Point2D.Double p) {
-        return getBounds().contains(p);
-    }
-    private void invalidateTransformedShape() {
-        cachedTransformedShape = null;
+        if (TRANSFORM.get(this) != null) {
+            try {
+                p = (Point2D.Double) TRANSFORM.get(this).inverseTransform(p, new Point2D.Double());
+            } catch (NoninvertibleTransformException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return getTextShape().getBounds2D().contains(p);
     }
     
-    private Shape getTransformedShape() {
-        if (cachedTransformedShape == null) {
+    private Shape getTextShape() {
+        if (cachedTextShape == null) {
             String text = getText();
             if (text == null || text.length() == 0) {
                 text = " ";
@@ -126,8 +146,8 @@ public class SVGTextFigure
             FontRenderContext frc = getFontRenderContext();
             HashMap<TextAttribute,Object> textAttributes = new HashMap<TextAttribute,Object>();
             textAttributes.put(TextAttribute.FONT, getFont());
-            if (FONT_UNDERLINED.get(this)) {
-                textAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_LOW_ONE_PIXEL);
+            if (FONT_UNDERLINE.get(this)) {
+                textAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
             }
             TextLayout textLayout = new TextLayout(text, textAttributes, frc);
             
@@ -145,17 +165,18 @@ public class SVGTextFigure
             }
             tx.rotate(rotates[0]);
             
+            /*
             if (TRANSFORM.get(this) != null) {
                 tx.preConcatenate(TRANSFORM.get(this));
-            }
+            }*/
             
-            cachedTransformedShape = tx.createTransformedShape(textLayout.getOutline(tx));
-            cachedTransformedShape = textLayout.getOutline(tx);
+            cachedTextShape = tx.createTransformedShape(textLayout.getOutline(tx));
+            cachedTextShape = textLayout.getOutline(tx);
         }
-        return cachedTransformedShape;
+        return cachedTextShape;
     }
     
-    public void basicSetBounds(Point2D.Double anchor, Point2D.Double lead) {
+    public void setBounds(Point2D.Double anchor, Point2D.Double lead) {
         coordinates = new Point2D.Double[] {
             new Point2D.Double(anchor.x, anchor.y)
         };
@@ -166,29 +187,58 @@ public class SVGTextFigure
      *
      * @param tx the transformation.
      */
-    public void basicTransform(AffineTransform tx) {
-        invalidateTransformedShape();
+    public void transform(AffineTransform tx) {
         if (TRANSFORM.get(this) != null ||
-                (tx.getType() &
-                (AffineTransform.TYPE_TRANSLATION /*| AffineTransform.TYPE_MASK_SCALE*/)) !=
-                tx.getType()) {
+                tx.getType() != (tx.getType() & AffineTransform.TYPE_TRANSLATION)) {
             if (TRANSFORM.get(this) == null) {
                 TRANSFORM.basicSet(this, (AffineTransform) tx.clone());
             } else {
-                TRANSFORM.get(this).preConcatenate(tx);
+                AffineTransform t = TRANSFORM.getClone(this);
+                t.preConcatenate(tx);
+                TRANSFORM.basicSet(this, t);
             }
         } else {
             for (int i=0; i < coordinates.length; i++) {
                 tx.transform(coordinates[i], coordinates[i]);
             }
+            if (FILL_GRADIENT.get(this) != null &&
+                    ! FILL_GRADIENT.get(this).isRelativeToFigureBounds()) {
+                Gradient g = FILL_GRADIENT.getClone(this);
+                g.transform(tx);
+                FILL_GRADIENT.basicSet(this, g);
+            }
+            if (STROKE_GRADIENT.get(this) != null && 
+                    ! STROKE_GRADIENT.get(this).isRelativeToFigureBounds()) {
+                Gradient g = STROKE_GRADIENT.getClone(this);
+                g.transform(tx);
+                STROKE_GRADIENT.basicSet(this, g);
+            }
         }
+        invalidate();
     }
     public void restoreTransformTo(Object geometry) {
-        TRANSFORM.set(this, (geometry == null) ? null : (AffineTransform) ((AffineTransform) geometry).clone());
+        Object[] restoreData = (Object[]) geometry;
+        TRANSFORM.basicSetClone(this, (AffineTransform) restoreData[0]);
+        Point2D.Double[] restoredCoordinates = (Point2D.Double[]) restoreData[1];
+        for (int i=0; i < this.coordinates.length; i++) {
+            coordinates[i] = (Point2D.Double) restoredCoordinates[i].clone();
+        }
+        FILL_GRADIENT.basicSetClone(this, (Gradient) restoreData[2]);
+        STROKE_GRADIENT.basicSetClone(this, (Gradient) restoreData[3]);
+        invalidate();
     }
     
     public Object getTransformRestoreData() {
-        return TRANSFORM.get(this) == null ? new AffineTransform() : TRANSFORM.get(this).clone();
+        Point2D.Double[] restoredCoordinates = (Point2D.Double[]) this.coordinates.clone();
+        for (int i=0; i < this.coordinates.length; i++) {
+            restoredCoordinates[i] = (Point2D.Double) this.coordinates[i].clone();
+        }
+        return new Object[] {
+            TRANSFORM.getClone(this),
+            restoredCoordinates,
+            FILL_GRADIENT.getClone(this),
+            STROKE_GRADIENT.getClone(this),
+        };
     }
     
     // ATTRIBUTES
@@ -198,24 +248,18 @@ public class SVGTextFigure
     public String getText() {
         return (String) getAttribute(TEXT);
     }
-    public void basicSetAttribute(AttributeKey key, Object newValue) {
+    public void setAttribute(AttributeKey key, Object newValue) {
         if (key == SVGAttributeKeys.TRANSFORM) {
-            invalidateTransformedShape();
+            invalidate();
         }
-        super.basicSetAttribute(key, newValue);
+        super.setAttribute(key, newValue);
     }
     
     /**
      * Sets the text shown by the text figure.
      */
     public void setText(String newText) {
-        setAttribute(TEXT, newText);
-    }
-    /**
-     * Sets the text shown by the text figure without firing events.
-     */
-    public void basicSetText(String newText) {
-        basicSetAttribute(TEXT, newText);
+        TEXT.set(this, newText);
     }
     public boolean isEditable() {
         return editable;
@@ -229,7 +273,7 @@ public class SVGTextFigure
     }
     
     public Font getFont() {
-        return AttributeKeys.getFont(this);
+        return SVGAttributeKeys.getFont(this);
     }
     
     public Color getTextColor() {
@@ -243,7 +287,7 @@ public class SVGTextFigure
     }
     
     public void setFontSize(float size) {
-        // FONT_SIZE.set(this, new Double(size));
+        // FONT_SIZE.basicSet(this, new Double(size));
         Point2D.Double p = new Point2D.Double(0, size);
         AffineTransform tx =  TRANSFORM.get(this);
         if (tx != null) {
@@ -284,7 +328,9 @@ public class SVGTextFigure
     
     @Override public void invalidate() {
         super.invalidate();
-        invalidateTransformedShape();
+        cachedTextShape = null;
+        cachedBounds = null;
+        cachedDrawingArea = null;
     }
     public Dimension2DDouble getPreferredSize() {
         Rectangle2D.Double b = getBounds();
@@ -293,26 +339,20 @@ public class SVGTextFigure
     
     public Collection<Handle> createHandles(int detailLevel) {
         LinkedList<Handle> handles = new LinkedList<Handle>();
-        if (detailLevel == 0) {
-            handles.add(new MoveHandle(this, RelativeLocator.northWest()));
-            handles.add(new MoveHandle(this, RelativeLocator.northEast()));
-            handles.add(new MoveHandle(this, RelativeLocator.southEast()));
-            handles.add(new FontSizeHandle(this));
-            handles.add(new RotateHandle(this));
+        switch (detailLevel % 2) {
+            case 0 :
+                handles.add(new BoundsOutlineHandle(this));
+                handles.add(new MoveHandle(this, RelativeLocator.northWest()));
+                handles.add(new MoveHandle(this, RelativeLocator.northEast()));
+                handles.add(new MoveHandle(this, RelativeLocator.southWest()));
+                handles.add(new MoveHandle(this, RelativeLocator.southEast()));
+                handles.add(new FontSizeHandle(this));
+                break;
+            case 1 :
+                TransformHandleKit.addTransformHandles(this, handles);
+                break;
         }
         return handles;
-    }
-    @Override public Collection<Action> getActions(Point2D.Double p) {
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.samples.svg.Labels");
-        LinkedList<Action> actions = new LinkedList<Action>();
-        if (TRANSFORM.get(this) != null) {
-            actions.add(new AbstractAction(labels.getString("removeTransform")) {
-                public void actionPerformed(ActionEvent evt) {
-                    TRANSFORM.set(SVGTextFigure.this, null);
-                }
-            });
-        }
-        return actions;
     }
     // CONNECTING
     public boolean canConnect() {
@@ -351,11 +391,21 @@ public class SVGTextFigure
     public SVGTextFigure clone() {
         SVGTextFigure that = (SVGTextFigure) super.clone();
         that.coordinates = (Point2D.Double[]) this.coordinates.clone();
+        for (int i=0; i < this.coordinates.length; i++) {
+            that.coordinates[i] = (Point2D.Double) this.coordinates[i].clone();
+        }
         that.rotates = (double[]) this.rotates.clone();
+        that.cachedBounds = null;
+        that.cachedDrawingArea = null;
+        that.cachedTextShape = null;
         return that;
     }
     
     public boolean isEmpty() {
         return getText() == null || getText().length() == 0;
+    }
+
+    public boolean isTextOverflow() {
+        return false;
     }
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)AbstractFigure.java   3.3  2006-06-17
+ * @(#)AbstractFigure.java   4.0  2007-05-18
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2007 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
  * All rights reserved.
  *
@@ -30,8 +30,13 @@ import org.jhotdraw.geom.*;
  * AbstractFigure provides the functionality for managing listeners
  * for a Figure.
  *
+ *
  * @author Werner Randelshofer
- * @version 3.3 Reworked.
+ * @version 4.0 2007-05-18 Removed addUndoableEditListener and
+ * removeUndoableEditListener, isConnectorsVisible, setConnectorsVisible
+ * methods due to changes in Figure interface.
+ * <br>3.4 2007-02-09 Method fireFigureHandlesChanged added.
+ * <br>3.3 Reworked.
  * <br>3.2 2006-01-05 Added method getChangingDepth().
  * <br>3.0 2006-01-20 Reworked for J2SE 1.5.
  * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
@@ -39,8 +44,6 @@ import org.jhotdraw.geom.*;
 public abstract class AbstractFigure
         implements Figure {
     protected EventListenerList listenerList = new EventListenerList();
-    private boolean isConnectorsVisible;
-    private ConnectionFigure courtingConnection;
     private Drawing drawing;
     private boolean isInteractive;
     private boolean isVisible = true;
@@ -68,13 +71,6 @@ public abstract class AbstractFigure
     
     public void removeFigureListener(FigureListener l) {
         listenerList.remove(FigureListener.class, l);
-    }
-    public void addUndoableEditListener(UndoableEditListener l) {
-        listenerList.add(UndoableEditListener.class, l);
-    }
-    
-    public void removeUndoableEditListener(UndoableEditListener l) {
-        listenerList.remove(UndoableEditListener.class, l);
     }
     
     public void addNotify(Drawing d) {
@@ -254,21 +250,33 @@ public abstract class AbstractFigure
      *  Notify all listenerList that have registered interest for
      * notification on this event type.
      */
-    protected void fireUndoableEditHappened(UndoableEdit edit) {
-        UndoableEditEvent event = null;
+    protected void fireFigureHandlesChanged() {
+        Rectangle2D.Double changedArea = getDrawingArea();
         if (listenerList.getListenerCount() > 0) {
+            FigureEvent event = null;
             // Notify all listeners that have registered interest for
             // Guaranteed to return a non-null array
             Object[] listeners = listenerList.getListenerList();
             // Process the listeners last to first, notifying
             // those that are interested in this event
             for (int i = listeners.length-2; i>=0; i-=2) {
-                if (event == null)
-                    event = new UndoableEditEvent(this, edit);
-                if (listeners[i] == UndoableEditListener.class) {
-                    ((UndoableEditListener)listeners[i+1]).undoableEditHappened(event);
+                if (listeners[i] == FigureListener.class) {
+                    // Lazily create the event:
+                    if (event == null)
+                        event = new FigureEvent(this, changedArea);
+                    ((FigureListener)listeners[i+1]).figureHandlesChanged(event);
                 }
             }
+        }
+    }
+    /**
+     * Notify all UndoableEditListener of the Drawing, to which this Figure has
+     * been added to. If this Figure is not part of a Drawing, the event is
+     * lost.
+     */
+    protected void fireUndoableEditHappened(UndoableEdit edit) {
+        if (getDrawing() != null) {
+            getDrawing().fireUndoableEditHappened(edit);
         }
     }
     /*
@@ -281,8 +289,7 @@ public abstract class AbstractFigure
         try {
             AbstractFigure that = (AbstractFigure) super.clone();
             that.listenerList = new EventListenerList();
-            that.isConnectorsVisible = false;
-            that.courtingConnection = null;
+            that.drawing = null; // Clones need to be explictly added to a drawing
             return that;
         } catch (CloneNotSupportedException e) {
             InternalError error = new InternalError(e.getMessage());
@@ -299,9 +306,7 @@ public abstract class AbstractFigure
     
     public Collection<Handle> createHandles(int detailLevel) {
         LinkedList<Handle> handles = new LinkedList<Handle>();
-        if (detailLevel == 0) {
-            BoxHandleKit.addBoxHandles(this, handles);
-        }
+        ResizeHandleKit.addResizeHandles(this, handles);
         return handles;
     }
     
@@ -323,7 +328,7 @@ public abstract class AbstractFigure
         if (! oldAnchor.equals(anchor)
         || ! oldLead.equals(lead)) {
             willChange();
-            basicSetBounds(anchor, lead);
+            setBounds(anchor, lead);
             changed();
             fireUndoableEditHappened(new SetBoundsEdit(this, oldAnchor, oldLead, anchor, lead));
         }
@@ -375,24 +380,6 @@ public abstract class AbstractFigure
         }
     }
     
-    /**
-     * Transforms the geometry of the figure.
-     */
-    public void transform(AffineTransform tx) {
-        willChange();
-        basicTransform(tx);
-        fireUndoableEditHappened(new TransformEdit(this, tx));
-        changed();
-    }
-    
-    
-    /**
-     * Moves the figure. This is the
-     * method that subclasses override.
-     * <p>
-     * This is a basic operation for which no events are fired.
-     */
-    public abstract void basicTransform(AffineTransform ty);
     /**
      * Returns the Figures connector for the specified location.
      * By default a ChopBoxConnector is returned.
@@ -484,21 +471,6 @@ public abstract class AbstractFigure
         }
     }
     
-    public void setConnectorsVisible(boolean isVisible, ConnectionFigure connection) {
-        willChange();
-        isConnectorsVisible = isVisible;
-        courtingConnection = connection;
-        changed();
-    }
-    
-    public boolean isConnectorsVisible() {
-        return isConnectorsVisible;
-    }
-    
-    protected ConnectionFigure getCourtingConnection() {
-        return courtingConnection;
-    }
-    
     public Collection<Figure> getDecomposition() {
         LinkedList<Figure> list = new LinkedList<Figure>();
         list.add(this);
@@ -531,5 +503,11 @@ public abstract class AbstractFigure
         buf.append('@');
         buf.append(hashCode());
         return buf.toString();
+    }
+
+    public Collection<Connector> getConnectors(ConnectionFigure prototype) {
+        LinkedList connectors = new LinkedList<Connector>();
+        connectors.add(new ChopRectangleConnector(this));
+        return connectors;
     }
 }

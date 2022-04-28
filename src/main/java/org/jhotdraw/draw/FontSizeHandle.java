@@ -1,7 +1,7 @@
 /*
- * @(#)FontSizeHandle.java  2.0  2006-01-14
+ * @(#)FontSizeHandle.java  3.0  2007-04-14
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2007 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
  * All rights reserved.
  *
@@ -14,21 +14,24 @@
 
 package org.jhotdraw.draw;
 
-import org.jhotdraw.undo.CompositeEdit;
-
+import java.util.Locale;
+import javax.swing.undo.*;
 import java.awt.*;
 import java.awt.geom.*;
 import org.jhotdraw.util.ResourceBundleUtil;
+import static org.jhotdraw.draw.AttributeKeys.*;
 /**
  * FontSizeHandle.
  *
  * @author Werner Randelshofer
- * @version 2.0 2006-01-14 Changed to support double precison coordinates.
+ * @version 3.0 2007-04-14 Changed to support AttributeKeys.TRANSFORM.
+ * <br>2.0 2006-01-14 Changed to support double precison coordinates.
  * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
  */
 public class FontSizeHandle extends LocatorHandle {
     private float oldSize;
-    private CompositeEdit edit;
+    private float newSize;
+    private Object restoreData;
     
     /** Creates a new instance. */
     public FontSizeHandle(TextHolderFigure owner) {
@@ -54,18 +57,52 @@ public class FontSizeHandle extends LocatorHandle {
     }
     
     public void trackStart(Point anchor, int modifiersEx) {
-        view.getDrawing().fireUndoableEditHappened(edit = new CompositeEdit("Schriftgr\u00f6sse"));
         TextHolderFigure textOwner = (TextHolderFigure) getOwner();
-        oldSize = textOwner.getFontSize();
+        oldSize = newSize = textOwner.getFontSize();
+        restoreData = textOwner.getAttributesRestoreData();
     }
     public void trackStep(Point anchor, Point lead, int modifiersEx) {
         TextHolderFigure textOwner = (TextHolderFigure) getOwner();
         
-        float newSize = (float) Math.max(1, oldSize + view.viewToDrawing(new Point(0, lead.y - anchor.y)).y);
+        Point2D.Double anchor2D = view.viewToDrawing(anchor);
+        Point2D.Double lead2D = view.viewToDrawing(lead);
+        if (TRANSFORM.get(textOwner) != null) {
+            try {
+                TRANSFORM.get(textOwner).inverseTransform(anchor2D, anchor2D);
+                TRANSFORM.get(textOwner).inverseTransform(lead2D, lead2D);
+            } catch (NoninvertibleTransformException ex) {
+                ex.printStackTrace();
+            }
+        }
+        newSize = (float) Math.max(1, oldSize + lead2D.y - anchor2D.y);
+        textOwner.willChange();
         textOwner.setFontSize(newSize);
+        textOwner.changed();
     }
     public void trackEnd(Point anchor, Point lead, int modifiersEx) {
-        view.getDrawing().fireUndoableEditHappened(edit);
+        final TextHolderFigure textOwner = (TextHolderFigure) getOwner();
+        final Object editRestoreData = restoreData;
+        final float editNewSize = newSize;
+        UndoableEdit edit = new AbstractUndoableEdit() {
+            public String getPresentationName() {
+                ResourceBundleUtil labels =
+                        ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels", Locale.getDefault());
+                return labels.getString("attributeFontSize");
+            }
+            public void undo() {
+                super.undo();
+                textOwner.willChange();
+                textOwner.restoreAttributesTo(editRestoreData);
+                textOwner.changed();
+            }
+            public void redo() {
+                super.redo();
+                textOwner.willChange();
+                textOwner.setFontSize(newSize);
+                textOwner.changed();
+            }
+        };
+        fireUndoableEditHappened(edit);
     }
     public String getToolTipText(Point p) {
         return ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels").getString("fontSizeHandle.tip");

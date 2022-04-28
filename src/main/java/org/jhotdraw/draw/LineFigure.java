@@ -10,7 +10,6 @@
  * such Confidential Information and shall use it only in accordance
  * with the terms of the license agreement you entered into with
  * JHotDraw.org.
-�
  */
 
 package org.jhotdraw.draw;
@@ -33,8 +32,8 @@ public class LineFigure extends BezierFigure {
     
     /** Creates a new instance. */
     public LineFigure() {
-        basicAddNode(new BezierPath.Node(new Point2D.Double(0,0)));
-        basicAddNode(new BezierPath.Node(new Point2D.Double(0,0)));
+        addNode(new BezierPath.Node(new Point2D.Double(0,0)));
+        addNode(new BezierPath.Node(new Point2D.Double(0,0)));
     }
     
     // DRAWING
@@ -45,6 +44,7 @@ public class LineFigure extends BezierFigure {
         LinkedList<Handle> handles = new LinkedList<Handle>();
         switch (detailLevel) {
             case 0 :
+                handles.add(new BezierOutlineHandle(this));
                 for (int i=0, n = path.size(); i < n; i++) {
                     handles.add(new BezierNodeHandle(this, i));
                 }
@@ -65,21 +65,21 @@ public class LineFigure extends BezierFigure {
     public boolean handleMouseClick(Point2D.Double p, MouseEvent evt, DrawingView view) {
         if (evt.getClickCount() == 2 && view.getHandleDetailLevel() == 0) {
             willChange();
-            final int index = basicSplitSegment(p, (float) (5f / view.getScaleFactor()));
+            final int index = splitSegment(p, (float) (5f / view.getScaleFactor()));
             if (index != -1) {
                 final BezierPath.Node newNode = getNode(index);
                 fireUndoableEditHappened(new AbstractUndoableEdit() {
                     public void redo() throws CannotRedoException {
                         super.redo();
                         willChange();
-                        basicAddNode(index, newNode);
+                        addNode(index, newNode);
                         changed();
                     }
 
                     public void undo() throws CannotUndoException {
                         super.undo();
                         willChange();
-                        basicRemoveNode(index);
+                        removeNode(index);
                         changed();
                     }
                     

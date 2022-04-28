@@ -1,7 +1,7 @@
 /*
- * @(#)SVGRect.java  1.0  July 8, 2006
+ * @(#)SVGRect.java  2.0  2007-04-14
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2007 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
  * All rights reserved.
  *
@@ -22,6 +22,7 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.undo.*;
 import org.jhotdraw.draw.*;
+import org.jhotdraw.draw.action.AttributeAction;
 import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
 import org.jhotdraw.samples.svg.*;
 import org.jhotdraw.samples.svg.SVGConstants;
@@ -33,7 +34,8 @@ import org.jhotdraw.geom.*;
  * SVGRect.
  *
  * @author Werner Randelshofer
- * @version 1.0 July 8, 2006 Created.
+ * @version 2.0 2007-04-14 Adapted for new AttributeKeys.TRANSFORM support.
+ * <br>1.0 July 8, 2006 Created.
  */
 public class SVGRectFigure extends SVGAttributedFigure implements SVGFigure {
     private RoundRectangle2D.Double roundrect;
@@ -55,16 +57,24 @@ public class SVGRectFigure extends SVGAttributedFigure implements SVGFigure {
     }
     public SVGRectFigure(double x, double y, double width, double height, double rx, double ry) {
         roundrect = new RoundRectangle2D.Double(x, y, width, height, rx, ry);
-       SVGAttributeKeys.setDefaults(this);
+        SVGAttributeKeys.setDefaults(this);
     }
     
     // DRAWING
     protected void drawFill(Graphics2D g) {
-        g.fill(getTransformedShape());
+        if (getArcHeight() == 0d && getArcWidth() == 0d) {
+            g.fill(roundrect.getBounds2D());
+        } else {
+            g.fill(roundrect);
+        }
     }
     
     protected void drawStroke(Graphics2D g) {
-        g.draw(getTransformedShape());
+        if (getArcHeight() == 0d && getArcWidth() == 0d) {
+            g.draw(roundrect.getBounds2D());
+        } else {
+            g.draw(roundrect);
+        }
     }
     
     // SHAPE AND BOUNDS
@@ -87,15 +97,26 @@ public class SVGRectFigure extends SVGAttributedFigure implements SVGFigure {
         return roundrect.archeight / 2d;
     }
     public Rectangle2D.Double getBounds() {
-        Rectangle2D rx = getTransformedShape().getBounds2D();
-        Rectangle2D.Double r = (rx instanceof Rectangle2D.Double) ? (Rectangle2D.Double) rx : new Rectangle2D.Double(rx.getX(), rx.getY(), rx.getWidth(), rx.getHeight());
-        return r;
+        return (Rectangle2D.Double) roundrect.getBounds2D();
     }
-    public Rectangle2D.Double getFigureDrawBounds() {
+    @Override public Rectangle2D.Double getDrawingArea() {
         Rectangle2D rx = getTransformedShape().getBounds2D();
         Rectangle2D.Double r = (rx instanceof Rectangle2D.Double) ? (Rectangle2D.Double) rx : new Rectangle2D.Double(rx.getX(), rx.getY(), rx.getWidth(), rx.getHeight());
-        double g = AttributeKeys.getPerpendicularHitGrowth(this) * 2;
-        Geom.grow(r, g, g);
+        if (TRANSFORM.get(this) == null) {
+            double g = SVGAttributeKeys.getPerpendicularHitGrowth(this) * 2;
+            Geom.grow(r, g, g);
+        } else {
+            double strokeTotalWidth = AttributeKeys.getStrokeTotalWidth(this);
+            double width = strokeTotalWidth / 2d;
+            if (STROKE_JOIN.get(this) == BasicStroke.JOIN_MITER) {
+                width *= STROKE_MITER_LIMIT.get(this);
+            }
+            if (STROKE_CAP.get(this) != BasicStroke.CAP_BUTT) {
+                width += strokeTotalWidth * 2;
+            }
+            width++;
+            Geom.grow(r, width, width);
+        }
         return r;
     }
     /**
@@ -105,7 +126,7 @@ public class SVGRectFigure extends SVGAttributedFigure implements SVGFigure {
         return getHitShape().contains(p);
     }
     
-    public void basicSetBounds(Point2D.Double anchor, Point2D.Double lead) {
+    public void setBounds(Point2D.Double anchor, Point2D.Double lead) {
         invalidateTransformedShape();
         roundrect.x = Math.min(anchor.x, lead.x);
         roundrect.y = Math.min(anchor.y , lead.y);
@@ -118,11 +139,11 @@ public class SVGRectFigure extends SVGAttributedFigure implements SVGFigure {
     }
     private Shape getTransformedShape() {
         if (cachedTransformedShape == null) {
-                if (getArcHeight() == 0 || getArcWidth() == 0) {
-                    cachedTransformedShape = roundrect.getBounds2D();
-                } else {
-                    cachedTransformedShape = (Shape) roundrect.clone();
-                }
+            if (getArcHeight() == 0 || getArcWidth() == 0) {
+                cachedTransformedShape = roundrect.getBounds2D();
+            } else {
+                cachedTransformedShape = (Shape) roundrect.clone();
+            }
             if (TRANSFORM.get(this) != null) {
                 cachedTransformedShape = TRANSFORM.get(this).createTransformedShape(cachedTransformedShape);
             }
@@ -142,90 +163,87 @@ public class SVGRectFigure extends SVGAttributedFigure implements SVGFigure {
      * Transforms the figure.
      * @param tx The transformation.
      */
-    public void basicTransform(AffineTransform tx) {
+    public void transform(AffineTransform tx) {
         invalidateTransformedShape();
         if (TRANSFORM.get(this) != null ||
-                (tx.getType() & (AffineTransform.TYPE_TRANSLATION | AffineTransform.TYPE_MASK_SCALE)) != tx.getType()) {
+                //              (tx.getType() & (AffineTransform.TYPE_TRANSLATION | AffineTransform.TYPE_MASK_SCALE)) != tx.getType()) {
+                (tx.getType() & (AffineTransform.TYPE_TRANSLATION)) != tx.getType()) {
             if (TRANSFORM.get(this) == null) {
                 TRANSFORM.basicSet(this, (AffineTransform) tx.clone());
             } else {
-                TRANSFORM.get(this).preConcatenate(tx);
+                AffineTransform t = TRANSFORM.getClone(this);
+                t.preConcatenate(tx);
+                TRANSFORM.basicSet(this, t);
             }
         } else {
             Point2D.Double anchor = getStartPoint();
             Point2D.Double lead = getEndPoint();
-            basicSetBounds(
+            setBounds(
                     (Point2D.Double) tx.transform(anchor, anchor),
                     (Point2D.Double) tx.transform(lead, lead)
                     );
+            if (FILL_GRADIENT.get(this) != null &&
+                    ! FILL_GRADIENT.get(this).isRelativeToFigureBounds()) {
+                Gradient g = FILL_GRADIENT.getClone(this);
+                g.transform(tx);
+                FILL_GRADIENT.basicSet(this, g);
+            }
+            if (STROKE_GRADIENT.get(this) != null &&
+                    ! STROKE_GRADIENT.get(this).isRelativeToFigureBounds()) {
+                Gradient g = STROKE_GRADIENT.getClone(this);
+                g.transform(tx);
+                STROKE_GRADIENT.basicSet(this, g);
+            }
         }
     }
     // ATTRIBUTES
-    public void setArc(final double w, final double h) {
-        willChange();
-        final double oldWidth = roundrect.getArcWidth();
-        final double oldHeight = roundrect.getArcHeight();
+    public void setArc(double w, double h) {
         roundrect.arcwidth = Math.max(0d, Math.min(roundrect.width, w * 2d));
         roundrect.archeight = Math.max(0d, Math.min(roundrect.height, h * 2d));
-      //  fireFigureChanged(getDrawBounds());
-        fireUndoableEditHappened(new AbstractUndoableEdit() {
-            public String getPresentationName() {
-                return "Arc";
-            }
-            public void undo() throws CannotUndoException {
-                super.undo();
-                willChange();
-                roundrect.arcwidth = oldWidth;
-                roundrect.archeight = oldHeight;
-                changed();
-            }
-            public void redo() throws CannotRedoException {
-                super.redo();
-                willChange();
-                roundrect.arcwidth = w * 2d;
-                roundrect.archeight = h * 2d;
-                changed();
-            }
-        });
-        changed();
+    }
+    public void setArc(Dimension2DDouble arc) {
+        roundrect.arcwidth = Math.max(0d, Math.min(roundrect.width, arc.width * 2d));
+        roundrect.archeight = Math.max(0d, Math.min(roundrect.height, arc.height * 2d));
+    }
+    public Dimension2DDouble getArc() {
+        return new Dimension2DDouble(
+                roundrect.arcwidth / 2d,
+                roundrect.archeight / 2d
+                );
     }
     public void restoreTransformTo(Object geometry) {
-            invalidateTransformedShape();
-            Object[] o = (Object[]) geometry;
-            roundrect = (RoundRectangle2D.Double) ((RoundRectangle2D.Double) o[0]).clone();
-            if (o[1] == null) {
-                TRANSFORM.set(this, null);
-            } else {
-            TRANSFORM.set(this, (AffineTransform) ((AffineTransform) o[1]).clone());
-            }
+        invalidateTransformedShape();
+        Object[] restoreData = (Object[]) geometry;
+        roundrect = (RoundRectangle2D.Double) ((RoundRectangle2D.Double) restoreData[0]).clone();
+        TRANSFORM.basicSetClone(this, (AffineTransform) restoreData[1]);
+            FILL_GRADIENT.basicSetClone(this, (Gradient) restoreData[2]);
+            STROKE_GRADIENT.basicSetClone(this, (Gradient) restoreData[3]);
     }
     
     public Object getTransformRestoreData() {
         return new Object[] {
             roundrect.clone(),
-            TRANSFORM.get(this)
+            TRANSFORM.getClone(this),
+            FILL_GRADIENT.getClone(this),
+            STROKE_GRADIENT.getClone(this),
         };
     }
     
     // EDITING
-    public Collection<Handle> createHandles(int detailLevel) {
-        LinkedList<Handle> handles = (LinkedList<Handle>) super.createHandles(detailLevel);
-         handles.add(new SVGRectRadiusHandle(this));
-                    handles.add(new RotateHandle(this));
-
-        return handles;
-    }
-    @Override public Collection<Action> getActions(Point2D.Double p) {
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.samples.svg.Labels");
-        LinkedList<Action> actions = new LinkedList<Action>();
-        if (TRANSFORM.get(this) != null) {
-            actions.add(new AbstractAction(labels.getString("removeTransform")) {
-                public void actionPerformed(ActionEvent evt) {
-                    TRANSFORM.set(SVGRectFigure.this, null);
-                }
-            });
+    @Override public Collection<Handle> createHandles(int detailLevel) {
+        LinkedList<Handle> handles = new LinkedList<Handle>();
+        switch (detailLevel % 2) {
+            case 0 :
+                ResizeHandleKit.addResizeHandles(this, handles);
+                handles.add(new SVGRectRadiusHandle(this));
+                break;
+            case 1 :
+                TransformHandleKit.addTransformHandles(this, handles);
+                break;
+            default:
+                break;
         }
-        return actions;
+        return handles;
     }
     // CONNECTING
     public boolean canConnect() {

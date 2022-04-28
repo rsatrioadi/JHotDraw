@@ -1,7 +1,7 @@
 /*
- * @(#)AbstractDrawing.java  2.2  2006-12-26
+ * @(#)AbstractDrawing.java  3.0  2007-05-18
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2007 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
  * All rights reserved.
  *
@@ -33,10 +33,12 @@ import java.io.*;
  * AbstractDrawing.
  *
  * @author Werner Randelshofer
- * @version 2.2 2006-12-26 Support for InputFormat's and OutputFormat's added. 
- * <br>2.1 2006-07-08 Extend AbstractBean. 
+ * @version 3.0 2007-05-18 Don't fire UndoableEdit events when Figures
+ * are added/removed from a Drawing. The
+ * <br>2.2 2006-12-26 Support for InputFormat's and OutputFormat's added.
+ * <br>2.1 2006-07-08 Extend AbstractBean.
  * <br>2.0.1 2006-02-06 Did ugly dirty fix for IndexOutOfBoundsException when
- * undoing removal of Figures. 
+ * undoing removal of Figures.
  * <br>2.0 2006-01-14 Changed to support double precision coordinates.
  * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
  */
@@ -44,8 +46,8 @@ public abstract class AbstractDrawing extends AbstractBean implements Drawing {
     private final static Object lock = new JPanel().getTreeLock();
     protected EventListenerList listenerList = new EventListenerList();
     private FontRenderContext fontRenderContext;
-    private java.util.List<InputFormat> inputFormats;
-    private java.util.List<OutputFormat> outputFormats;
+    private java.util.List<InputFormat> inputFormats = new java.util.LinkedList<InputFormat>();
+    private java.util.List<OutputFormat> outputFormats = new java.util.LinkedList<OutputFormat>();
     
     /** Creates a new instance. */
     public AbstractDrawing() {
@@ -64,14 +66,15 @@ public abstract class AbstractDrawing extends AbstractBean implements Drawing {
     public void removeUndoableEditListener(UndoableEditListener l) {
         listenerList.remove(UndoableEditListener.class, l);
     }
-    public void addAll(Collection<Figure> figures) {
-        CompositeEdit edit = new CompositeEdit("Figuren hinzuf\u00fcgen");
-        fireUndoableEditHappened(edit);
-        for (Figure f : figures) {
-            add(f);
-        }
-        fireUndoableEditHappened(edit);
+    public final void addAll(Collection<Figure> figures) {
+        addAll(getFigureCount(), figures);
     }
+    public final void addAll(int index, Collection<Figure> figures) {
+        for (Figure f : figures) {
+            add(index++, f);
+        }
+    }
+    
     
     /***
      * Removes all figures.
@@ -89,13 +92,9 @@ public abstract class AbstractDrawing extends AbstractBean implements Drawing {
     
     public void removeAll(Collection<Figure> toBeRemoved) {
         CompositeEdit edit = new CompositeEdit("Figuren entfernen");
-        fireUndoableEditHappened(edit);
-        
         for (Figure f : new ArrayList<Figure>(toBeRemoved)) {
             remove(f);
         }
-        
-        fireUndoableEditHappened(edit);
     }
     public void basicAddAll(int index, Collection<Figure> figures) {
         for (Figure f : figures) {
@@ -115,31 +114,23 @@ public abstract class AbstractDrawing extends AbstractBean implements Drawing {
      * Calls basicAdd and then calls figure.addNotify and firesFigureAdded.
      */
     public final void add(final Figure figure) {
-        final int index = getFigureCount();
+        add(getFigureCount(), figure);
+    }
+    public final void add(int index, Figure figure) {
         basicAdd(index, figure);
         figure.addNotify(this);
-        fireFigureAdded(figure);
-        fireUndoableEditHappened(new AbstractUndoableEdit() {
-            public String getPresentationName() { return "Figur einf\u00fcgen"; }
-            public void undo()  throws CannotUndoException {
-                super.undo();
-                basicRemove(figure);
-                figure.removeNotify(AbstractDrawing.this);
-                fireFigureRemoved(figure);
-            }
-            public void redo()  throws CannotUndoException {
-                super.redo();
-                basicAdd(index, figure);
-                figure.addNotify(AbstractDrawing.this);
-                fireFigureAdded(figure);
-            }
-        });
+        fireFigureAdded(figure, index);
+        fireAreaInvalidated(figure.getDrawingArea());
     }
     
-        public void basicAdd(Figure figure) {
+    
+    /**
+     * Thi
+     */
+    public void basicAdd(Figure figure) {
         basicAdd(getFigureCount(), figure);
     }
-
+    
     /**
      * Calls basicRemove and then calls figure.addNotify and firesFigureAdded.
      */
@@ -148,22 +139,7 @@ public abstract class AbstractDrawing extends AbstractBean implements Drawing {
             final int index = indexOf(figure);
             basicRemove(figure);
             figure.removeNotify(this);
-            fireFigureRemoved(figure);
-            fireUndoableEditHappened(new AbstractUndoableEdit() {
-                public String getPresentationName() { return "Figur entfernen"; }
-                public void redo()  throws CannotUndoException {
-                    super.redo();
-                    basicRemove(figure);
-                    figure.removeNotify(AbstractDrawing.this);
-                    fireFigureRemoved(figure);
-                }
-                public void undo()  throws CannotUndoException {
-                    super.undo();
-                    basicAdd(index, figure);
-                    figure.addNotify(AbstractDrawing.this);
-                    fireFigureAdded(figure);
-                }
-            });
+            fireFigureRemoved(figure, index);
         } else {
             fireAreaInvalidated(figure.getDrawingArea());
         }
@@ -214,7 +190,7 @@ public abstract class AbstractDrawing extends AbstractBean implements Drawing {
      *  Notify all listenerList that have registered interest for
      * notification on this event type.
      */
-    protected void fireFigureAdded(Figure f) {
+    protected void fireFigureAdded(Figure f, int zIndex) {
         DrawingEvent event = null;
         // Notify all listeners that have registered interest for
         // Guaranteed to return a non-null array
@@ -225,7 +201,7 @@ public abstract class AbstractDrawing extends AbstractBean implements Drawing {
             if (listeners[i] == DrawingListener.class) {
                 // Lazily create the event:
                 if (event == null)
-                    event = new DrawingEvent(this, f, f.getDrawingArea());
+                    event = new DrawingEvent(this, f, f.getDrawingArea(), zIndex);
                 ((DrawingListener)listeners[i+1]).figureAdded(event);
             }
         }
@@ -235,7 +211,7 @@ public abstract class AbstractDrawing extends AbstractBean implements Drawing {
      *  Notify all listenerList that have registered interest for
      * notification on this event type.
      */
-    protected void fireFigureRemoved(Figure f) {
+    protected void fireFigureRemoved(Figure f, int zIndex) {
         DrawingEvent event = null;
         // Notify all listeners that have registered interest for
         // Guaranteed to return a non-null array
@@ -246,13 +222,13 @@ public abstract class AbstractDrawing extends AbstractBean implements Drawing {
             if (listeners[i] == DrawingListener.class) {
                 // Lazily create the event:
                 if (event == null)
-                    event = new DrawingEvent(this, f, f.getDrawingArea());
+                    event = new DrawingEvent(this, f, f.getDrawingArea(), zIndex);
                 ((DrawingListener)listeners[i+1]).figureRemoved(event);
             }
         }
     }
     
-
+    
     
     public FontRenderContext getFontRenderContext() {
         return fontRenderContext;
@@ -284,19 +260,19 @@ public abstract class AbstractDrawing extends AbstractBean implements Drawing {
     public Object getLock() {
         return lock;
     }
-
+    
     public void setOutputFormats(java.util.List<OutputFormat> formats) {
         this.outputFormats = formats;
     }
-
+    
     public void setInputFormats(java.util.List<InputFormat> formats) {
         this.inputFormats = formats;
     }
-
+    
     public java.util.List<InputFormat> getInputFormats() {
         return inputFormats;
     }
-
+    
     public java.util.List<OutputFormat> getOutputFormats() {
         return outputFormats;
     }

@@ -14,6 +14,8 @@
  */
 package org.jhotdraw.samples.draw;
 
+import java.awt.geom.*;
+import java.awt.image.BufferedImage;
 import java.awt.print.Pageable;
 import org.jhotdraw.draw.ImageInputFormat;
 import org.jhotdraw.draw.ImageOutputFormat;
@@ -93,12 +95,12 @@ public class DrawProject extends AbstractProject {
         
         JPanel placardPanel = new JPanel(new BorderLayout());
         javax.swing.AbstractButton pButton;
-        pButton = ToolBarButtonFactory.createZoomButton(view);
+        pButton = ButtonFactory.createZoomButton(view);
         pButton.putClientProperty("Quaqua.Button.style","placard");
         pButton.putClientProperty("Quaqua.Component.visualMargin",new Insets(0,0,0,0));
         pButton.setFont(UIManager.getFont("SmallSystemFont"));
         placardPanel.add(pButton, BorderLayout.WEST);
-        pButton = ToolBarButtonFactory.createToggleGridButton(view);
+        pButton = ButtonFactory.createToggleGridButton(view);
         pButton.putClientProperty("Quaqua.Button.style","placard");
         pButton.putClientProperty("Quaqua.Component.visualMargin",new Insets(0,0,0,0));
         pButton.setFont(UIManager.getFont("SmallSystemFont"));
@@ -117,6 +119,13 @@ public class DrawProject extends AbstractProject {
         LinkedList<InputFormat> inputFormats = new LinkedList<InputFormat>();
         inputFormats.add(ioFormat);
         inputFormats.add(new ImageInputFormat(new ImageFigure()));
+        inputFormats.add(new ImageInputFormat(new ImageFigure(), "JPG","Joint Photographics Experts Group (JPEG)", "jpg", BufferedImage.TYPE_INT_RGB));
+        inputFormats.add(new ImageInputFormat(new ImageFigure(), "GIF","Graphics Interchange Format (GIF)", "gif", BufferedImage.TYPE_INT_ARGB));
+        inputFormats.add(new ImageInputFormat(new ImageFigure()));
+        inputFormats.add(new TextInputFormat(new TextFigure()));
+        TextAreaFigure taf = new TextAreaFigure();
+        taf.setBounds(new Point2D.Double(10,10), new Point2D.Double(60,40));
+        inputFormats.add(new TextInputFormat(taf));
         drawing.setInputFormats(inputFormats);
         LinkedList<OutputFormat> outputFormats = new LinkedList<OutputFormat>();
         outputFormats.add(ioFormat);

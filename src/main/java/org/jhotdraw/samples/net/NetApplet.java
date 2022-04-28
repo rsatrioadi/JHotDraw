@@ -36,7 +36,7 @@ import org.jhotdraw.xml.*;
  * @version 1.0 2006-07-15 Created.
  */
 public class NetApplet extends JApplet {
-    private final static String VERSION = "7.0.8";
+    private static String version;
     private final static String NAME = "JHotDraw Net";
     private NetPanel drawingPanel;
     
@@ -51,6 +51,26 @@ public class NetApplet extends JApplet {
              return null;
          }
      }    
+    protected String getVersion() {
+        if (version == null) {
+            BufferedReader r = null;
+            try {
+                r = new BufferedReader(
+                        new InputStreamReader(
+                        getClass().getResourceAsStream("version.txt"), "UTF-8"
+                        )
+                        );
+                version = r.readLine();
+            } catch (Throwable e) {
+                version = "unknown";
+            } finally {
+                if (r != null) try {
+                    r.close();
+                } catch (IOException e) {}
+            }
+        }
+        return version;
+    }
      
     /**
      * Initializes the applet NetApplet
@@ -115,13 +135,14 @@ public class NetApplet extends JApplet {
                 initComponents();
                 if (result != null) {
                     if (result instanceof Drawing) {
-                        setDrawing((Drawing) result);
+                        Drawing drawing = (Drawing) result;
+                        setDrawing(drawing);
                     } else if (result instanceof Throwable) {
                         getDrawing().add(new TextFigure(result.toString()));
                         ((Throwable) result).printStackTrace();
                     }
                 }
-                
+                initDrawing(getDrawing());
                 c.validate();
             }
         }.start();
@@ -133,6 +154,26 @@ public class NetApplet extends JApplet {
     }
     private Drawing getDrawing() {
         return drawingPanel.getDrawing();
+    }
+    /**
+     * Configure Drawing object to support copy and paste.
+     */
+    private void initDrawing(Drawing d) {
+        LinkedList<InputFormat> inputFormats = new LinkedList<InputFormat>();
+        LinkedList<OutputFormat> outputFormats = new LinkedList<OutputFormat>();
+
+        DOMStorableInputOutputFormat ioFormat = new DOMStorableInputOutputFormat(
+                new NetFactory()
+                );
+        inputFormats.add(ioFormat);
+        outputFormats.add(ioFormat);
+        
+        inputFormats.add(new ImageInputFormat(new ImageFigure()));
+        inputFormats.add(new TextInputFormat(new TextFigure()));
+        outputFormats.add(new ImageOutputFormat());
+        
+        d.setInputFormats(inputFormats);
+        d.setOutputFormats(outputFormats);
     }
     
     
@@ -184,7 +225,7 @@ public class NetApplet extends JApplet {
     }
     public String getAppletInfo() {
         return NAME +
-                "\nVersion "+VERSION +
+                "\nVersion "+getVersion() +
                 "\n\nCopyright 1996-2007 (c) by the authors of JHotDraw" +
                 "\nThis software is licensed under LGPL or" +
                 "\nCreative Commons 2.5 BY";

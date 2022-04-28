@@ -37,9 +37,9 @@ import org.jhotdraw.xml.*;
  * @version 1.0 2006-07-08 Created.
  */
 public class SVGApplet extends JApplet {
-    private final static String VERSION = "7.0.8";
+    private static String version;
     private final static String NAME = "JHotDraw SVG";
-    private SVGPanel drawingPanel;
+    private SVGDrawingPanel drawingPanel;
     
     /**
      * We override getParameter() to make it work even if we have no Applet
@@ -51,6 +51,26 @@ public class SVGApplet extends JApplet {
         } catch (NullPointerException e) {
             return null;
         }
+    }
+    protected String getVersion() {
+        if (version == null) {
+            BufferedReader r = null;
+            try {
+                r = new BufferedReader(
+                        new InputStreamReader(
+                        getClass().getResourceAsStream("version.txt"), "UTF-8"
+                        )
+                        );
+                version = r.readLine();
+            } catch (Throwable e) {
+                version = "unknown";
+            } finally {
+                if (r != null) try {
+                    r.close();
+                } catch (IOException e) {}
+            }
+        }
+        return version;
     }
     
     /** Initializes the applet SVGApplet */
@@ -116,7 +136,7 @@ public class SVGApplet extends JApplet {
                 Container c = getContentPane();
                 c.setLayout(new BorderLayout());
                 c.removeAll();
-                c.add(drawingPanel = new SVGPanel());
+                c.add(drawingPanel = new SVGDrawingPanel());
                 
                 initComponents();
                 if (result != null) {
@@ -145,8 +165,11 @@ public class SVGApplet extends JApplet {
         DefaultDrawing drawing = new DefaultDrawing();
         LinkedList<InputFormat> inputFormats = new LinkedList<InputFormat>();
         inputFormats.add(new SVGInputFormat());
+        inputFormats.add(new ImageInputFormat(new SVGImageFigure()));
+        inputFormats.add(new TextInputFormat(new SVGTextFigure()));
         LinkedList<OutputFormat> outputFormats = new LinkedList<OutputFormat>();
         outputFormats.add(new SVGOutputFormat());
+        outputFormats.add(new ImageOutputFormat());
         drawing.setInputFormats(inputFormats);
         drawing.setOutputFormats(outputFormats);
         return drawing;
@@ -202,7 +225,7 @@ public class SVGApplet extends JApplet {
     }
     public String getAppletInfo() {
         return NAME +
-                "\nVersion "+VERSION +
+                "\nVersion "+getVersion() +
                 "\n\nCopyright 1996-2007 (c) by the authors of JHotDraw" +
                 "\nThis software is licensed under LGPL or" +
                 "\nCreative Commons 2.5 BY";
@@ -214,7 +237,6 @@ public class SVGApplet extends JApplet {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        toolButtonGroup = new javax.swing.ButtonGroup();
 
     }// </editor-fold>//GEN-END:initComponents
     
@@ -235,7 +257,6 @@ public class SVGApplet extends JApplet {
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup toolButtonGroup;
     // End of variables declaration//GEN-END:variables
     
 }

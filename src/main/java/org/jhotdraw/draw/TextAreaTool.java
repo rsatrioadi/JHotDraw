@@ -46,7 +46,7 @@ import org.jhotdraw.geom.*;
  * The TextAreaTool then uses Figure.findFigureInside to find a Figure that
  * implements the TextHolderFigure interface and that is editable. Then it overlays
  * a text area over the drawing where the user can enter the text for the Figure.
- * 
+ *
  * @author Werner Randelshofer
  * @version 2.0 2006-01-14 Changed to support double precison coordinates.
  * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
@@ -57,6 +57,11 @@ import org.jhotdraw.geom.*;
 public class TextAreaTool extends CreationTool implements ActionListener {
     private FloatingTextArea   textArea;
     private TextHolderFigure  typingTarget;
+    /**
+     * Rubberband color of the tool. When this is null, the tool does not
+     * draw a rubberband.
+     */
+    private Color rubberbandColor = null;
     
     /** Creates a new instance. */
     public TextAreaTool(TextHolderFigure prototype) {
@@ -66,14 +71,25 @@ public class TextAreaTool extends CreationTool implements ActionListener {
         super(prototype, attributes);
     }
     
+    /**
+     * Sets the rubberband color for the tool. Setting this to null, disables
+     * the rubberband.
+     *
+     * @param c Rubberband color or null.
+     */
+    public void setRubberbandColor(Color c) {
+        rubberbandColor = c;
+    }
+    
+    
     public void deactivate(DrawingEditor editor) {
         endEdit();
         super.deactivate(editor);
     }
     
     /**
-     * If the pressed figure is a TextHolderFigure it can be edited otherwise
-     * a new text figure is created.
+     * Creates a new figure at the mouse location.
+     * If editing is in progress, this finishes editing.
      */
     public void mousePressed(MouseEvent e) {
         TextHolderFigure textHolder = null;
@@ -89,7 +105,6 @@ public class TextAreaTool extends CreationTool implements ActionListener {
             beginEdit(textHolder);
             return;
         }
-        
         if (typingTarget != null) {
             endEdit();
             fireToolDone();
@@ -104,10 +119,24 @@ public class TextAreaTool extends CreationTool implements ActionListener {
             beginEdit(textHolder);*/
         }
     }
+    /**
+     * This method allows subclasses to do perform additonal user interactions
+     * after the new figure has been created.
+     * The implementation of this class just invokes fireToolDone.
+     */
+    protected void creationFinished(Figure createdFigure) {
+            beginEdit((TextHolderFigure) createdFigure);
+    }
     /*
     public void mouseDragged(java.awt.event.MouseEvent e) {
     }
      */
+    public void draw(Graphics2D g) {
+        if (createdFigure != null && rubberbandColor != null) {
+            g.setColor(rubberbandColor);
+            g.draw(getView().drawingToView(createdFigure.getBounds()));
+        }
+    }
     
     protected void beginEdit(TextHolderFigure textHolder) {
         if (textArea == null) {
@@ -127,10 +156,10 @@ public class TextAreaTool extends CreationTool implements ActionListener {
     
     
     private Rectangle2D.Double getFieldBounds(TextHolderFigure figure) {
-        Rectangle2D.Double r = figure.getBounds();
+        Rectangle2D.Double r = figure.getDrawingArea();
         Insets2D.Double insets = figure.getInsets();
         insets.subtractTo(r);
-
+        
         // FIXME - Find a way to determine the parameters for grow.
         //r.grow(1,2);
         //r.width += 16;
@@ -140,7 +169,7 @@ public class TextAreaTool extends CreationTool implements ActionListener {
         r.height += 4;
         return r;
     }
-    
+    /*
     public void mouseReleased(MouseEvent evt) {
         if (createdFigure != null) {
             TextHolderFigure textHolder = (TextHolderFigure) createdFigure;
@@ -150,8 +179,8 @@ public class TextAreaTool extends CreationTool implements ActionListener {
             } else {
                 if (bounds.width < 5 && bounds.height < 5) {
                     createdFigure.willChange();
-                    createdFigure.basicSetBounds(new Point2D.Double(bounds.x, bounds.y), new Point2D.Double(bounds.x + 100, bounds.y + 100));
-                createdFigure.changed();
+                    createdFigure.setBounds(new Point2D.Double(bounds.x, bounds.y), new Point2D.Double(bounds.x + 100, bounds.y + 100));
+                    createdFigure.changed();
                 }
                 getView().addToSelection(createdFigure);
             }
@@ -162,25 +191,23 @@ public class TextAreaTool extends CreationTool implements ActionListener {
             getDrawing().fireUndoableEditHappened(creationEdit);
             beginEdit(textHolder);
         }
-    }
+    }*/
     
     protected void endEdit() {
         if (typingTarget != null) {
+            typingTarget.willChange();
             if (textArea.getText().length() > 0) {
                 typingTarget.setText(textArea.getText());
-                if (createdFigure != null) {
-                    getDrawing().fireUndoableEditHappened(creationEdit);
-                    createdFigure = null;
-                }
             } else {
                 if (createdFigure != null) {
                     getDrawing().remove((Figure)getAddedFigure());
+                    // Fire undoable edit here!!
                 } else {
                     typingTarget.setText("");
                 }
             }
-            // nothing to undo
-            //	            setUndoActivity(null);
+            // XXX - implement undo redo behavior here
+            typingTarget.changed();
             typingTarget = null;
             
             textArea.endOverlay();

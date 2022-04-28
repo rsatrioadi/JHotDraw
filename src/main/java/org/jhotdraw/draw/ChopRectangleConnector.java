@@ -1,7 +1,7 @@
 /*
- * @(#)ChopRectangleConnector.java  2.2  2006-12-23
+ * @(#)ChopRectangleConnector.java  2.2.2  2007-05-14
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2007 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
  * All rights reserved.
  *
@@ -30,7 +30,10 @@ import org.jhotdraw.geom.*;
  * @see Connector
  *
  * @author Werner Randelshofer
- * @version 2.2 2006-12-23 Renamed from ChopBoxConnector to ChopRectangleConnector.
+ * @version 2.2.2 2007-05-14 Fixed strange layout behavior while manipulating
+ * a connection. 
+ * <br>2.2.1 2007-02-01 Added support for self-connecting connections. 
+ * <br>2.2 2006-12-23 Renamed from ChopBoxConnector to ChopRectangleConnector.
  * <br>2.1 2006-03-22 Support for total stroke width added.
  * <br>2.0 2006-01-14 Changed to support double precision coordinates.
  * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
@@ -51,7 +54,7 @@ public class ChopRectangleConnector extends AbstractConnector {
     public Point2D.Double findStart(ConnectionFigure connection) {
         Figure startFigure = connection.getStartConnector().getOwner();
         Point2D.Double from;
-        if (connection.getPointCount() <= 2 || connection.getLiner() != null) {
+        if (connection.getNodeCount() <= 2 || connection.getLiner() != null) {
             if (connection.getEndConnector() == null) {
                 from = connection.getEndPoint();
             } else {
@@ -67,15 +70,20 @@ public class ChopRectangleConnector extends AbstractConnector {
     public Point2D.Double findEnd(ConnectionFigure connection) {
         Figure endFigure = connection.getEndConnector().getOwner();
         Point2D.Double from;
-        if (connection.getPointCount() <= 2 || connection.getLiner() != null) {
+        if (connection.getNodeCount() <= 3 && connection.getStartFigure() == connection.getEndFigure() ||
+                connection.getNodeCount() <= 2 ||
+                connection.getLiner() != null) {
             if (connection.getStartConnector() == null) {
                 from = connection.getStartPoint();
+            } else if (connection.getStartFigure() == connection.getEndFigure()) {
+                Rectangle2D.Double r1 = getConnectorTarget(connection.getStartConnector().getOwner()).getBounds();
+                from = new Point2D.Double(r1.x + r1.width/2, r1.y);
             } else {
                 Rectangle2D.Double r1 = getConnectorTarget(connection.getStartConnector().getOwner()).getBounds();
                 from = new Point2D.Double(r1.x + r1.width/2, r1.y + r1.height/2);
             }
         } else {
-            from = connection.getPoint(connection.getPointCount() - 2);
+            from = connection.getPoint(connection.getNodeCount() - 2);
         }
         
         return chop(endFigure, from);
@@ -88,7 +96,7 @@ public class ChopRectangleConnector extends AbstractConnector {
             double grow;
             switch (STROKE_PLACEMENT.get(target)) {
                 case CENTER:
-                 default :
+                default :
                     grow = AttributeKeys.getStrokeTotalWidth(target) / 2d;
                     break;
                 case OUTSIDE :
@@ -102,4 +110,5 @@ public class ChopRectangleConnector extends AbstractConnector {
         }
         return Geom.angleToPoint(r, Geom.pointToAngle(r, from));
     }
+    
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)SVGAttributeKeys.java  1.0  December 9, 2006
+ * @(#)SVGAttributeKeys.java  1.2  2007-04-22
  *
  * Copyright (c) 1996-2007 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
@@ -22,14 +22,11 @@ import org.jhotdraw.draw.*;
  * SVGAttributeKeys.
  *
  * @author Werner Randelshofer
- * @version 1.0 December 9, 2006 Created.
+ * @version 1.2 2007-04-22 Attribute Key LINK added. 
+ * <br>1.1 2007-04-10 Attribute key TEXT_ALIGN added. 
+ * <br>1.0 December 9, 2006 Created.
  */
 public class SVGAttributeKeys extends AttributeKeys {
-    
-    /**
-     * Specifies the transform of a Figure.
-     */
-    public final static AttributeKey<AffineTransform>TRANSFORM = new AttributeKey<AffineTransform>("transform", null, true);
     
     public enum TextAnchor {
         START, MIDDLE, END
@@ -39,6 +36,13 @@ public class SVGAttributeKeys extends AttributeKeys {
      */
     public final static AttributeKey<TextAnchor> TEXT_ANCHOR = new AttributeKey<TextAnchor>("textAnchor",TextAnchor.START, false);
     
+    public enum TextAlign {
+        START, CENTER, END
+    }
+    /**
+     * Specifies the text alignment of a SVGText figure.
+     */
+    public final static AttributeKey<TextAlign> TEXT_ALIGN = new AttributeKey<TextAlign>("textAlign",TextAlign.START, false);
     /**
      * Specifies the fill gradient of a SVG figure.
      */
@@ -49,6 +53,11 @@ public class SVGAttributeKeys extends AttributeKeys {
      * This is a value between 0 and 1 whereas 0 is translucent and 1 is fully opaque.
      */
     public final static AttributeKey<Double> FILL_OPACITY = new AttributeKey<Double>("fillOpacity", 1d, false);
+    /**
+     * Specifies the overall opacity of a SVG figure.
+     * This is a value between 0 and 1 whereas 0 is translucent and 1 is fully opaque.
+     */
+    public final static AttributeKey<Double> OPACITY = new AttributeKey<Double>("opacity", 1d, false);
     
     
     /**
@@ -60,6 +69,15 @@ public class SVGAttributeKeys extends AttributeKeys {
      * This is a value between 0 and 1 whereas 0 is translucent and 1 is fully opaque.
      */
     public final static AttributeKey<Double> STROKE_OPACITY = new AttributeKey<Double>("strokeOpacity", 1d, false);
+    
+    /**
+     * Specifies a link.
+     * In an SVG file, the link is stored in a "a" element which encloses the
+     * figure.
+     * http://www.w3.org/TR/SVGMobile12/linking.html#AElement
+     */
+    public final static AttributeKey<String> LINK = new AttributeKey<String>("link", null);
+    
     
     /**
      * Gets the fill paint for the specified figure based on the attributes
@@ -121,5 +139,22 @@ public class SVGAttributeKeys extends AttributeKeys {
         STROKE_DASHES.basicSet(f, null);
         STROKE_DASH_PHASE.basicSet(f, 0d);
         IS_STROKE_DASH_FACTOR.basicSet(f, false);
+    }
+    /**
+     * Returns the distance, that a Rectangle needs to grow (or shrink) to
+     * make hit detections on a shape as specified by the FILL_UNDER_STROKE and STROKE_POSITION
+     * attributes of a figure.
+     * The value returned is the number of units that need to be grown (or shrunk)
+     * perpendicular to a stroke on an outline of the shape.
+     */
+    public static double getPerpendicularHitGrowth(Figure f) {
+        double grow;
+        if (STROKE_COLOR.get(f) == null && STROKE_GRADIENT.get(f) == null) {
+            grow = getPerpendicularFillGrowth(f);
+        } else {
+            double strokeWidth = AttributeKeys.getStrokeTotalWidth(f);
+            grow = getPerpendicularDrawGrowth(f) + strokeWidth / 2d;
+        }
+        return grow;
     }
 }

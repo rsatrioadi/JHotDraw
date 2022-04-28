@@ -15,6 +15,7 @@
 package org.jhotdraw.samples.svg;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.geom.*;
 import org.jhotdraw.app.action.*;
 import org.jhotdraw.samples.svg.action.*;
@@ -25,14 +26,15 @@ import javax.swing.*;
 import org.jhotdraw.app.*;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.action.*;
-import static org.jhotdraw.draw.AttributeKeys.*;
+import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
 /**
  * SVGApplicationModel.
- * 
+ *
  * @author Werner Randelshofer.
  * @version 1.0 June 10, 2006 Created.
  */
 public class SVGApplicationModel extends DefaultApplicationModel {
+    private final static double[] scaleFactors = {5, 4, 3, 2, 1.5, 1.25, 1, 0.75, 0.5, 0.25, 0.10};
     /**
      * This editor is shared by all projects.
      */
@@ -54,9 +56,24 @@ public class SVGApplicationModel extends DefaultApplicationModel {
             ((SVGProject) p).setEditor(getSharedEditor());
         }
     }
-
+    
     public void initApplication(Application a) {
-putAction(ExportAction.ID, new ExportAction(a));
+        ResourceBundleUtil drawLabels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.samples.svg.Labels");
+        AbstractAction aa;
+        
+        putAction(ViewSourceAction.ID, new ViewSourceAction(a));
+        putAction(ExportAction.ID, new ExportAction(a));
+        putAction("toggleGrid", aa = new ToggleProjectPropertyAction(a, "gridVisible"));
+        drawLabels.configureAction(aa, "alignGrid");
+        for (double sf : scaleFactors) {
+            putAction((int) (sf*100)+"%",
+                    aa = new ProjectPropertyAction(a, "scaleFactor", Double.TYPE, new Double(sf))
+                    );
+            aa.putValue(Action.NAME, (int) (sf*100)+" %");
+            
+        }
+        putAction("togglePropertiesPanel", new TogglePropertiesPanelAction(a));
     }
     /**
      * Creates toolbars for the application.
@@ -85,7 +102,7 @@ putAction(ExportAction.ID, new ExportAction(a));
         tb.setName(labels.getString("attributesToolBarTitle"));
         list.add(tb);
         tb = new JToolBar();
-        ToolBarButtonFactory.addAlignmentButtonsTo(tb, editor);
+        ButtonFactory.addAlignmentButtonsTo(tb, editor);
         tb.setName(labels.getString("alignmentToolBarTitle"));
         list.add(tb);
         return list;
@@ -124,30 +141,30 @@ putAction(ExportAction.ID, new ExportAction(a));
         ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.samples.svg.Labels");
         ResourceBundleUtil drawLabels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
         
-        ToolBarButtonFactory.addSelectionToolTo(tb, editor, createDrawingActions(editor), createSelectionActions(editor));
+        ButtonFactory.addSelectionToolTo(tb, editor, createDrawingActions(editor), createSelectionActions(editor));
         tb.addSeparator();
         
         attributes = new HashMap<AttributeKey,Object>();
-        //attributes.put(AttributeKeys.FILL_COLOR, Color.white);
-        //attributes.put(AttributeKeys.STROKE_COLOR, Color.black);
-        ToolBarButtonFactory.addToolTo(tb, editor, new CreationTool(new SVGRectFigure(), attributes), "createRectangle", drawLabels);
-        ToolBarButtonFactory.addToolTo(tb, editor, new CreationTool(new SVGEllipseFigure(), attributes), "createEllipse", drawLabels);
-        ToolBarButtonFactory.addToolTo(tb, editor, new PathTool(new SVGPathFigure(), new BezierFigure(true), attributes), "createPolygon", drawLabels);
+        ButtonFactory.addToolTo(tb, editor, new CreationTool(new SVGRectFigure(), attributes), "createRectangle", drawLabels);
+        ButtonFactory.addToolTo(tb, editor, new CreationTool(new SVGEllipseFigure(), attributes), "createEllipse", drawLabels);
+        ButtonFactory.addToolTo(tb, editor, new PathTool(new SVGPathFigure(), new SVGBezierFigure(true), attributes), "createPolygon", drawLabels);
         attributes = new HashMap<AttributeKey,Object>();
         attributes.put(AttributeKeys.FILL_COLOR, null);
         attributes.put(AttributeKeys.STROKE_COLOR, Color.black);
-        ToolBarButtonFactory.addToolTo(tb, editor, new CreationTool(new SVGPathFigure(), attributes), "createLine", drawLabels);
-        ToolBarButtonFactory.addToolTo(tb, editor, new PathTool(new SVGPathFigure(), new BezierFigure(false), attributes), "createScribble", drawLabels);
+        ButtonFactory.addToolTo(tb, editor, new CreationTool(new SVGPathFigure(), attributes), "createLine", drawLabels);
+        ButtonFactory.addToolTo(tb, editor, new PathTool(new SVGPathFigure(), new SVGBezierFigure(false), attributes), "createScribble", drawLabels);
         attributes = new HashMap<AttributeKey,Object>();
         attributes.put(AttributeKeys.FILL_COLOR, Color.black);
         attributes.put(AttributeKeys.STROKE_COLOR, null);
-        ToolBarButtonFactory.addToolTo(tb, editor, new TextTool(new SVGTextFigure(), attributes), "createText", drawLabels);
-        ToolBarButtonFactory.addToolTo(tb, editor, new TextAreaTool(new SVGTextAreaFigure(), attributes), "createTextArea", drawLabels);
+        ButtonFactory.addToolTo(tb, editor, new TextTool(new SVGTextFigure(), attributes), "createText", drawLabels);
+        TextAreaTool tat = new TextAreaTool(new SVGTextAreaFigure(), attributes);
+        tat.setRubberbandColor(Color.BLACK);
+        ButtonFactory.addToolTo(tb, editor, tat, "createTextArea", drawLabels);
         attributes = new HashMap<AttributeKey,Object>();
         attributes.put(AttributeKeys.FILL_COLOR, null);
         attributes.put(AttributeKeys.STROKE_COLOR, null);
-        ToolBarButtonFactory.addToolTo(tb, editor, new ImageTool(new SVGImageFigure(), attributes), "createImage", drawLabels);
-    }    
+        ButtonFactory.addToolTo(tb, editor, new ImageTool(new SVGImageFigure(), attributes), "createImage", drawLabels);
+    }
     /**
      * Creates toolbar buttons and adds them to the specified JToolBar
      */
@@ -161,22 +178,74 @@ putAction(ExportAction.ID, new ExportAction(a));
         b.setFocusable(false);
         bar.addSeparator();
         
-addColorButtonsTo(bar, editor);
+        addColorButtonsTo(bar, editor);
         bar.addSeparator();
         addStrokeButtonsTo(bar, editor);
         bar.addSeparator();
-        ToolBarButtonFactory.addFontButtonsTo(bar, editor);
+        ButtonFactory.addFontButtonsTo(bar, editor);
     }
     private void addColorButtonsTo(JToolBar bar, DrawingEditor editor) {
         ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
-        ToolBarButtonFactory.addColorButtonTo(bar, editor, STROKE_COLOR, ToolBarButtonFactory.DEFAULT_COLORS, 8, "attributeStrokeColor", labels);
-        ToolBarButtonFactory.addColorButtonTo(bar, editor, FILL_COLOR, ToolBarButtonFactory.DEFAULT_COLORS, 8, "attributeFillColor", labels);
+        HashMap<AttributeKey,Object> defaultAttributes = new HashMap<AttributeKey,Object>();
+        STROKE_GRADIENT.set(defaultAttributes, (Gradient) null);
+        bar.add(
+                ButtonFactory.createEditorColorButton(editor,
+                STROKE_COLOR, ButtonFactory.DEFAULT_COLORS, 8,
+                "attributeStrokeColor", labels, 
+                defaultAttributes
+                )
+                );
+        defaultAttributes = new HashMap<AttributeKey,Object>();
+        FILL_GRADIENT.set(defaultAttributes, (Gradient) null);
+        bar.add(
+                ButtonFactory.createEditorColorButton(editor,
+                FILL_COLOR, ButtonFactory.DEFAULT_COLORS, 8,
+                "attributeFillColor", labels, 
+                defaultAttributes
+                )
+                );
     }
     private void addStrokeButtonsTo(JToolBar bar, DrawingEditor editor) {
-        ToolBarButtonFactory.addStrokeWidthButtonTo(bar, editor);
-        ToolBarButtonFactory.addStrokeDashesButtonTo(bar, editor);
-        ToolBarButtonFactory.addStrokeCapButtonTo(bar, editor);
-        ToolBarButtonFactory.addStrokeJoinButtonTo(bar, editor);
+        bar.add(ButtonFactory.createStrokeWidthButton(editor));
+        bar.add(ButtonFactory.createStrokeDashesButton(editor));
+        bar.add(ButtonFactory.createStrokeCapButton(editor));
+        bar.add(ButtonFactory.createStrokeJoinButton(editor));
     }
-
+    
+    @Override public java.util.List<JMenu> createMenus(Application a, Project pr) {
+        // FIXME - Add code for unconfiguring the menus!! We leak memory!
+        SVGProject p = (SVGProject) pr;
+        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        
+        //  JMenuBar mb = new JMenuBar();
+        LinkedList<JMenu> mb =  new LinkedList<JMenu>();
+        JMenu m, m2;
+        JMenuItem mi;
+        JRadioButtonMenuItem rbmi;
+        JCheckBoxMenuItem cbmi;
+        ButtonGroup group;
+        
+        mb.add(createEditMenu(a, pr));
+        
+        m = new JMenu();
+        labels.configureMenu(m, "view");
+        cbmi = new JCheckBoxMenuItem(getAction("toggleGrid"));
+        Actions.configureJCheckBoxMenuItem(cbmi, getAction("toggleGrid"));
+        m.add(cbmi);
+        m2 = new JMenu("Zoom");
+        for (double sf : scaleFactors) {
+            String id = (int) (sf*100)+"%";
+            cbmi = new JCheckBoxMenuItem(getAction(id));
+            Actions.configureJCheckBoxMenuItem(cbmi, getAction(id));
+            m2.add(cbmi);
+        }
+        m.add(m2);
+        cbmi = new JCheckBoxMenuItem(getAction("togglePropertiesPanel"));
+        m.add(getAction(ViewSourceAction.ID));
+        m.add(cbmi);
+        
+        mb.add(m);
+        
+        return mb;
+    }
 }

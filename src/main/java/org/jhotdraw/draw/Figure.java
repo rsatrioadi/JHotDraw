@@ -1,7 +1,7 @@
 /*
- * @(#)Figure.java  3.0  2006-01-20
+ * @(#)Figure.java  4.2  2007-05-19
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2007 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
  * All rights reserved.
  *
@@ -55,13 +55,21 @@ import org.jhotdraw.xml.DOMStorable;
  * <p>
  * A figure can hold a text or an image or both. Such a figure should implement
  * the ImageHolder and TextHolder interfaces, to allo
- *
  * <p>
  * Default implementations for the Figure interface are provided by
  * AbstractFigure.
  *
  * @author Werner Randelshofer
- * @version 3.0 2006-01-20 Reworked for J2SE 1.5.
+ * @version 4.2 2007-05-19 Removed setConnectorsVisible, isConnectorsVisible
+ * method due to changes in Connector interface. 
+ * <br>4.1 2007-05-18 Removed addUndoableEditListener, 
+ * removeUndoableEditListener methods. They are not needed anymore, due to
+ * the removal of the basicSet methods for undoable attributes. 
+ * <br>4.0 2007-05-12 Replaced set.../basicSet... design for undoable attributes 
+ * by setAttribute/getAttributesRestoreData/restoreAttributesTo design.
+ * <br>3.1 2007-04-14 Method handleMouseClick is now required to consume
+ * an event, if it returns true. 
+ * <br>3.0 2006-01-20 Reworked for J2SE 1.5.
  */
 public interface Figure extends Cloneable, Serializable, DOMStorable {
     // DRAWING
@@ -106,7 +114,8 @@ public interface Figure extends Cloneable, Serializable, DOMStorable {
     
     // BOUNDS
     /**
-     * Sets the logical bounds of the figure and of its decorator figure.
+     * Sets the logical and untransformed bounds of the figure and of its 
+     * decorator figure.
      * <p>
      * This is used by Tool's which create a new Figure and by Tool's which
      * connect a Figure to another Figure.
@@ -115,32 +124,35 @@ public interface Figure extends Cloneable, Serializable, DOMStorable {
      * code sequence, if you need event firing:
      * <pre>
      * aFigure.willChange();
-     * aFigure.basicSetBounds(...);
+     * aFigure.setBounds(...);
      * aFigure.changed();
      * </pre>
+     * 
      * 
      * 
      * @param start the start point of the bounds
      * @param end the end point of the bounds
      * @see #getBounds
      */
-    public void basicSetBounds(Point2D.Double start, Point2D.Double end);
+    public void setBounds(Point2D.Double start, Point2D.Double end);
     /**
-     * Returns the start point of the bounds.
+     * Returns the untransformed logical start point of the bounds.
      * 
      * 
-     * @see #basicSetBounds
+     * 
+     * @see #setBounds
      */
     public Point2D.Double getStartPoint();
     /**
-     * Returns the end point of the bounds.
+     * Returns the untransformed logical end point of the bounds.
      * 
      * 
-     * @see #basicSetBounds
+     * 
+     * @see #setBounds
      */
     public Point2D.Double getEndPoint();
     /**
-     * Returns the bounds of the figure as a Rectangle.
+     * Returns the untransformed logicalbounds of the figure as a Rectangle.
      * The handle bounds are used by Handle objects for adjusting the 
      * figure and for aligning the figure on a grid.
      */
@@ -162,10 +174,11 @@ public interface Figure extends Cloneable, Serializable, DOMStorable {
     public Dimension2DDouble getPreferredSize();
     
     /**
-     * Gets data which can be used to restore the transformaton of the figure 
-     * after a basicTransform has been applied to it.
+     * Gets data which can be used to restore the transformation of the figure 
+     * without loss of precision, after a transform has been applied to it.
      * 
-     * @see #basicTransform(AffineTransform)
+     * 
+     * @see #transform(AffineTransform)
      */
     public Object getTransformRestoreData();
     /**
@@ -184,41 +197,41 @@ public interface Figure extends Cloneable, Serializable, DOMStorable {
      * code sequence, if you need event firing:
      * <pre>
      * aFigure.willChange();
-     * aFigure.basicSetBounds(...);
+     * aFigure.transform(...);
      * aFigure.changed();
      * </pre>
      * 
-     * @see #getTransformRestoreData
-     * @see #restoreTransformTo
      * 
      * @param tx The transformation.
+     * @see #getTransformRestoreData
+     * @see #restoreTransformTo
      */
-    public void basicTransform(AffineTransform tx);
+    public void transform(AffineTransform tx);
     
     // ATTRIBUTES
-    /**
-     * Sets an attribute of the figure.
-     * AttributeKey name and semantics are defined by the class implementing
-     * the Figure interface.
-     * <p>
-     * On an attribute change, the Figure fires
-     * <code>FigureListener.figureAttributeChanged</code>, 
-     * <code>UndoableEditListener.undoableEditHappened</code>. If
-     * the shape is affected by an attribute change, 
-     * <code>FigureListener.figureChanged</code> is fired too.
-     */
-    public void setAttribute(AttributeKey key, Object value);
     /**
      * Sets an attribute of the figure without firing events.
      * AttributeKey name and semantics are defined by the class implementing
      * the Figure interface.
      * <p>
-     * Use <code>AttributeKey.basicSet()</code> for typesafe access to this 
+     * Use <code>AttributeKey.basicSet</code> for typesafe access to this 
      * method.
+     * <p>
+     * This is a basic operation which does not fire events. Use method 
+     * <code>setAttribute</code> if you need event firing, or - alternatively - the following
+     * code sequence:
+     * <pre>
+     * aFigure.willChange();
+     * Object oldData = aFigure.getAttributesRestoreData();
+     * STROKE_COLOR.basicSet(aFigure, ...);
+     * aFigure.changed();
+     * Object newData = aFigure.getAttributesRestoreData();
+     * ...fire an UndoableEditEvent oldData and newData... 
+     * </pre>
      * 
      * @see AttributeKey#basicSet
      */
-    public void basicSetAttribute(AttributeKey key, Object value);
+    public void setAttribute(AttributeKey key, Object value);
     /**
      * Gets an attribute from the Figure.
      * <p>
@@ -235,6 +248,19 @@ public interface Figure extends Cloneable, Serializable, DOMStorable {
      * By convention, an unmodifiable map is returned.
      */
     public Map<AttributeKey, Object> getAttributes();
+    
+    /**
+     * Gets data which can be used to restore the attributes of the figure 
+     * after a setAttribute has been applied to it.
+     * 
+     * 
+     * @see #basicSetAttribue(AttributeKey,Object)
+     */
+    public Object getAttributesRestoreData();
+    /**
+     * Restores the attributes of the figure to a previously stored state.
+     */
+    public void restoreAttributesTo(Object restoreData);
     
     // EDITING
     /**
@@ -305,15 +331,18 @@ public interface Figure extends Cloneable, Serializable, DOMStorable {
      */
     public Connector findCompatibleConnector(Connector c, boolean isStartConnector);
     /**
-     * Sets whether the connectors should be visible for the
-     * specified courting connector.
-     * Connectors can be optionally visible.
+     * Returns all connectors of this Figure for the specified prototype of
+     * a ConnectionFigure.
+     * <p>
+     * This is used by connection tools and connection handles
+     * to visualize the connectors when the user is about to
+     * create a ConnectionFigure to this Figure.
+     * 
+     * @param prototype The prototype used to create a connection or null if 
+     * unknown. This allows for specific connectors for different 
+     * connection figures.
      */
-    public void setConnectorsVisible(boolean isVisible, ConnectionFigure courtingConnection);
-    /**
-     * Returns true, if this figure draws its connectors.
-     */
-    public boolean isConnectorsVisible();
+    public Collection<Connector> getConnectors(ConnectionFigure prototype);
 
     // COMPOSITE FIGURES
     /**
@@ -401,7 +430,7 @@ public interface Figure extends Cloneable, Serializable, DOMStorable {
      * @param evt The mouse event.
      * @param view The drawing view which is the source of the mouse event.
      *
-     * @return Returns true, if the figure consumed the mouse click.
+     * @return Returns true, if the event was consumed.
       */
     public boolean handleMouseClick(Point2D.Double p, MouseEvent evt, DrawingView view);
     /**
@@ -412,13 +441,4 @@ public interface Figure extends Cloneable, Serializable, DOMStorable {
      * Removes a listener for FigureEvent's.
      */
     public void removeFigureListener(FigureListener l);
-    /**
-     * Adds a listener for UndoableEdit events.
-     */
-    public void addUndoableEditListener(UndoableEditListener l);
-    /**
-     * Removes a listener for UndoableEdit events.
-     */
-    public void removeUndoableEditListener(UndoableEditListener l);
-
 }

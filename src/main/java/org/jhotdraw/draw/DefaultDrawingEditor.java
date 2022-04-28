@@ -1,7 +1,7 @@
 /*
- * @(#)DefaultDrawingEditor.java  3.0  2006-02-13
+ * @(#)DefaultDrawingEditor.java  3.2  2007-04-22
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2007 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
  * All rights reserved.
  *
@@ -10,7 +10,6 @@
  * such Confidential Information and shall use it only in accordance
  * with the terms of the license agreement you entered into with
  * JHotDraw.org.
-�
  */
 
 package org.jhotdraw.draw;
@@ -28,7 +27,9 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * DefaultDrawingEditor.
  *
  * @author Werner Randelshofer
- * @version 3.0 2006-02-13 Revised to handle multiple drawing views.
+ * @version 3.2 2007-04-22 Keep last focus view, even if we lost focus permanently.
+ * <br>3.1 2007-04-16 Added method getDefaultAttributes.
+ * <br>3.0 2006-02-13 Revised to handle multiple drawing views.
  * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
  */
 public class DefaultDrawingEditor extends AbstractBean implements DrawingEditor, ToolListener {
@@ -37,17 +38,17 @@ public class DefaultDrawingEditor extends AbstractBean implements DrawingEditor,
     private HashSet<DrawingView> views;
     private DrawingView activeView;
     private boolean isEnabled = true;
-    private DrawingView focusedView;
     
     private FocusListener focusHandler = new FocusListener() {
         public void focusGained(FocusEvent e) {
-            setFocusedView((DrawingView) findView((Container) e.getSource()));
+            setActiveView((DrawingView) findView((Container) e.getSource()));
         }
         
         public void focusLost(FocusEvent e) {
+            /*
             if (! e.isTemporary()) {
             setFocusedView(null);
-            }
+            }*/
         }
     };
     
@@ -88,19 +89,20 @@ public class DefaultDrawingEditor extends AbstractBean implements DrawingEditor,
         evt.getView().getComponent().repaint(r.x, r.y, r.width, r.height);
     }
     public void toolStarted(ToolEvent evt) {
-        setView(evt.getView());
+        setActiveView(evt.getView());
     }
-    public void setView(DrawingView newValue) {
+    public void setActiveView(DrawingView newValue) {
         DrawingView oldValue = activeView;
         activeView = newValue;
-        firePropertyChange("view", oldValue, newValue);
+        firePropertyChange(PROP_ACTIVE_VIEW, oldValue, newValue);
+        /* Don't repaint
         for (DrawingView v : views) {
             v.getComponent().repaint();
-        }
+        }*/
     }
     public void toolDone(ToolEvent evt) {
         // FIXME - Maybe we should do this with all views of the editor??
-        DrawingView v = getView();
+        DrawingView v = getActiveView();
         if (v != null) {
             Container c = v.getComponent();
             c.invalidate();
@@ -112,27 +114,19 @@ public class DefaultDrawingEditor extends AbstractBean implements DrawingEditor,
         return tool;
     }
     
-    public DrawingView getView() {
-        return activeView != null ? activeView : views.iterator().next();
+    public DrawingView getActiveView() {
+        return (activeView != null) ? activeView : 
+            (views.size() == 0) ? null : views.iterator().next();
     }
     
-    private void updateFocusedView() {
+    private void updateActiveView() {
         for (DrawingView v : views) {
             if (v.getComponent().hasFocus()) {
-                setFocusedView(v);
+                setActiveView(v);
                 return;
             }
         }
-        setFocusedView(null);
-    }
-    
-    private void setFocusedView(DrawingView newValue) {
-        DrawingView oldValue = focusedView;
-        focusedView = newValue;
-        firePropertyChange("focusedView", oldValue, newValue);
-    }
-    public DrawingView getFocusedView() {
-        return focusedView;
+        setActiveView(null);
     }
     
     public void applyDefaultAttributesTo(Figure f) {
@@ -163,7 +157,7 @@ public class DefaultDrawingEditor extends AbstractBean implements DrawingEditor,
         if (activeView == view) {
             view = (views.size() > 0) ? views.iterator().next() : null;
         }
-        updateFocusedView();
+        updateActiveView();
     }
     
     public void add(DrawingView view) {
@@ -175,7 +169,7 @@ public class DefaultDrawingEditor extends AbstractBean implements DrawingEditor,
             view.addMouseMotionListener(tool);
             view.addKeyListener(tool);
         }
-        updateFocusedView();
+        updateActiveView();
     }
     
     public void setCursor(Cursor c) {
@@ -204,5 +198,9 @@ public class DefaultDrawingEditor extends AbstractBean implements DrawingEditor,
     
     public boolean isEnabled() {
         return isEnabled;
+    }
+
+    public Map<AttributeKey, Object> getDefaultAttributes() {
+        return Collections.unmodifiableMap(defaultAttributes);
     }
 }

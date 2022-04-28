@@ -68,19 +68,16 @@ public class GraphicalCompositeFigure extends AbstractCompositeFigure {
      * Handles figure changes in the children.
      */
     private PresentationFigureHandler presentationFigureHandler = new PresentationFigureHandler(this);
-    private static class PresentationFigureHandler implements FigureListener, UndoableEditListener {
+    private static class PresentationFigureHandler extends FigureAdapter implements UndoableEditListener {
         private GraphicalCompositeFigure owner;
         private PresentationFigureHandler(GraphicalCompositeFigure owner) {
             this.owner = owner;
         }
-        public void figureRequestRemove(FigureEvent e) {
+        @Override public void figureRequestRemove(FigureEvent e) {
             owner.remove(e.getFigure());
         }
         
-        public void figureRemoved(FigureEvent evt) {
-        }
-        
-        public void figureChanged(FigureEvent e) {
+        @Override public void figureChanged(FigureEvent e) {
             if (! owner.isChanging()) {
                 owner.willChange();
                 owner.fireFigureChanged(e);
@@ -88,13 +85,7 @@ public class GraphicalCompositeFigure extends AbstractCompositeFigure {
             }
         }
         
-        public void figureAdded(FigureEvent e) {
-        }
-        
-        public void figureAttributeChanged(FigureEvent e) {
-        }
-        
-        public void figureAreaInvalidated(FigureEvent e) {
+        @Override public void figureAreaInvalidated(FigureEvent e) {
             if (! owner.isChanging()) {
                 owner.fireAreaInvalidated(e.getInvalidatedArea());
             }
@@ -176,9 +167,9 @@ public class GraphicalCompositeFigure extends AbstractCompositeFigure {
      * method that subclassers override. Clients usually
      * call displayBox.
      */
-    public void basicSetBounds(Point2D.Double anchor, Point2D.Double lead) {
+    public void setBounds(Point2D.Double anchor, Point2D.Double lead) {
         if (getLayouter() == null) {
-            super.basicSetBounds(anchor, lead);
+            super.setBounds(anchor, lead);
             basicSetPresentationFigureBounds(anchor, lead);
         } else {
             Rectangle2D.Double r = getLayouter().layout(this, anchor, lead);
@@ -193,11 +184,11 @@ public class GraphicalCompositeFigure extends AbstractCompositeFigure {
     }
     
     protected void superBasicSetBounds(Point2D.Double anchor, Point2D.Double lead) {
-        super.basicSetBounds(anchor, lead);
+        super.setBounds(anchor, lead);
     }
     protected void basicSetPresentationFigureBounds(Point2D.Double anchor, Point2D.Double lead) {
         if (getPresentationFigure() != null) {
-            getPresentationFigure().basicSetBounds(anchor, lead);
+            getPresentationFigure().setBounds(anchor, lead);
         }
     }
     
@@ -205,10 +196,10 @@ public class GraphicalCompositeFigure extends AbstractCompositeFigure {
      * Standard presentation method which is delegated to the encapsulated presentation figure.
      * The presentation figure is moved as well as all contained figures.
      */
-    public void basicTransform(AffineTransform tx) {
-        super.basicTransform(tx);
+    public void transform(AffineTransform tx) {
+        super.transform(tx);
         if (getPresentationFigure() != null) {
-            getPresentationFigure().basicTransform(tx);
+            getPresentationFigure().transform(tx);
         }
     }
     
@@ -248,7 +239,6 @@ public class GraphicalCompositeFigure extends AbstractCompositeFigure {
     public void setPresentationFigure(Figure newPresentationFigure) {
         if (this.presentationFigure != null) {
             this.presentationFigure.removeFigureListener(presentationFigureHandler);
-            this.presentationFigure.removeUndoableEditListener(presentationFigureHandler);
             if (getDrawing() != null) {
                 this.presentationFigure.removeNotify(getDrawing());
             }
@@ -256,7 +246,6 @@ public class GraphicalCompositeFigure extends AbstractCompositeFigure {
         this.presentationFigure = newPresentationFigure;
         if (this.presentationFigure != null) {
             this.presentationFigure.addFigureListener(presentationFigureHandler);
-            this.presentationFigure.addUndoableEditListener(presentationFigureHandler);
             if (getDrawing() != null) {
                 this.presentationFigure.addNotify(getDrawing());
             }
@@ -283,7 +272,6 @@ public class GraphicalCompositeFigure extends AbstractCompositeFigure {
             (Figure) this.presentationFigure.clone();
         if (that.presentationFigure != null) {
             that.presentationFigure.addFigureListener(that.presentationFigureHandler);
-            that.presentationFigure.addUndoableEditListener(that.presentationFigureHandler);
         }
         return that;
     }
@@ -301,30 +289,10 @@ public class GraphicalCompositeFigure extends AbstractCompositeFigure {
     public void setAttribute(AttributeKey key, Object newValue) {
         if (forbiddenAttributes == null
                 || ! forbiddenAttributes.contains(key)) {
-            willChange();
             if (getPresentationFigure() != null) {
                 getPresentationFigure().setAttribute(key, newValue);
             }
             super.setAttribute(key, newValue);
-            
-            Object oldValue = attributes.put(key, newValue);
-            fireAttributeChanged(key, oldValue, newValue);
-            fireUndoableEditHappened(new AttributeChangeEdit(this, key, oldValue, newValue));
-            changed();
-        }
-    }
-    /**
-     * Sets an attribute of the figure.
-     * AttributeKey name and semantics are defined by the class implementing
-     * the figure interface.
-     */
-    public void basicSetAttribute(AttributeKey key, Object newValue) {
-        if (forbiddenAttributes == null
-                || ! forbiddenAttributes.contains(key)) {
-            if (getPresentationFigure() != null) {
-                getPresentationFigure().basicSetAttribute(key, newValue);
-            }
-            super.basicSetAttribute(key, newValue);
             Object oldValue = attributes.put(key, newValue);
         }
     }
@@ -396,13 +364,23 @@ public class GraphicalCompositeFigure extends AbstractCompositeFigure {
                 if (key != null && key.isAssignable(value)) {
                     if (forbiddenAttributes == null
                             || ! forbiddenAttributes.contains(key)) {
-                        setAttribute(key, value);
+                        key.basicSet(this, value);
                     }
                 }
                 in.closeElement();
             }
             in.closeElement();
         }
+    }
+    
+    public void read(DOMInput in) throws IOException {
+        super.read(in);
+        readAttributes(in);
+    }
+    
+    public void write(DOMOutput out) throws IOException {
+        super.write(out);
+        writeAttributes(out);
     }
     
     protected AttributeKey getAttributeKey(String name) {

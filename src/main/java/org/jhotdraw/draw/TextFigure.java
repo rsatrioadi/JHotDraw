@@ -1,7 +1,7 @@
 /*
- * @(#)TextFigure.java  1.0.1  2006-02-27
+ * @(#)TextFigure.java  1.0.2  2007-05-02
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2007 by the original authors of JHotDraw
  * and all its contributors ("JHotDraw.org")
  * All rights reserved.
  *
@@ -33,22 +33,27 @@ import org.jhotdraw.xml.DOMOutput;
  * @see TextTool
  *
  * @author Werner Randelshofer
- * @version 2.0.1 2006-02-27 Draw UNDERLINE_LOW_ONE_PIXEL instead of UNDERLINE_ON.
+ * @version 2.0.2 2007-05-02 Made all instance variables protected instead of
+ * private. 
+ * <br>2.0.1 2006-02-27 Draw UNDERLINE_LOW_ONE_PIXEL instead of UNDERLINE_ON.
  * <br>2.0 2006-01-14 Changed to support double precison coordinates.
  * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
  */
 public class TextFigure extends AbstractAttributedDecoratedFigure
         implements TextHolderFigure {
     protected Point2D.Double origin = new Point2D.Double();
-    private boolean editable = true;
+    protected boolean editable = true;
     
     
     // cache of the TextFigure's layout
-    transient private TextLayout textLayout;
+    transient protected TextLayout textLayout;
     
     /** Creates a new instance. */
     public TextFigure() {
-        this("Text");
+        this(ResourceBundleUtil.
+                getLAFBundle("org.jhotdraw.draw.Labels").
+                getString("TextFigure.defaultText")
+        );
     }
     public TextFigure(String text) {
         setText(text);
@@ -68,10 +73,10 @@ public class TextFigure extends AbstractAttributedDecoratedFigure
     }
     
     // SHAPE AND BOUNDS
-    public void basicTransform(AffineTransform tx) {
+    public void transform(AffineTransform tx) {
         tx.transform(origin, origin);
     }
-    public void basicSetBounds(Point2D.Double anchor, Point2D.Double lead) {
+    public void setBounds(Point2D.Double anchor, Point2D.Double lead) {
         origin = new Point2D.Double(anchor.x, anchor.y);
     }
     
@@ -92,7 +97,7 @@ public class TextFigure extends AbstractAttributedDecoratedFigure
             FontRenderContext frc = getFontRenderContext();
             HashMap<TextAttribute,Object> textAttributes = new HashMap<TextAttribute,Object>();
             textAttributes.put(TextAttribute.FONT, getFont());
-            if (FONT_UNDERLINED.get(this)) {
+            if (FONT_UNDERLINE.get(this)) {
                 textAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_LOW_ONE_PIXEL);
             }
             textLayout = new TextLayout(text, textAttributes, frc);
@@ -151,14 +156,16 @@ public class TextFigure extends AbstractAttributedDecoratedFigure
      * Gets the text shown by the text figure.
      */
     public String getText() {
-        return (String) getAttribute(TEXT);
+        return TEXT.get(this);
     }
     
     /**
      * Sets the text shown by the text figure.
+     * This is a convenience method for calling willChange,
+     * AttribuTEXT.basicSet, changed.
      */
     public void setText(String newText) {
-        setAttribute(TEXT, newText);
+        TEXT.set(this, newText);
     }
     
     public int getTextColumns() {
@@ -207,14 +214,14 @@ public class TextFigure extends AbstractAttributedDecoratedFigure
     public void setEditable(boolean b) {
         this.editable = b;
     }
-    public Collection<Handle> createHandles(int detailLevel) {
+    @Override public Collection<Handle> createHandles(int detailLevel) {
         LinkedList<Handle> handles = new LinkedList<Handle>();
-        if (detailLevel == 0) {
-            handles.add(new MoveHandle(this, RelativeLocator.northWest()));
-            handles.add(new MoveHandle(this, RelativeLocator.northEast()));
-            handles.add(new MoveHandle(this, RelativeLocator.southEast()));
-            handles.add(new FontSizeHandle(this));
-        }
+        handles.add(new BoundsOutlineHandle(this));
+        handles.add(new MoveHandle(this, RelativeLocator.northWest()));
+        handles.add(new MoveHandle(this, RelativeLocator.northEast()));
+        handles.add(new MoveHandle(this, RelativeLocator.southWest()));
+        handles.add(new MoveHandle(this, RelativeLocator.southEast()));
+        handles.add(new FontSizeHandle(this));
         return handles;
     }
     /**
@@ -247,6 +254,7 @@ public class TextFigure extends AbstractAttributedDecoratedFigure
                 );
         readAttributes(in);
         readDecorator(in);
+        invalidate();
     }
     
     
@@ -262,5 +270,9 @@ public class TextFigure extends AbstractAttributedDecoratedFigure
         that.origin = (Point2D.Double) this.origin.clone();
         that.textLayout = null;
         return that;
+    }
+
+    public boolean isTextOverflow() {
+        return false;
     }
 }

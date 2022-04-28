@@ -10,7 +10,6 @@
  * such Confidential Information and shall use it only in accordance
  * with the terms of the license agreement you entered into with
  * JHotDraw.org.
-�
  */
 
 
@@ -20,14 +19,34 @@ import java.awt.event.*;
 import java.awt.*;
 import java.util.*;
 /**
- * SelectAreaTracker.
+ * <code>SelectAreaTracker</code> implements interactions with the background
+ * area of a <code>Drawing</code>.
+ * <p>
+ * The <code>SelectAreaTracker</code> handles one of the three states of the 
+ * <code>SelectionTool</code>. It comes into action, when the user presses
+ * the mouse button over the background of a <code>Drawing</code>.
+ *
+ * @see SelectionTool
  *
  * @author Werner Randelshofer
  * @version 3.0 2006-02-15 Updated to handle multiple views.
  * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
  */
 public class SelectAreaTracker extends AbstractTool {
-    private Rectangle rubberBand = new Rectangle();
+    /**
+     * The bounds of the rubberband. 
+     */
+    private Rectangle rubberband = new Rectangle();
+    /**
+     * Rubberband color. When this is null, the tracker does not
+     * draw the rubberband.
+     */
+    private Color rubberbandColor = Color.BLACK;
+    /**
+     * Rubberband stroke.
+     */
+    private Stroke rubberbandStroke = new BasicStroke();
+    
     
     /** Creates a new instance. */
     public SelectAreaTracker() {
@@ -44,17 +63,17 @@ public class SelectAreaTracker extends AbstractTool {
         
     }
     public void mouseDragged(MouseEvent evt) {
-        Rectangle invalidatedArea = (Rectangle) rubberBand.clone();
-        rubberBand.setBounds(
+        Rectangle invalidatedArea = (Rectangle) rubberband.clone();
+        rubberband.setBounds(
         Math.min(anchor.x, evt.getX()),
         Math.min(anchor.y, evt.getY()),
         Math.abs(anchor.x - evt.getX()),
         Math.abs(anchor.y - evt.getY())
         );
         if (invalidatedArea.isEmpty()) {
-            invalidatedArea = (Rectangle) rubberBand.clone();
+            invalidatedArea = (Rectangle) rubberband.clone();
         } else {
-            invalidatedArea = invalidatedArea.union(rubberBand);
+            invalidatedArea = invalidatedArea.union(rubberband);
         }
         fireAreaInvalidated(invalidatedArea);
     }
@@ -65,19 +84,19 @@ public class SelectAreaTracker extends AbstractTool {
     }
     
     private void clearRubberBand() {
-        if (rubberBand.width > 0) {
-            fireAreaInvalidated(rubberBand);
-            rubberBand.width = 0;
+        if (! rubberband.isEmpty()) {
+            fireAreaInvalidated(rubberband);
+            rubberband.width = -1;
         }
     }
     
     public void draw(Graphics2D g) {
-        g.setStroke(new BasicStroke());
-        g.setColor(Color.black);
-        g.drawRect(rubberBand.x, rubberBand.y, rubberBand.width - 1, rubberBand.height - 1);
+        g.setStroke(rubberbandStroke);
+        g.setColor(rubberbandColor);
+        g.drawRect(rubberband.x, rubberband.y, rubberband.width - 1, rubberband.height - 1);
     }
     
     private void selectGroup(boolean toggle) {
-        getView().addToSelection(getView().findFiguresWithin(rubberBand));
+        getView().addToSelection(getView().findFiguresWithin(rubberband));
     }
 }

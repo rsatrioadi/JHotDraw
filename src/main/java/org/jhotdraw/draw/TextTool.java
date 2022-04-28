@@ -124,7 +124,7 @@ public class TextTool extends CreationTool implements ActionListener {
         d.width = Math.max(box.width, d.width);
         return new Rectangle(box.x - 6, box.y - 4, d.width, d.height);
          */
-        Rectangle box = getView().drawingToView(figure.getBounds());
+        Rectangle box = getView().drawingToView(figure.getDrawingArea());
         //Dimension d = textField.getPreferredSize(3);
         //d.width = Math.max(box.width, d.width);
         Insets insets = textField.getInsets();
@@ -153,23 +153,19 @@ public class TextTool extends CreationTool implements ActionListener {
     
     protected void endEdit() {
         if (typingTarget != null) {
-            //typingTarget.willChange();
+                    typingTarget.willChange();
             if (textField.getText().length() > 0) {
                 typingTarget.setText(textField.getText());
-                if (createdFigure != null) {
-                    getDrawing().fireUndoableEditHappened(creationEdit);
-                    createdFigure = null;
-                }
             } else {
                 if (createdFigure != null) {
                     getDrawing().remove((Figure)getAddedFigure());
                 } else {
                     typingTarget.setText("");
+                    typingTarget.changed();
                 }
             }
-            // nothing to undo
-            //	            setUndoActivity(null);
-            //typingTarget.changed();
+                    // XXX - Implement Undo/Redo behavior here
+            typingTarget.changed();
             typingTarget = null;
             
             textField.endOverlay();
@@ -180,5 +176,13 @@ public class TextTool extends CreationTool implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         endEdit();
         fireToolDone();
+    }
+    /**
+     * This method allows subclasses to do perform additonal user interactions
+     * after the new figure has been created.
+     * The implementation of this class just invokes fireToolDone.
+     */
+    protected void creationFinished(Figure createdFigure) {
+            beginEdit((TextHolderFigure) createdFigure);
     }
 }
