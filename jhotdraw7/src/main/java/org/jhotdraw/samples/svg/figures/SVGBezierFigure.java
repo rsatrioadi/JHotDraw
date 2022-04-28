@@ -1,19 +1,20 @@
 /*
- * @(#)SVGBezierFigure.java  1.0  April 14, 2007
+ * @(#)SVGBezierFigure.java  1.0.1  2008-03-20
  *
- * Copyright (c) 2007 Werner Randelshofer
- * Staldenmattweg 2, CH-6405 Immensee, Switzerland
+ * Copyright (c) 2007-2008 by the original authors of JHotDraw
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * Werner Randelshofer. ("Confidential Information").  You shall not
- * disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Werner Randelshofer.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.samples.svg.figures;
 
+import java.awt.BasicStroke;
 import java.awt.event.*;
 import java.awt.geom.*;
 import java.util.*;
@@ -27,7 +28,8 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * represent a single BezierPath segment within an SVG path.
  *
  * @author Werner Randelshofer
- * @version 1.0 April 14, 2007 Created.
+ * @version 1.0.1 2008-03-20 Fixed computation of clip bounds. 
+ * <br>1.0 April 14, 2007 Created.
  */
 public class SVGBezierFigure extends BezierFigure {
     private Rectangle2D.Double cachedDrawingArea;
@@ -103,7 +105,6 @@ public class SVGBezierFigure extends BezierFigure {
     
     public Rectangle2D.Double getDrawingArea() {
         if (cachedDrawingArea == null) {
-            
             if (TRANSFORM.get(this) == null) {
                 cachedDrawingArea = path.getBounds2D();
             } else {
@@ -111,6 +112,14 @@ public class SVGBezierFigure extends BezierFigure {
                 p2.transform(TRANSFORM.get(this));
                 cachedDrawingArea = p2.getBounds2D();
             }
+            double strokeTotalWidth = AttributeKeys.getStrokeTotalWidth(this);
+            double width = strokeTotalWidth / 2d;
+            if (STROKE_JOIN.get(this) == BasicStroke.JOIN_MITER) {
+                width *= STROKE_MITER_LIMIT.get(this);
+            } else if (STROKE_CAP.get(this) != BasicStroke.CAP_BUTT) {
+                width += strokeTotalWidth * 2;
+            }
+            Geom.grow(cachedDrawingArea, width, width);
         }
         return (Rectangle2D.Double) cachedDrawingArea.clone();
     }

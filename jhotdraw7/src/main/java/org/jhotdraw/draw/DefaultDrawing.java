@@ -2,18 +2,18 @@
  * @(#)DefaultDrawing.java  2.2  2007-04-09
  *
  * Copyright (c) 1996-2007 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
-
 package org.jhotdraw.draw;
 
+import java.awt.event.MouseEvent;
 import org.jhotdraw.geom.Dimension2DDouble;
 import org.jhotdraw.util.ReversedList;
 import java.awt.*;
@@ -23,9 +23,10 @@ import javax.swing.event.*;
 import javax.swing.undo.*;
 import org.jhotdraw.util.*;
 import java.util.*;
+
 /**
- * DefaultDrawing to be used for drawings that contain only a few figures.
- * For larger drawings, {@see QuadTreeDrawing} should be used.
+ * DefaultDrawing to be used for drawings that contain only a few children.
+ * For larger drawings, {@link QuadTreeDrawing} should be used.
  * <p>
  * FIXME - Maybe we should rename this class to SimpleDrawing or we should
  * get rid of this class altogether.
@@ -40,41 +41,20 @@ import java.util.*;
  */
 public class DefaultDrawing
         extends AbstractDrawing {
-    private ArrayList<Figure> figures = new ArrayList<Figure>();
+
     private boolean needsSorting = false;
-    private FigureHandler figureHandler;
-    private Dimension2DDouble canvasSize;
-    
+    private Rectangle2D.Double canvasBounds;
+
     /** Creates a new instance. */
     public DefaultDrawing() {
-        figureHandler = createFigureHandler();
     }
-    
-    protected FigureHandler createFigureHandler() {
-        return new FigureHandler();
-    }
-    
-    public int indexOf(Figure figure) {
-        return figures.indexOf(figure);
-    }
-    public void basicAdd(int index, Figure figure) {
-        figures.add(index, figure);
-        figure.addFigureListener(figureHandler);
-        invalidateSortOrder();
-    }
-    public void basicRemove(Figure figure) {
-        figures.remove(figure);
-        figure.removeFigureListener(figureHandler);
-        invalidateSortOrder();
-    }
-    
-    
+
     public void draw(Graphics2D g) {
         synchronized (getLock()) {
             ensureSorted();
-            ArrayList<Figure> toDraw = new ArrayList<Figure>(figures.size());
+            ArrayList<Figure> toDraw = new ArrayList<Figure>(getChildren().size());
             Rectangle clipRect = g.getClipBounds();
-            for (Figure f : figures) {
+            for (Figure f : getChildren()) {
                 if (f.getDrawingArea().intersects(clipRect)) {
                     toDraw.add(f);
                 }
@@ -82,29 +62,29 @@ public class DefaultDrawing
             draw(g, toDraw);
         }
     }
-    
-    public void draw(Graphics2D g, Collection<Figure> figures) {
+
+    public void draw(Graphics2D g, Collection<Figure> children) {
         Rectangle2D clipBounds = g.getClipBounds();
         if (clipBounds != null) {
-            for (Figure f : figures) {
+            for (Figure f : children) {
                 if (f.isVisible() && f.getDrawingArea().intersects(clipBounds)) {
                     f.draw(g);
                 }
             }
         } else {
-            for (Figure f : figures) {
+            for (Figure f : children) {
                 if (f.isVisible()) {
                     f.draw(g);
                 }
             }
         }
     }
-    
+
     public java.util.List<Figure> sort(Collection<Figure> c) {
         HashSet<Figure> unsorted = new HashSet<Figure>();
         unsorted.addAll(c);
         ArrayList<Figure> sorted = new ArrayList<Figure>(c.size());
-        for (Figure f : figures) {
+        for (Figure f : getChildren()) {
             if (unsorted.contains(f)) {
                 sorted.add(f);
                 unsorted.remove(f);
@@ -118,8 +98,7 @@ public class DefaultDrawing
         }
         return sorted;
     }
-    
-    
+
     public Figure findFigure(Point2D.Double p) {
         for (Figure f : getFiguresFrontToBack()) {
             if (f.isVisible() && f.contains(p)) {
@@ -128,6 +107,7 @@ public class DefaultDrawing
         }
         return null;
     }
+
     public Figure findFigureExcept(Point2D.Double p, Figure ignore) {
         for (Figure f : getFiguresFrontToBack()) {
             if (f != ignore && f.isVisible() && f.contains(p)) {
@@ -136,6 +116,7 @@ public class DefaultDrawing
         }
         return null;
     }
+
     public Figure findFigureBehind(Point2D.Double p, Figure figure) {
         boolean isBehind = false;
         for (Figure f : getFiguresFrontToBack()) {
@@ -149,41 +130,45 @@ public class DefaultDrawing
         }
         return null;
     }
-    public Figure findFigureBehind(Point2D.Double p, Collection<Figure> figures) {
-        int inFrontOf = figures.size();
+
+    public Figure findFigureBehind(Point2D.Double p, Collection<Figure> children) {
+        int inFrontOf = children.size();
         for (Figure f : getFiguresFrontToBack()) {
             if (inFrontOf == 0) {
                 if (f.isVisible() && f.contains(p)) {
                     return f;
                 }
             } else {
-                if (figures.contains(f)) {
+                if (children.contains(f)) {
                     inFrontOf--;
                 }
             }
         }
         return null;
     }
+
     public Figure findFigureExcept(Point2D.Double p, Collection<Figure> ignore) {
         for (Figure f : getFiguresFrontToBack()) {
-            if (! ignore.contains(f) && f.isVisible() && f.contains(p)) {
+            if (!ignore.contains(f) && f.isVisible() && f.contains(p)) {
                 return f;
             }
         }
         return null;
     }
+
     public java.util.List<Figure> findFigures(Rectangle2D.Double bounds) {
         LinkedList<Figure> intersection = new LinkedList<Figure>();
-        for (Figure f : figures) {
+        for (Figure f : getChildren()) {
             if (f.isVisible() && f.getBounds().intersects(bounds)) {
                 intersection.add(f);
             }
         }
         return intersection;
     }
+
     public java.util.List<Figure> findFiguresWithin(Rectangle2D.Double bounds) {
         LinkedList<Figure> contained = new LinkedList<Figure>();
-        for (Figure f : figures) {
+        for (Figure f : getChildren()) {
             Rectangle2D r = f.getBounds();
             if (AttributeKeys.TRANSFORM.get(f) != null) {
                 r = AttributeKeys.TRANSFORM.get(f).createTransformedShape(r).getBounds2D();
@@ -194,92 +179,88 @@ public class DefaultDrawing
         }
         return contained;
     }
-    
-    public java.util.List<Figure> getFigures() {
-        return Collections.unmodifiableList(figures);
-    }
-    
+
     public Figure findFigureInside(Point2D.Double p) {
         Figure f = findFigure(p);
         return (f == null) ? null : f.findFigureInside(p);
     }
-    
+
     /**
      * Returns an iterator to iterate in
-     * Z-order front to back over the figures.
+     * Z-order front to back over the children.
      */
     public java.util.List<Figure> getFiguresFrontToBack() {
         ensureSorted();
-        return new ReversedList<Figure>(figures);
+        return new ReversedList<Figure>(getChildren());
     }
-    
+
     public void bringToFront(Figure figure) {
-        if (figures.remove(figure)) {
-            figures.add(figure);
+        if (basicRemove(figure) != -1) {
+            basicAdd(figure);
             invalidateSortOrder();
             fireAreaInvalidated(figure.getDrawingArea());
         }
     }
+
     public void sendToBack(Figure figure) {
-        if (figures.remove(figure)) {
-            figures.add(0, figure);
+        if (basicRemove(figure) != -1) {
+            basicAdd(0, figure);
             invalidateSortOrder();
             fireAreaInvalidated(figure.getDrawingArea());
         }
     }
-    
-    public boolean contains(Figure f) {
-        return figures.contains(f);
-    }
+
     /**
      * Invalidates the sort order.
      */
     private void invalidateSortOrder() {
         needsSorting = true;
     }
+
     /**
-     * Ensures that the figures are sorted in z-order sequence from back to
+     * Ensures that the children are sorted in z-order sequence from back to
      * front.
      */
     private void ensureSorted() {
         if (needsSorting) {
-            Collections.sort(figures, FigureLayerComparator.INSTANCE);
+            Collections.sort(children, FigureLayerComparator.INSTANCE);
             needsSorting = false;
         }
     }
-    
-    public void setCanvasSize(Dimension2DDouble newValue) {
-        Dimension2DDouble oldValue = canvasSize;
-        canvasSize = newValue;
-        firePropertyChange("canvasSize", oldValue, newValue);
-    }
-    
-    public Dimension2DDouble getCanvasSize() {
-        return canvasSize;
+    protected void setAttributeOnChildren(AttributeKey key, Object newValue) {
+        // empty
     }
 
-    /**
-     * Handles all figure events fired by Figures contained in the Drawing.
-     */
-    protected class FigureHandler extends FigureAdapter implements UndoableEditListener {
-        /**
-         * We propagate all edit events from our figures to
-         * undoable edit listeners, which have registered with us.
-         */
-        public void undoableEditHappened(UndoableEditEvent e) {
-            fireUndoableEditHappened(e.getEdit());
-        }
-        
-        @Override public void figureAreaInvalidated(FigureEvent e) {
-            fireAreaInvalidated(e.getInvalidatedArea());
-        }
-        @Override public void figureChanged(FigureEvent e) {
-            invalidateSortOrder();
-            fireAreaInvalidated(e.getInvalidatedArea());
-        }
-        
-        @Override public void figureRequestRemove(FigureEvent e) {
-            remove(e.getFigure());
-        }
+    public void setCanvasSize(Dimension2DDouble newValue) {
+        Dimension2DDouble oldValue = new Dimension2DDouble(
+                canvasBounds.width, canvasBounds.height);
+        canvasBounds.width = newValue == null ? -1 : newValue.width;
+        canvasBounds.height = newValue == null ? -1 : newValue.height;
+        firePropertyChange("canvasSize", oldValue, newValue);
+    }
+
+    public Dimension2DDouble getCanvasSize() {
+        return canvasBounds == null || canvasBounds.isEmpty() ? null : new Dimension2DDouble(
+                canvasBounds.width, canvasBounds.height);
+    }
+
+    public int indexOf(Figure figure) {
+        return children.indexOf(figure);
+    }
+
+    public DefaultDrawing clone() {
+        DefaultDrawing that = (DefaultDrawing) super.clone();
+        that.canvasBounds = (Rectangle2D.Double) this.canvasBounds.clone();
+        return that;
+    }
+
+    @Override
+    protected void drawFill(Graphics2D g) {
+    //  throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    protected void drawStroke(Graphics2D g) {
+    //  throw new UnsupportedOperationException("Not supported yet.");
     }
 }

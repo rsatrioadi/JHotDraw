@@ -2,14 +2,14 @@
  * @(#)BezierBezierLineConnection.java  1.0.2  2007-05-02
  *
  * Copyright (c) 1996-2007 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.draw;
@@ -95,9 +95,8 @@ public class LineConnectionFigure extends LineFigure
      * PolylineHandles but adds ChangeConnectionHandles at the
      * start and end.
      */
-    public Collection<Handle> createHandles(int detailLevel) {
+    @Override public Collection<Handle> createHandles(int detailLevel) {
         ArrayList<Handle> handles = new ArrayList<Handle>(getNodeCount());
-        
         switch (detailLevel) {
             case 0 :
                 if (getLiner() == null) {
@@ -138,6 +137,7 @@ public class LineConnectionFigure extends LineFigure
         }
         changed();
     }
+    
     public void validate() {
         super.validate();
         lineout();
@@ -302,8 +302,6 @@ public class LineConnectionFigure extends LineFigure
      * Note: This method is only invoked, when the Figure is part of a
      * Drawing. If the Figure is added to a Drawing this method is invoked
      * on behalf of the addNotify call to the Figure.
-     *
-     * @see #addConnect
      */
     protected void handleConnect(Connector start, Connector end) {
     }

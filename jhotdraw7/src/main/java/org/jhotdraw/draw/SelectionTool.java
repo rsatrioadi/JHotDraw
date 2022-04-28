@@ -1,15 +1,15 @@
 /*
- * @(#)SelectionTool.java  1.0  2003-12-01
+ * @(#)SelectionTool.java  1.1  2007-11-05
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 
@@ -22,8 +22,8 @@ import java.util.HashSet;
 /**
  * Tool to select and manipulate figures.
  * <p>
- * A selection tool is in one of three states, for example, background
- * selection, figure selection, handle manipulation. The different
+ * A selection tool is in one of three states: 1) area
+ * selection, 2) figure dragging, 3) handle manipulation. The different
  * states are handled by different tracker objects: the
  * <code>SelectAreaTracker</code>, the <code>DragTracker</code> and the
  * <code>HandleTracker</code>.
@@ -36,7 +36,8 @@ import java.util.HashSet;
  * @see HandleTracker
  *
  * @author Werner Randelshofer
- * @version 1.0 2003-12-01 Derived from JHotDraw 5.4b1.
+ * @version 1.1 2007-11-05 Added property selectBehindEnabled.
+ * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
  */
 public class SelectionTool extends AbstractTool
         implements ToolListener {
@@ -45,13 +46,43 @@ public class SelectionTool extends AbstractTool
      */
     private Tool tracker;
     
+    /**
+     * Constant for the name of the selectBehindEnabled property.
+     */
+    public final static String SELECT_BEHIND_ENABLED_PROPERTY = "selectBehindEnabled";
+    
+    /**
+     * Represents the state of the selectBehindEnabled property.
+     * By default, this property is set to true.
+     */
+    private boolean isSelectBehindEnabled = true;
+    
     /** Creates a new instance. */
     public SelectionTool() {
         tracker = createAreaTracker();
         tracker.addToolListener(this);
     }
     
-    
+    /**
+     * Sets the selectBehindEnabled property.
+     * This is a bound property.
+     *
+     * @param newValue The new value.
+     */
+    public void setSelectBehindEnabled(boolean newValue) {
+        boolean oldValue = isSelectBehindEnabled;
+        isSelectBehindEnabled = newValue;
+        firePropertyChange(SELECT_BEHIND_ENABLED_PROPERTY, oldValue, newValue);
+    }
+    /**
+     * Returns the value of the selectBehindEnabled property.
+     * This is a bound property.
+     *
+     * @return The property value.
+     */
+    public boolean isSelectBehindEnabled() {
+        return isSelectBehindEnabled;
+    }
     
     public void activate(DrawingEditor editor) {
         super.activate(editor);
@@ -126,9 +157,10 @@ public class SelectionTool extends AbstractTool
                 newTracker = createHandleTracker(handle);
             } else {
                 Figure figure;
-                if ((evt.getModifiersEx() &
+                if (isSelectBehindEnabled() && 
+                        (evt.getModifiersEx() &
                         (InputEvent.ALT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK)) != 0) {
-                    // Take a figure behind the current selection
+                    // Select a figure behind the current selection
                     figure = view.findFigure(anchor);
                     HashSet<Figure> ignoredFigures = new HashSet<Figure>(view.getSelectedFigures());
                     ignoredFigures.add(figure);
@@ -141,10 +173,12 @@ public class SelectionTool extends AbstractTool
                     // If possible, continue to work with the current selection
                     Point2D.Double p = view.viewToDrawing(anchor);
                     figure = null;
-                    for (Figure f : view.getSelectedFigures()) {
-                        if (f.contains(p)) {
-                            figure = f;
-                            break;
+                    if (isSelectBehindEnabled()) {
+                        for (Figure f : view.getSelectedFigures()) {
+                            if (f.contains(p)) {
+                                figure = f;
+                                break;
+                            }
                         }
                     }
                     // If the point is not contained in the current selection,
@@ -153,6 +187,7 @@ public class SelectionTool extends AbstractTool
                         figure = view.findFigure(anchor);
                     }
                 }
+                
                 if (figure != null) {
                     newTracker = createDragTracker(figure);
                 } else {

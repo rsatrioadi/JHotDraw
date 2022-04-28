@@ -1,15 +1,15 @@
 /*
- * @(#)BezierFigure.java 3.0  2007-05-12
+ * @(#)BezierFigure.java 3.0.1  2007-11-30
  *
  * Copyright (c) 1996-2007 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.draw;
@@ -28,10 +28,21 @@ import org.jhotdraw.xml.DOMOutput;
 /**
  * A BezierFigure can be used to draw arbitrary shapes using a <code>BezierPath</code>.
  * It can be used to draw an open path or a closed shape.
+ * <p>
+ * A BezierFigure can have straight path segments and curved segments.
+ * A straight path segment can be added by clicking on the drawing area.
+ * Curved segments can be added by dragging the mouse pointer over the
+ * drawing area.
+ * <p> 
+ * To creation of the BezierFigure can be finished by adding a segment
+ * which closes the path, or by double clicking on the drawing area, or by
+ * selecting a different tool in the DrawingEditor.
+ * 
  *
  * @see org.jhotdraw.geom.BezierPath
  *
- * @version 3.0 2007-05-12 Got rid of basic methods.
+ * @version 3.0.1 2007-11-30 Changed method removeNode from protected to public. 
+ * <br>3.0 2007-05-12 Got rid of basic methods.
  * <br>2.2.1 2007-04-22 Method contains did not work as expected for filled
  * unclosed beziers with thick line widths.
  * <br>2.2 2007-04-14 Added BezierContourHandle. We fill now open
@@ -264,7 +275,7 @@ public class BezierFigure extends AbstractAttributedFigure {
         return (BezierPath) path.clone();
     }
     public void setBezierPath(BezierPath newValue) {
-        path = newValue.clone();
+        path = (BezierPath) newValue.clone();
         this.setClosed(newValue.isClosed());
     }
     
@@ -526,7 +537,7 @@ public class BezierFigure extends AbstractAttributedFigure {
     /**
      * Removes the Node at the specified index.
      */
-    protected BezierPath.Node removeNode(int index) {
+    public BezierPath.Node removeNode(int index) {
        return path.remove(index);
     }
     /**

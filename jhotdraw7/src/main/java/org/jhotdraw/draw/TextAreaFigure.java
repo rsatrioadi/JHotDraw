@@ -2,14 +2,14 @@
  * @(#)TextAreaFigure.java  2.0.3  2007-05-02
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.draw;
@@ -133,6 +133,8 @@ public class TextAreaFigure extends AbstractAttributedDecoratedFigure implements
      *  measure the size of the paragraph.
      */
     private float drawParagraph(Graphics2D g, AttributedCharacterIterator styledText, float verticalPos, float maxVerticalPos, float leftMargin, float rightMargin, float[] tabStops, int tabCount) {
+        // This method is based on the code sample given
+        // in the class comment of java.awt.font.LineBreakMeasurer, 
         
         // assume styledText is an AttributedCharacterIterator, and the number
         // of tabs in styledText is tabCount
@@ -338,7 +340,12 @@ public class TextAreaFigure extends AbstractAttributedDecoratedFigure implements
      * <p>Returns null, if no specialized tool is available.
      */
     public Tool getTool(Point2D.Double p) {
-        return (isEditable() && contains(p)) ? new TextAreaTool(this) : null;
+        if (isEditable() && contains(p)) {
+            TextAreaTool tool = new TextAreaTool(this);
+            tool.setForCreationOnly(false);
+            return tool;
+        }
+        return null;
     }
     public TextHolderFigure getLabelFor() {
         return this;

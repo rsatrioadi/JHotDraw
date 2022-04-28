@@ -1,16 +1,15 @@
 /*
- * @(#)MoveHandle.java  2.0  2006-01-14
+ * @(#)MoveHandle.java  2.1  2008-02-28
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
-�
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 
@@ -20,11 +19,12 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.util.*;
 /**
- * A handle that changes the location of the owning figure. Its only purpose is
- * to show feedback that a figure is selected.
+ * A handle that changes the location of the owning figure, if the figure is
+ * transformable. 
  *
  * @author Werner Randelshofer
- * @version 2.0 2006-01-14 Changed to support double precision coordinates.
+ * @version 2.1 2008-02-28 Only move a figure, if it is transformable. 
+ * <br>2.0 2006-01-14 Changed to support double precision coordinates.
  * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
  */
 public class MoveHandle extends LocatorHandle {
@@ -32,8 +32,6 @@ public class MoveHandle extends LocatorHandle {
      * The previously handled x and y coordinates.
      */
     private Point2D.Double oldPoint;
-    
-    private Object geometry;
     
     /** Creates a new instance. */
     public MoveHandle(Figure owner, Locator locator) {
@@ -52,17 +50,32 @@ public class MoveHandle extends LocatorHandle {
     }
     /**
      * Draws this handle.
-     * Null Handles are drawn as unfilled rectangles.
+     * <p>
+     * If the figure is transformable, the handle is drawn as a filled rectangle.
+     * If the figure is not transformable, the handle is drawn as an unfilled
+     * rectangle.
      */
     public void draw(Graphics2D g) {
-        drawRectangle(g, Color.white, Color.black);
+        drawRectangle(g, getOwner().isTransformable() ? Color.white : null, Color.black);
     }
+    /**
+     * Returns a cursor for the handle. 
+     * 
+     * @return Returns a move cursor, if the figure
+     * is transformable. Returns a default cursor otherwise. 
+     */
+    public Cursor getCursor() {
+        return Cursor.getPredefinedCursor(
+                getOwner().isTransformable() ? Cursor.MOVE_CURSOR : Cursor.DEFAULT_CURSOR
+                );
+    }
+    
     public void trackStart(Point anchor, int modifiersEx) {
-        // geometry = owner.getGeometry();
         oldPoint = view.getConstrainer().constrainPoint(view.viewToDrawing(anchor));
     }
     public void trackStep(Point anchor, Point lead, int modifiersEx) {
         Figure f = getOwner();
+        if (f.isTransformable()) {
         Point2D.Double newPoint = view.getConstrainer().constrainPoint(view.viewToDrawing(lead));
         AffineTransform tx = new AffineTransform();
         tx.translate(newPoint.x - oldPoint.x, newPoint.y - oldPoint.y);
@@ -71,13 +84,16 @@ public class MoveHandle extends LocatorHandle {
         f.changed();
         
         oldPoint = newPoint;
+        }
     }
     public void trackEnd(Point anchor, Point lead, int modifiersEx) {
+        if (getOwner().isTransformable()) {
         AffineTransform tx = new AffineTransform();
         tx.translate(lead.x - anchor.x, lead.y - anchor.y);
         fireUndoableEditHappened(
                 new TransformEdit(getOwner(),tx)
                 );
+        }
     }
     
     static public Handle south(Figure owner) {

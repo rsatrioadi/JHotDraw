@@ -2,14 +2,14 @@
  * @(#)AbstractSaveBeforeAction.java  2.0  2006-06-15
  *
  * Copyright (c) 1996-2007 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.app.action;
@@ -24,18 +24,18 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
 import org.jhotdraw.app.Application;
-import org.jhotdraw.app.Project;
+import org.jhotdraw.app.View;
 /**
- * Base class for actions that can only be safely performed when the project
- * has no unsaved changes.
+ * Base class for actions that can only be safely performed when a 
+ * {@link org.jhotdraw.app.View} has no unsaved changes.
  * <p>
- * If the project has no unsaved changes, method doIt is invoked immediately.
+ * If the view has no unsaved changes, method doIt is invoked immediately.
  * If unsaved changes are present, a dialog is shown asking whether the user
  * wants to discard the changes, cancel or save the changes before doing it.
  * If the user chooses to discard the chanegs, toIt is invoked immediately.
  * If the user chooses to cancel, the action is aborted.
- * If the user chooses to save the changes, the project is saved, and doIt
- * is only invoked after the project was successfully saved.
+ * If the user chooses to save the changes, the view is saved, and doIt
+ * is only invoked after the view was successfully saved.
  *
  * @author  Werner Randelshofer
  * @version 2.0 2006-06-15 Reworked. 
@@ -43,7 +43,7 @@ import org.jhotdraw.app.Project;
  * <br>1.1 2006-05-03 Localized messages.
  * <br>1.0 27. September 2005 Created.
  */
-public abstract class AbstractSaveBeforeAction extends AbstractProjectAction {
+public abstract class AbstractSaveBeforeAction extends AbstractViewAction {
     private Component oldFocusOwner;
     
     /** Creates a new instance. */
@@ -52,12 +52,13 @@ public abstract class AbstractSaveBeforeAction extends AbstractProjectAction {
     }
     
     public void actionPerformed(ActionEvent evt) {
-       final Project p = getCurrentProject();
+       final View p = getActiveView();
         if (p.isEnabled()) {
             final ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
             Window wAncestor = SwingUtilities.getWindowAncestor(p.getComponent());
             oldFocusOwner = (wAncestor == null) ? null : wAncestor.getFocusOwner();
             p.setEnabled(false);
+
             if (p.hasUnsavedChanges()) {
                 JOptionPane pane = new JOptionPane(
                         "<html>"+UIManager.getString("OptionPane.css")+
@@ -92,7 +93,7 @@ public abstract class AbstractSaveBeforeAction extends AbstractProjectAction {
         }
     }
     
-    protected void saveChanges(final Project p) {
+    protected void saveChanges(final View p) {
         if (p.getFile() == null) {
             JFileChooser fileChooser = p.getSaveChooser();
             //int option = fileChooser.showSaveDialog(this);
@@ -120,7 +121,7 @@ public abstract class AbstractSaveBeforeAction extends AbstractProjectAction {
         }
     }
     
-    protected void saveToFile(final Project p, final File file) {
+    protected void saveToFile(final View p, final File file) {
         p.execute(new Worker() {
             public Object construct() {
                 try {
@@ -136,18 +137,24 @@ public abstract class AbstractSaveBeforeAction extends AbstractProjectAction {
         });
     }
     
-    protected void fileSaved(Project p, File file, Object value) {
+    protected void fileSaved(View p, File file, Object value) {
         if (value == null) {
             p.setFile(file);
             p.markChangesAsSaved();
             doIt(p);
         } else {
+            String message;
+            if ((value instanceof Throwable) && ((Throwable) value).getMessage() != null) {
+                message = ((Throwable) value).getMessage();
+            } else {
+                message = value.toString();
+            }
             ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
-            JSheet.showMessageSheet(p.getComponent(),
-                    "<html>"+UIManager.getString("OptionPane.css")+
-                    labels.getFormatted("couldntSave", file, value),
-                    JOptionPane.ERROR_MESSAGE
-                    );
+            JSheet.showMessageSheet(getActiveView().getComponent(),
+                    "<html>" + UIManager.getString("OptionPane.css") +
+                    "<b>" + labels.getFormatted("couldntSave", file.getName()) + "</b><br>" +
+                    ((message == null) ? "" : message),
+                    JOptionPane.ERROR_MESSAGE);
         }
         p.setEnabled(true);
         if (oldFocusOwner != null) {
@@ -155,5 +162,5 @@ public abstract class AbstractSaveBeforeAction extends AbstractProjectAction {
         }
     }
     
-    protected abstract void doIt(Project p);
+    protected abstract void doIt(View p);
 }

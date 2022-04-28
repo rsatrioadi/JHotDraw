@@ -1,15 +1,15 @@
 /*
  * @(#)BezierOutlineHandle.java  1.0  April 14, 2007
  *
- * Copyright (c) 2007 Werner Randelshofer
- * Staldenmattweg 2, CH-6405 Immensee, Switzerland
+ * Copyright (c) 2007 by the original authors of JHotDraw
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * Werner Randelshofer. ("Confidential Information").  You shall not
- * disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Werner Randelshofer.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.draw;
@@ -23,7 +23,12 @@ import java.awt.*;
  * @version 1.0 April 14, 2007 Created.
  */
 public class BezierOutlineHandle extends AbstractHandle {
+    /* XXX - In a future version all these styles should be properties of
+     * the DrawingEditor (much like properties in javax.swing.UIManager).
+     * So that we can have visually styled (skinned) drawing editors.
+     */
     private final static Color HANDLE_FILL_COLOR = new Color(0x00a8ff);
+    private final static BasicStroke HANDLE_STROKE = new BasicStroke();
     private final static Color HANDLE_STROKE_COLOR = Color.WHITE;
     
     /** Creates a new instance. */
@@ -57,6 +62,7 @@ public class BezierOutlineHandle extends AbstractHandle {
             bounds = AttributeKeys.TRANSFORM.get(getOwner()).createTransformedShape(bounds);
         }
         bounds = view.getDrawingToViewTransform().createTransformedShape(bounds);
+        g.setStroke(HANDLE_STROKE);
         g.setColor(HANDLE_FILL_COLOR);
         g.draw(bounds);
     }

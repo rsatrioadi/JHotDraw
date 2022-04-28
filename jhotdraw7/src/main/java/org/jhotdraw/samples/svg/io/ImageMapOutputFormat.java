@@ -1,15 +1,15 @@
 /*
- * @(#)ImageMapOutputFormat.java  1.0  22. April 2007
+ * @(#)ImageMapOutputFormat.java  1.1  2007-12-16
  *
  * Copyright (c) 2007 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.samples.svg.io;
@@ -45,7 +45,8 @@ import org.jhotdraw.xml.*;
  *
  *
  * @author Werner Randelshofer
- * @version 1.0 22. April 2007 Created.
+ * @version 1.1 2007-12-16 Adapted to changes in OutputFormat. 
+ * <br>1.0 22. April 2007 Created.
  */
 public class ImageMapOutputFormat implements OutputFormat {
     /**
@@ -97,22 +98,22 @@ public class ImageMapOutputFormat implements OutputFormat {
     }
     
     public void write(OutputStream out, Drawing drawing) throws IOException {
-        write(out, drawing.getFigures());
+        write(out, drawing.getChildren());
     }
     /**
      * Writes the drawing to the specified output stream.
      * This method applies the specified drawingTransform to the drawing, and draws
-     * it on an image of the specified size.
+     * it on an image of the specified getChildCount.
      */
     public void write(OutputStream out, Drawing drawing,
             AffineTransform drawingTransform, Dimension imageSize) throws IOException {
-        write(out, drawing.getFigures(), drawingTransform, imageSize);
+        write(out, drawing.getChildren(), drawingTransform, imageSize);
     }
     /**
      * Writes the figures to the specified output stream.
      * This method applies the specified drawingTransform to the drawing, and draws
-     * it on an image of the specified size.
-     *
+     * it on an image of the specified getChildCount.
+     * 
      * All other write methods delegate their work to here.
      */
     public void write(OutputStream out, java.util.List<Figure> figures,
@@ -183,10 +184,10 @@ public class ImageMapOutputFormat implements OutputFormat {
                 );
     }
     
-    public Transferable createTransferable(java.util.List<Figure> figures, double scaleFactor) throws IOException {
+    public Transferable createTransferable(Drawing drawing, java.util.List<Figure> figures, double scaleFactor) throws IOException {
         ByteArrayOutputStream buf = new ByteArrayOutputStream();
         write(buf, figures);
-        return new InputStreamTransferable(new DataFlavor("tex/html", "HTML Image Map"), buf.toByteArray());
+        return new InputStreamTransferable(new DataFlavor("text/html", "HTML Image Map"), buf.toByteArray());
     }
     
     protected void writeElement(IXMLElement parent, Figure f) throws IOException {

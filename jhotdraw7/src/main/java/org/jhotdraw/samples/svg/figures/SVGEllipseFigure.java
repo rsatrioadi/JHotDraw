@@ -1,15 +1,15 @@
 /*
- * @(#)SVGEllipse.java  2.0  2007-04-14
+ * @(#)SVGEllipse.java  2.0.1  2008-03-20
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * Copyright (c) 1996-2008 by the original authors of JHotDraw
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.samples.svg.figures;
@@ -31,7 +31,8 @@ import org.jhotdraw.util.*;
  * SVGEllipse represents a SVG ellipse and a SVG circle element.
  *
  * @author Werner Randelshofer
- * @version 2.0 2007-04-14 Adapted for new AttributeKeys.TRANSFORM support.
+ * @version 2.0.2 2008-03-20 Fixed contains() method. 
+ * <br>2.0 2007-04-14 Adapted for new AttributeKeys.TRANSFORM support.
  * <br>1.0 July 8, 2006 Created.
  */
 public class SVGEllipseFigure extends SVGAttributedFigure implements SVGFigure {
@@ -90,12 +91,12 @@ public class SVGEllipseFigure extends SVGAttributedFigure implements SVGFigure {
         Rectangle2D rx = getTransformedShape().getBounds2D();
         Rectangle2D.Double r = (rx instanceof Rectangle2D.Double) ? (Rectangle2D.Double) rx : new Rectangle2D.Double(rx.getX(), rx.getY(), rx.getWidth(), rx.getHeight());
         if (TRANSFORM.get(this) == null) {
-            double g = SVGAttributeKeys.getPerpendicularHitGrowth(this) * 2;
+            double g = SVGAttributeKeys.getPerpendicularHitGrowth(this) * 2d + 1;
             Geom.grow(r, g, g);
         } else {
             double strokeTotalWidth = AttributeKeys.getStrokeTotalWidth(this);
             double width = strokeTotalWidth / 2d;
-            width *= Math.max(TRANSFORM.get(this).getScaleX(), TRANSFORM.get(this).getScaleY());
+            width *= Math.max(TRANSFORM.get(this).getScaleX(), TRANSFORM.get(this).getScaleY()) + 1;
             Geom.grow(r, width, width);
         }
         return r;
@@ -104,8 +105,22 @@ public class SVGEllipseFigure extends SVGAttributedFigure implements SVGFigure {
      * Checks if a Point2D.Double is inside the figure.
      */
     public boolean contains(Point2D.Double p) {
-        // XXX - This does not take the stroke width into account!
-        return getTransformedShape().contains(p);
+        if (TRANSFORM.get(this) != null) {
+            try {
+
+                p = (Point2D.Double) TRANSFORM.get(this).createInverse().transform(p, new Point2D.Double());
+            } catch (NoninvertibleTransformException ex) {
+                ex.printStackTrace();
+            }
+        }
+        Ellipse2D.Double r = (Ellipse2D.Double) ellipse.clone();
+        double grow = STROKE_WIDTH.get(this) / 2d;
+        r.x -= grow;
+        r.y -= grow;
+        r.width += grow * 2;
+        r.height += grow * 2;
+        
+        return r.contains(p);
     }
     private Shape getTransformedShape() {
         if (cachedTransformedShape == null) {
@@ -122,6 +137,7 @@ public class SVGEllipseFigure extends SVGAttributedFigure implements SVGFigure {
         ellipse.y = Math.min(anchor.y , lead.y);
         ellipse.width = Math.max(0.1, Math.abs(lead.x - anchor.x));
         ellipse.height = Math.max(0.1, Math.abs(lead.y - anchor.y));
+        invalidate();
     }
     /**
      * Transforms the figure.

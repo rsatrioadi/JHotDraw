@@ -1,15 +1,15 @@
 /*
  * @(#)BoundsOutlineHandle.java  1.0  April 15, 2007
  *
- * Copyright (c) 2007 Werner Randelshofer
- * Staldenmattweg 2, CH-6405 Immensee, Switzerland
+ * Copyright (c) 2007 by the original authors of JHotDraw
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * Werner Randelshofer. ("Confidential Information").  You shall not
- * disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Werner Randelshofer.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.draw;
@@ -24,7 +24,14 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * @version 1.0 April 15, 2007 Created.
  */
 public class BoundsOutlineHandle extends AbstractHandle {
-    private final static Color HANDLE_STROKE_COLOR = new Color(0x00a8ff); //Color.WHITE;
+    /* XXX - In a future version all these styles should be properties of
+     * the DrawingEditor (much like properties in javax.swing.UIManager).
+     * So that we can have visually styled (skinned) drawing editors.
+     */
+    private final static BasicStroke HANDLE_STROKE = new BasicStroke(
+            1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0f, new float[] { 5f, 5f }, 0f
+            );
+    private final static Color HANDLE_STROKE_COLOR = new Color(0xaaaaaa); //Color.WHITE;
     
     public BoundsOutlineHandle(Figure owner) {
         super(owner);
@@ -59,6 +66,7 @@ public class BoundsOutlineHandle extends AbstractHandle {
             bounds = AttributeKeys.TRANSFORM.get(getOwner()).createTransformedShape(bounds);
         }
         bounds = view.getDrawingToViewTransform().createTransformedShape(bounds);
+        g.setStroke(HANDLE_STROKE);
         g.setColor(HANDLE_STROKE_COLOR);
         g.draw(bounds);
     }

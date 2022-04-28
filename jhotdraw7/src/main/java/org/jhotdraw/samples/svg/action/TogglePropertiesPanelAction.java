@@ -1,15 +1,15 @@
 /*
  * @(#)TogglePropertiesPanelAction.java  1.0  22. April 2007
  *
- * Copyright (c) 2007 Werner Randelshofer
- * Staldenmattweg 2, CH-6405 Immensee, Switzerland
+ * Copyright (c) 2007 by the original authors of JHotDraw
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * Werner Randelshofer. ("Confidential Information").  You shall not
- * disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Werner Randelshofer.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.samples.svg.action;
@@ -27,7 +27,7 @@ import org.jhotdraw.util.*;
  * @author Werner Randelshofer
  * @version 1.0 22. April 2007 Created.
  */
-public class TogglePropertiesPanelAction extends AbstractProjectAction {
+public class TogglePropertiesPanelAction extends AbstractViewAction {
     
     /** Creates a new instance. */
     public TogglePropertiesPanelAction(Application app) {
@@ -39,23 +39,23 @@ public class TogglePropertiesPanelAction extends AbstractProjectAction {
     
     /**
      * This method is invoked, when the property changed and when
-     * the project changed.
+     * the view changed.
      */
-    protected void updateProperty() {
+    protected void updateView() {
         putValue(Actions.SELECTED_KEY,
-                getCurrentProject() != null &&
-                ! getCurrentProject().isPropertiesPanelVisible()
+                getActiveView() != null &&
+                ! getActiveView().isPropertiesPanelVisible()
                 );
     }
     
     
-    public SVGProject getCurrentProject() {
-        return (SVGProject) super.getCurrentProject();
+    public SVGView getActiveView() {
+        return (SVGView) super.getActiveView();
     }
     
     public void actionPerformed(ActionEvent e) {
-        getCurrentProject().setPropertiesPanelVisible(
-                ! getCurrentProject().isPropertiesPanelVisible()
+        getActiveView().setPropertiesPanelVisible(
+                ! getActiveView().isPropertiesPanelVisible()
                 );
     }
     

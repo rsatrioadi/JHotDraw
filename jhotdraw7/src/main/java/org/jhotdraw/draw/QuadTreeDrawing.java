@@ -2,14 +2,14 @@
  * @(#)QuadTreeDrawing.java  2.2  2007-04-09
  *
  * Copyright (c) 1996-2007 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.draw;
@@ -25,9 +25,7 @@ import org.jhotdraw.util.*;
 import java.util.*;
 /**
  * QuadTreeDrawing uses a QuadTree2DDouble to improve responsiveness of drawings
- * which contain many figures.
- * <p>
- * FIXME - Rename this class to DefaultDrawingView.
+ * which contain many children.
  *
  * @author Werner Randelshofer
  * @version 2.2 2007-04-09 Added methods setCanvasSize, getCanvasSize.
@@ -37,36 +35,25 @@ import java.util.*;
  * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
  */
 public class QuadTreeDrawing extends AbstractDrawing {
-    private ArrayList<Figure> figures = new ArrayList<Figure>();
     private QuadTree<Figure> quadTree = new QuadTree<Figure>();
     private boolean needsSorting = false;
-    private FigureHandler figureHandler;
     private Dimension2DDouble canvasSize;
     
-    /** Creates a new instance. */
-    public QuadTreeDrawing() {
-        figureHandler = createFigureHandler();
-    }
-    
-    protected FigureHandler createFigureHandler() {
-        return new FigureHandler();
-    }
-    
     public int indexOf(Figure figure) {
-        return figures.indexOf(figure);
+        return children.indexOf(figure);
     }
     
-    public void basicAdd(int index, Figure figure) {
-        figures.add(index, figure);
+    @Override public void basicAdd(int index, Figure figure) {
+        super.basicAdd(index, figure);
         quadTree.add(figure, figure.getDrawingArea());
-        figure.addFigureListener(figureHandler);
         needsSorting = true;
     }
-    public void basicRemove(Figure figure) {
-        figures.remove(figure);
+    @Override public Figure basicRemoveChild(int index) {
+        Figure figure = getChild(index);
         quadTree.remove(figure);
-        figure.removeFigureListener(figureHandler);
         needsSorting = true;
+        super.basicRemoveChild(index);
+        return figure;
     }
     
     public void draw(Graphics2D g) {
@@ -76,17 +63,17 @@ public class QuadTreeDrawing extends AbstractDrawing {
             Collection<Figure> toDraw = sort(c);
             draw(g, toDraw);
         } else {
-            draw(g, figures);
+            draw(g, children);
         }
     }
     
     /**
-     * Implementation note: Sorting can not be done for orphaned figures.
+     * Implementation note: Sorting can not be done for orphaned children.
      */
     public java.util.List<Figure> sort(Collection<Figure> c) {
         ensureSorted();
         ArrayList<Figure> sorted = new ArrayList<Figure>(c.size());
-        for (Figure f : figures) {
+        for (Figure f : children) {
             if (c.contains(f)) {
                 sorted.add(f);
             }
@@ -102,12 +89,12 @@ public class QuadTreeDrawing extends AbstractDrawing {
     
     
     
-    public java.util.List<Figure> getFigures(Rectangle2D.Double bounds) {
+    public java.util.List<Figure> getChildren(Rectangle2D.Double bounds) {
         return new LinkedList(quadTree.findInside(bounds));
     }
     
-    public java.util.List<Figure> getFigures() {
-        return Collections.unmodifiableList(figures);
+    public java.util.List<Figure> getChildren() {
+        return Collections.unmodifiableList(children);
     }
     
     public Figure findFigureInside(Point2D.Double p) {
@@ -123,11 +110,11 @@ public class QuadTreeDrawing extends AbstractDrawing {
     
     /**
      * Returns an iterator to iterate in
-     * Z-order front to back over the figures.
+     * Z-order front to back over the children.
      */
     public java.util.List<Figure> getFiguresFrontToBack() {
         ensureSorted();
-        return new ReversedList<Figure>(figures);
+        return new ReversedList<Figure>(children);
     }
     
     public Figure findFigure(Point2D.Double p) {
@@ -196,15 +183,15 @@ public class QuadTreeDrawing extends AbstractDrawing {
         }
         return null;
     }
-    public Figure findFigureBehind(Point2D.Double p, Collection<Figure> figures) {
-        int inFrontOf = figures.size();
+    public Figure findFigureBehind(Point2D.Double p, Collection<Figure> children) {
+        int inFrontOf = children.size();
         for (Figure f : getFiguresFrontToBack()) {
             if (inFrontOf == 0) {
                 if (f.isVisible() && f.contains(p)) {
                     return f;
                 }
             } else {
-                if (figures.contains(f)) {
+                if (children.contains(f)) {
                     inFrontOf--;
                 }
             }
@@ -225,7 +212,7 @@ public class QuadTreeDrawing extends AbstractDrawing {
     }
     public java.util.List<Figure> findFiguresWithin(Rectangle2D.Double bounds) {
         LinkedList<Figure> contained = new LinkedList<Figure>();
-        for (Figure f : figures) {
+        for (Figure f : children) {
             Rectangle2D r = f.getBounds();
             if (AttributeKeys.TRANSFORM.get(f) != null) {
                 r = AttributeKeys.TRANSFORM.get(f).createTransformedShape(r).getBounds2D();
@@ -238,32 +225,35 @@ public class QuadTreeDrawing extends AbstractDrawing {
     }
     
     public void bringToFront(Figure figure) {
-        if (figures.remove(figure)) {
-            figures.add(figure);
+        if (children.remove(figure)) {
+            children.add(figure);
             needsSorting = true;
             fireAreaInvalidated(figure.getDrawingArea());
         }
     }
     public void sendToBack(Figure figure) {
-        if (figures.remove(figure)) {
-            figures.add(0, figure);
+        if (children.remove(figure)) {
+            children.add(0, figure);
             needsSorting = true;
             fireAreaInvalidated(figure.getDrawingArea());
         }
     }
     
     public boolean contains(Figure f) {
-        return figures.contains(f);
+        return children.contains(f);
     }
     
     /**
-     * Ensures that the figures are sorted in z-order sequence.
+     * Ensures that the children are sorted in z-order sequence.
      */
     private void ensureSorted() {
         if (needsSorting) {
-            Collections.sort(figures, FigureLayerComparator.INSTANCE);
+            Collections.sort(children, FigureLayerComparator.INSTANCE);
             needsSorting = false;
         }
+    }
+    protected void setAttributeOnChildren(AttributeKey key, Object newValue) {
+        // empty
     }
     
     public void setCanvasSize(Dimension2DDouble newValue) {
@@ -275,30 +265,36 @@ public class QuadTreeDrawing extends AbstractDrawing {
     public Dimension2DDouble getCanvasSize() {
         return canvasSize;
     }
+
+    public QuadTreeDrawing clone() {
+        QuadTreeDrawing that = (QuadTreeDrawing) super.clone();
+        return that;
+    }
+    protected EventHandler createEventHandler() {
+        return new QuadTreeEventHandler();
+    }
+    
     
     /**
      * Handles all figure events fired by Figures contained in the Drawing.
      */
-    protected class FigureHandler extends FigureAdapter implements UndoableEditListener {
-        /**
-         * We propagate all edit events from our figures to
-         * undoable edit listeners, which have registered with us.
-         */
-        public void undoableEditHappened(UndoableEditEvent e) {
-            fireUndoableEditHappened(e.getEdit());
-        }
-        
-        @Override public void figureAreaInvalidated(FigureEvent e) {
-            fireAreaInvalidated(e.getInvalidatedArea());
-        }
+    protected class QuadTreeEventHandler extends AbstractCompositeFigure.EventHandler {
         @Override public void figureChanged(FigureEvent e) {
             quadTree.remove(e.getFigure());
             quadTree.add(e.getFigure(), e.getFigure().getDrawingArea());
             needsSorting = true;
+            invalidate();
             fireAreaInvalidated(e.getInvalidatedArea());
         }
-        @Override public void figureRequestRemove(FigureEvent e) {
-            remove(e.getFigure());
-        }
+    }
+
+    @Override
+    protected void drawFill(Graphics2D g) {
+        //throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    protected void drawStroke(Graphics2D g) {
+       // throw new UnsupportedOperationException("Not supported yet.");
     }
 }

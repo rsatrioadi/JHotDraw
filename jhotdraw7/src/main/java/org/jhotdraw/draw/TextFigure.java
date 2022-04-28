@@ -2,14 +2,14 @@
  * @(#)TextFigure.java  1.0.2  2007-05-02
  *
  * Copyright (c) 1996-2007 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 
@@ -54,6 +54,7 @@ public class TextFigure extends AbstractAttributedDecoratedFigure
                 getLAFBundle("org.jhotdraw.draw.Labels").
                 getString("TextFigure.defaultText")
         );
+        
     }
     public TextFigure(String text) {
         setText(text);
@@ -229,7 +230,12 @@ public class TextFigure extends AbstractAttributedDecoratedFigure
      * <p>Returns null, if no specialized tool is available.
      */
     public Tool getTool(Point2D.Double p) {
-        return (isEditable() && contains(p)) ? new TextTool(this) : null;
+        if (isEditable() && contains(p)) {
+            TextTool t = new TextTool(this);
+            t.setForCreationOnly(false);
+            return t;
+        }
+        return null;
     }
     
     // CONNECTING

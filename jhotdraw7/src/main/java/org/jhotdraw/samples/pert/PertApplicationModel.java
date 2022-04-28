@@ -2,14 +2,14 @@
  * @(#)PertApplicationModel.java  1.0  2006-06-18
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.samples.pert;
@@ -47,7 +47,7 @@ public class PertApplicationModel extends DefaultApplicationModel {
         }
     }
     /**
-     * This editor is shared by all projects.
+     * This editor is shared by all views.
      */
     private DefaultDrawingEditor sharedEditor;
     
@@ -63,11 +63,11 @@ public class PertApplicationModel extends DefaultApplicationModel {
         AbstractAction aa;
         
         putAction(ExportAction.ID, new ExportAction(a));
-        putAction("toggleGrid", aa = new ToggleProjectPropertyAction(a, "gridVisible"));
+        putAction("toggleGrid", aa = new ToggleViewPropertyAction(a, "gridVisible"));
         drawLabels.configureAction(aa, "alignGrid");
         for (double sf : scaleFactors) {
             putAction((int) (sf*100)+"%",
-                    aa = new ProjectPropertyAction(a, "scaleFactor", Double.TYPE, new Double(sf))
+                    aa = new ViewPropertyAction(a, "scaleFactor", Double.TYPE, new Double(sf))
                     );
             aa.putValue(Action.NAME, (int) (sf*100)+" %");
             
@@ -81,9 +81,9 @@ public class PertApplicationModel extends DefaultApplicationModel {
         return sharedEditor;
     }
     
-    public void initProject(Application a, Project p) {
-        if (a.isSharingToolsAmongProjects()) {
-            ((PertProject) p).setDrawingEditor(getSharedEditor());
+    public void initView(Application a, View p) {
+        if (a.isSharingToolsAmongViews()) {
+            ((PertView) p).setDrawingEditor(getSharedEditor());
         }
     }
     private void addCreationButtonsTo(JToolBar tb, final DrawingEditor editor) {
@@ -114,10 +114,10 @@ public class PertApplicationModel extends DefaultApplicationModel {
      * This class always returns an empty list. Subclasses may return other
      * values.
      */
-    public java.util.List<JToolBar> createToolBars(Application a, Project pr) {
+    public java.util.List<JToolBar> createToolBars(Application a, View pr) {
         ResourceBundleUtil drawLabels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
         ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.samples.pert.Labels");
-        PertProject p = (PertProject) pr;
+        PertView p = (PertView) pr;
         
         DrawingEditor editor;
         if (p == null) {
@@ -143,9 +143,9 @@ public class PertApplicationModel extends DefaultApplicationModel {
         return list;
     }
     
-    public java.util.List<JMenu> createMenus(Application a, Project pr) {
+    public java.util.List<JMenu> createMenus(Application a, View pr) {
         // FIXME - Add code for unconfiguring the menus!! We leak memory!
-        PertProject p = (PertProject) pr;
+        PertView p = (PertView) pr;
         ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
         
         //  JMenuBar mb = new JMenuBar();

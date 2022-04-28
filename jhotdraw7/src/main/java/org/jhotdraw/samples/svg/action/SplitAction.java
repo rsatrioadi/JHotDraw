@@ -2,14 +2,14 @@
  * @(#)SplitPathsAction.java  1.0  2006-07-12
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.samples.svg.action;
@@ -52,18 +52,18 @@ public class SplitAction extends UngroupAction {
         LinkedList<Figure> figures = new LinkedList<Figure>(group.getChildren());
         view.clearSelection();
         group.basicRemoveAllChildren();
+        view.getDrawing().remove(group);
         LinkedList<Figure> paths = new LinkedList<Figure>();
         for (Figure f : figures) {
             SVGPathFigure path = new SVGPathFigure();
-            path.removeAllChildren();
+            path.basicRemoveAllChildren();
             for (Map.Entry<AttributeKey,Object> entry : group.getAttributes().entrySet()) {
                 path.setAttribute(entry.getKey(), entry.getValue());
             }
             path.add(f);
-            view.getDrawing().basicAdd(path);
+            view.getDrawing().add(path);
             paths.add(path);
         }
-        view.getDrawing().remove(group);
         view.addToSelection(paths);
         return figures;
     }

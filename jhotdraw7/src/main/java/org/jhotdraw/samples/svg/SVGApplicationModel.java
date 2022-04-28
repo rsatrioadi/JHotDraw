@@ -2,14 +2,14 @@
  * @(#)SVGApplicationModel.java  1.0  June 10, 2006
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.samples.svg;
@@ -35,8 +35,11 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  */
 public class SVGApplicationModel extends DefaultApplicationModel {
     private final static double[] scaleFactors = {5, 4, 3, 2, 1.5, 1.25, 1, 0.75, 0.5, 0.25, 0.10};
+    
+    private GridConstrainer gridConstrainer;
+    
     /**
-     * This editor is shared by all projects.
+     * This editor is shared by all views.
      */
     private DefaultDrawingEditor sharedEditor;
     
@@ -51,38 +54,42 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         return sharedEditor;
     }
     
-    public void initProject(Application a, Project p) {
-        if (a.isSharingToolsAmongProjects()) {
-            ((SVGProject) p).setEditor(getSharedEditor());
+    public void initView(Application a, View p) {
+        if (a.isSharingToolsAmongViews()) {
+            ((SVGView) p).setEditor(getSharedEditor());
         }
+        p.putAction(EditGridAction.ID, getAction(EditGridAction.ID));
+        p.putAction(SelectSameAction.ID, new SelectSameAction(((SVGView) p).getEditor()));
     }
     
-    public void initApplication(Application a) {
+    @Override public void initApplication(Application a) {
         ResourceBundleUtil drawLabels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
         ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.samples.svg.Labels");
         AbstractAction aa;
         
+        gridConstrainer = new GridConstrainer(12, 12);
+        
         putAction(ViewSourceAction.ID, new ViewSourceAction(a));
         putAction(ExportAction.ID, new ExportAction(a));
-        putAction("toggleGrid", aa = new ToggleProjectPropertyAction(a, "gridVisible"));
-        drawLabels.configureAction(aa, "alignGrid");
+        putAction(ToggleGridAction.ID, new ToggleGridAction(getSharedEditor()));
+        putAction(EditGridAction.ID, new EditGridAction(a, getSharedEditor()));
+        putAction(EditDrawingAction.ID, new EditDrawingAction(a, getSharedEditor()));
         for (double sf : scaleFactors) {
             putAction((int) (sf*100)+"%",
-                    aa = new ProjectPropertyAction(a, "scaleFactor", Double.TYPE, new Double(sf))
+                    aa = new ViewPropertyAction(a, "scaleFactor", Double.TYPE, new Double(sf))
                     );
             aa.putValue(Action.NAME, (int) (sf*100)+" %");
             
         }
+        
         putAction("togglePropertiesPanel", new TogglePropertiesPanelAction(a));
     }
     /**
      * Creates toolbars for the application.
-     * This class always returns an empty list. Subclasses may return other
-     * values.
      */
-    public java.util.List<JToolBar> createToolBars(Application a, Project pr) {
+    public java.util.List<JToolBar> createToolBars(Application a, View pr) {
         ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
-        SVGProject p = (SVGProject) pr;
+        SVGView p = (SVGView) pr;
         
         DrawingEditor editor;
         if (p == null) {
@@ -94,7 +101,7 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         LinkedList<JToolBar> list = new LinkedList<JToolBar>();
         JToolBar tb;
         tb = new JToolBar();
-        addCreationButtonsTo(tb, editor);
+        addCreationButtonsTo(a, tb, editor);
         tb.setName(labels.getString("drawToolBarTitle"));
         list.add(tb);
         tb = new JToolBar();
@@ -108,14 +115,13 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         return list;
     }
     
-    public static Collection<Action> createDrawingActions(DrawingEditor editor) {
+    public  Collection<Action> createDrawingActions(Application app, DrawingEditor editor) {
         LinkedList<Action> a = new LinkedList<Action>();
         a.add(new CutAction());
         a.add(new CopyAction());
         a.add(new PasteAction());
         a.add(new SelectAllAction());
         a.add(new SelectSameAction(editor));
-        
         return a;
     }
     public static Collection<Action> createSelectionActions(DrawingEditor editor) {
@@ -134,14 +140,14 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         
         return a;
     }
-    private void addCreationButtonsTo(JToolBar tb, final DrawingEditor editor) {
+    private void addCreationButtonsTo(Application a, JToolBar tb, final DrawingEditor editor) {
         // AttributeKeys for the entitie sets
         HashMap<AttributeKey,Object> attributes;
         
         ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.samples.svg.Labels");
         ResourceBundleUtil drawLabels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
         
-        ButtonFactory.addSelectionToolTo(tb, editor, createDrawingActions(editor), createSelectionActions(editor));
+        ButtonFactory.addSelectionToolTo(tb, editor, createDrawingActions(a, editor), createSelectionActions(editor));
         tb.addSeparator();
         
         attributes = new HashMap<AttributeKey,Object>();
@@ -190,8 +196,8 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         STROKE_GRADIENT.set(defaultAttributes, (Gradient) null);
         bar.add(
                 ButtonFactory.createEditorColorButton(editor,
-                STROKE_COLOR, ButtonFactory.DEFAULT_COLORS, 8,
-                "attributeStrokeColor", labels, 
+                STROKE_COLOR, ButtonFactory.WEBSAVE_COLORS, ButtonFactory.WEBSAVE_COLORS_COLUMN_COUNT,
+                "attribute.strokeColor", labels,
                 defaultAttributes
                 )
                 );
@@ -199,8 +205,8 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         FILL_GRADIENT.set(defaultAttributes, (Gradient) null);
         bar.add(
                 ButtonFactory.createEditorColorButton(editor,
-                FILL_COLOR, ButtonFactory.DEFAULT_COLORS, 8,
-                "attributeFillColor", labels, 
+                FILL_COLOR, ButtonFactory.WEBSAVE_COLORS, ButtonFactory.WEBSAVE_COLORS_COLUMN_COUNT,
+                "attribute.fillColor", labels,
                 defaultAttributes
                 )
                 );
@@ -212,10 +218,11 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         bar.add(ButtonFactory.createStrokeJoinButton(editor));
     }
     
-    @Override public java.util.List<JMenu> createMenus(Application a, Project pr) {
+     @Override public java.util.List<JMenu> createMenus(Application a, View pr) {
         // FIXME - Add code for unconfiguring the menus!! We leak memory!
-        SVGProject p = (SVGProject) pr;
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        SVGView p = (SVGView) pr;
+        ResourceBundleUtil appLabels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil drawLabels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
         
         //  JMenuBar mb = new JMenuBar();
         LinkedList<JMenu> mb =  new LinkedList<JMenu>();
@@ -228,11 +235,18 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         mb.add(createEditMenu(a, pr));
         
         m = new JMenu();
-        labels.configureMenu(m, "view");
-        cbmi = new JCheckBoxMenuItem(getAction("toggleGrid"));
-        Actions.configureJCheckBoxMenuItem(cbmi, getAction("toggleGrid"));
-        m.add(cbmi);
-        m2 = new JMenu("Zoom");
+        appLabels.configureMenu(m, "view");
+        m.add(getAction(EditDrawingAction.ID));
+        m2 = new JMenu();
+        drawLabels.configureMenu(m2, "grid");
+        cbmi = new JCheckBoxMenuItem(getAction(ToggleGridAction.ID));
+        Actions.configureJCheckBoxMenuItem(cbmi, getAction(ToggleGridAction.ID));
+        m2.add(cbmi);
+        cbmi.setIcon(null);
+        m2.add(getAction(EditGridAction.ID));
+        m.add(m2);
+        m2 = new JMenu();
+        drawLabels.configureMenu(m2, "zoom");
         for (double sf : scaleFactors) {
             String id = (int) (sf*100)+"%";
             cbmi = new JCheckBoxMenuItem(getAction(id));
@@ -247,5 +261,21 @@ public class SVGApplicationModel extends DefaultApplicationModel {
         mb.add(m);
         
         return mb;
+    }
+    @Override protected JMenu createEditMenu(Application a, View p) {
+        ResourceBundleUtil drawLabels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
+        
+        JMenu m = super.createEditMenu(a, p);
+        JMenuItem mi;
+        if (p != null) {
+            mi = m.add(p.getAction(SelectSameAction.ID));
+        } else {
+            mi = new JMenuItem();
+            drawLabels.configureMenu(mi, SelectSameAction.ID);
+            mi.setEnabled(false);
+            m.add(mi);
+        }
+        mi.setIcon(null);
+        return m;
     }
 }

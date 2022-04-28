@@ -2,14 +2,14 @@
  * @(#)BezierNodeHandle.java  1.0.1  2006-04-21
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.draw;
@@ -35,7 +35,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * <br>1.0 January 20, 2006 Created.
  */
 public class BezierNodeHandle extends AbstractHandle {
-    private final static Color HANDLE_FILL_COLOR = Color.BLACK;
+    private final static Color HANDLE_FILL_COLOR = new Color(0x00a8ff); 
     private final static Color HANDLE_STROKE_COLOR = Color.WHITE;
     protected int index;
     private CompositeEdit edit;
@@ -136,9 +136,9 @@ public class BezierNodeHandle extends AbstractHandle {
         }
         
         BezierPath.Node n = figure.getNode(index);
-        fireAreaInvalidated(n);
+        //fireAreaInvalidated(n);
         n.moveTo(p);
-        fireAreaInvalidated(n);
+        //fireAreaInvalidated(n);
         figure.setNode(index, n);
         figure.changed();
     }

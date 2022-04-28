@@ -1,15 +1,15 @@
 /*
- * @(#)ConnectionTool.java  4.0  2007-05-18
+ * @(#)ConnectionTool.java  4.1  2007-08-22
  *
  * Copyright (c) 1996-2007 by the original authors of JHotDraw
- * and all its contributors ("JHotDraw.org")
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * JHotDraw.org ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only in accordance
- * with the terms of the license agreement you entered into with
- * JHotDraw.org.
+ * The copyright of this software is owned by the authors and  
+ * contributors of the JHotDraw project ("the copyright holders").  
+ * You may not use, copy or modify this software, except in  
+ * accordance with the license agreement you entered into with  
+ * the copyright holders. For details see accompanying license terms. 
  */
 
 package org.jhotdraw.draw;
@@ -25,8 +25,8 @@ import java.awt.dnd.*;
 
 /**
  * A tool to create a connection between two figures.
- * The  {@see ConnectionFigure} to be created is specified by a prototype.
- * The location of the start and end points are controlled by {@see Connector}s.
+ * The  {@link ConnectionFigure} to be created is specified by a prototype.
+ * The location of the start and end points are controlled by {@link Connector}s.
  * <p>
  * To create a connection using the ConnectionTool, the user does the following
  * mouse gestures on a DrawingView:
@@ -41,7 +41,8 @@ import java.awt.dnd.*;
  * </ol>
  *
  * @author Werner Randelshofer
- * @version 4.0 2007-05 Reworked due to changes in ConnectionFigure interface.
+ * @version 4.1 2007-08-22 Added property 'toolDoneAfterCreation'.
+ * <br>4.0 2007-05 Reworked due to changes in ConnectionFigure interface.
  * Removed split/join functionality for connection points.
  * <br>3.1 2006-07-15 Added support for prototype class name.
  * <br>3.0 2006-06-07 Reworked.
@@ -92,6 +93,13 @@ public class ConnectionTool extends AbstractTool {
      * UndoableEdit.
      */
     private String presentationName;
+    
+    /**
+     * If this is set to false, the CreationTool does not fire toolDone
+     * after a new Figure has been created. This allows to create multiple
+     * figures consecutively.
+     */
+    private boolean isToolDoneAfterCreation = true;
     
     /** Creates a new instance.
      */
@@ -224,7 +232,7 @@ public class ConnectionTool extends AbstractTool {
             }
             Rectangle r = new Rectangle(getView().drawingToView(createdFigure.getEndPoint()));
             createdFigure.setEndPoint(endPoint);
-             r.add(getView().drawingToView(endPoint));
+            r.add(getView().drawingToView(endPoint));
             r.grow(ANCHOR_WIDTH + 2, ANCHOR_WIDTH + 2);
             getView().getComponent().repaint(r);
             createdFigure.changed();
@@ -271,7 +279,9 @@ public class ConnectionTool extends AbstractTool {
             createdFigure = null;
             creationFinished(createdFigure);
         } else {
-            fireToolDone();
+            if (isToolDoneAfterCreation()) {
+                fireToolDone();
+            }
         }
     }
     public void activate(DrawingEditor editor) {
@@ -311,24 +321,24 @@ public class ConnectionTool extends AbstractTool {
         }
         if (createdFigure != null) {
             createdFigure.draw(gg);
-                Point p = getView().drawingToView(createdFigure.getStartPoint());
-                Ellipse2D.Double e = new Ellipse2D.Double(
-                        p.x - ANCHOR_WIDTH / 2, p.y - ANCHOR_WIDTH / 2,
-                        ANCHOR_WIDTH, ANCHOR_WIDTH
-                        );
-                g.setColor(Color.GREEN);
-                g.fill(e);
-                g.setColor(Color.BLACK);
-                g.draw(e);
-                 p = getView().drawingToView(createdFigure.getEndPoint());
-                e = new Ellipse2D.Double(
-                        p.x - ANCHOR_WIDTH / 2, p.y - ANCHOR_WIDTH / 2,
-                        ANCHOR_WIDTH, ANCHOR_WIDTH
-                        );
-                g.setColor(Color.GREEN);
-                g.fill(e);
-                g.setColor(Color.BLACK);
-                g.draw(e);
+            Point p = getView().drawingToView(createdFigure.getStartPoint());
+            Ellipse2D.Double e = new Ellipse2D.Double(
+                    p.x - ANCHOR_WIDTH / 2, p.y - ANCHOR_WIDTH / 2,
+                    ANCHOR_WIDTH, ANCHOR_WIDTH
+                    );
+            g.setColor(Color.GREEN);
+            g.fill(e);
+            g.setColor(Color.BLACK);
+            g.draw(e);
+            p = getView().drawingToView(createdFigure.getEndPoint());
+            e = new Ellipse2D.Double(
+                    p.x - ANCHOR_WIDTH / 2, p.y - ANCHOR_WIDTH / 2,
+                    ANCHOR_WIDTH, ANCHOR_WIDTH
+                    );
+            g.setColor(Color.GREEN);
+            g.fill(e);
+            g.setColor(Color.BLACK);
+            g.draw(e);
             
         }
         gg.dispose();
@@ -339,6 +349,26 @@ public class ConnectionTool extends AbstractTool {
      * The implementation of this class just invokes fireToolDone.
      */
     protected void creationFinished(Figure createdFigure) {
-        fireToolDone();
+        if (isToolDoneAfterCreation()) {
+            fireToolDone();
+        }
+    }
+    
+    /**
+     * If this is set to false, the CreationTool does not fire toolDone
+     * after a new Figure has been created. This allows to create multiple
+     * figures consecutively.
+     */
+    public void setToolDoneAfterCreation(boolean newValue) {
+        boolean oldValue = isToolDoneAfterCreation;
+        isToolDoneAfterCreation = newValue;
+    }
+    
+    /**
+     * Returns true, if this tool fires toolDone immediately after a new
+     * figure has been created.
+     */
+    public boolean isToolDoneAfterCreation() {
+        return isToolDoneAfterCreation;
     }
 }
