@@ -37,7 +37,7 @@ import org.jhotdraw.app.View;
  */
 public class OpenRecentAction extends AbstractApplicationAction {
 
-    public final static String ID = "openRecent";
+    public final static String ID = "file.openRecent";
     private File file;
 
     /** Creates a new instance. */
@@ -98,8 +98,8 @@ public class OpenRecentAction extends AbstractApplicationAction {
                         view.read(file);
                         return null;
                     } else {
-                        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
-                        return new IOException(labels.getFormatted("errorFileDoesNotExist", file.getName()));
+                        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
+                        return new IOException(labels.getFormatted("file.open.fileDoesNotExist.message", file.getName()));
                     }
                 } catch (Throwable e) {
                     return e;
@@ -131,10 +131,10 @@ public class OpenRecentAction extends AbstractApplicationAction {
                     message = value.toString();
                 }
             }
-            ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+            ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
             JSheet.showMessageSheet(view.getComponent(),
                     "<html>" + UIManager.getString("OptionPane.css") +
-                    "<b>" + labels.getFormatted("couldntOpen", file.getName()) + "</b><br>" +
+                    "<b>" + labels.getFormatted("file.open.couldntOpen.message", file.getName()) + "</b><br>" +
                     (message == null ? "" : message),
                     JOptionPane.ERROR_MESSAGE, new SheetListener() {
 

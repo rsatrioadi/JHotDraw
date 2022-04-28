@@ -32,14 +32,14 @@ import org.jhotdraw.app.View;
  * @version 1.0  04 January 2005  Created.
  */
 public class ExitAction extends AbstractApplicationAction {
-    public final static String ID = "exit";
+    public final static String ID = "application.exit";
     private Component oldFocusOwner;
     private View unsavedView;
     
     /** Creates a new instance. */
     public ExitAction(Application app) {
         super(app);
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
         labels.configureAction(this, ID);
     }
     

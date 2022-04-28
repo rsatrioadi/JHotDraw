@@ -29,11 +29,11 @@ import org.jhotdraw.util.*;
  * <br>1.0 October 9, 2005 Created.
  */
 public class CopyAction extends AbstractAction {
-    public final static String ID = "copy";
+    public final static String ID = "edit.copy";
     
     /** Creates a new instance. */
     public CopyAction() {
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
         labels.configureAction(this, ID);
     }
     

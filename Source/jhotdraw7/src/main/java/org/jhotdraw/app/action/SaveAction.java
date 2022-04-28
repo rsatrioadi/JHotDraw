@@ -37,7 +37,7 @@ import org.jhotdraw.gui.event.*;
  * <br>1.0 28. September 2005 Created.
  */
 public class SaveAction extends AbstractViewAction {
-    public final static String ID = "save";
+    public final static String ID = "file.save";
     private boolean saveAs;
     private Component oldFocusOwner;
     
@@ -49,7 +49,7 @@ public class SaveAction extends AbstractViewAction {
     public SaveAction(Application app, boolean saveAs) {
         super(app);
         this.saveAs = saveAs;
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
         labels.configureAction(this, ID);
     }
     
@@ -128,7 +128,7 @@ public class SaveAction extends AbstractViewAction {
             } else {
                 message = value.toString();
             }
-            ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+            ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
             JSheet.showMessageSheet(getActiveView().getComponent(),
                     "<html>" + UIManager.getString("OptionPane.css") +
                     "<b>" + labels.getFormatted("couldntSave", file.getName()) + "</b><br>" +

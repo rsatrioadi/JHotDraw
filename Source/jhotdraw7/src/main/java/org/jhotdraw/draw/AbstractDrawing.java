@@ -13,20 +13,13 @@
  */
 package org.jhotdraw.draw;
 
-import org.jhotdraw.beans.*;
-import org.jhotdraw.undo.*;
 import org.jhotdraw.xml.*;
-import org.jhotdraw.io.*;
-import java.awt.*;
-import java.awt.geom.*;
 import java.awt.font.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.undo.*;
-import org.jhotdraw.util.*;
 import java.util.*;
 import java.io.*;
-import org.jhotdraw.geom.Dimension2DDouble;
 
 /**
  * AbstractDrawing.
@@ -45,7 +38,7 @@ import org.jhotdraw.geom.Dimension2DDouble;
  */
 public abstract class AbstractDrawing extends AbstractAttributedCompositeFigure implements Drawing {
     private final static Object lock = new JPanel().getTreeLock();
-    private FontRenderContext fontRenderContext;
+    private transient FontRenderContext fontRenderContext;
     private LinkedList<InputFormat> inputFormats = new LinkedList<InputFormat>();
     private LinkedList<OutputFormat> outputFormats = new LinkedList<OutputFormat>();
     private final static boolean DEBUG = false;
@@ -66,6 +59,7 @@ public abstract class AbstractDrawing extends AbstractAttributedCompositeFigure 
      *  Notify all listenerList that have registered interest for
      * notification on this event type.
      */
+    @Override
     public void fireUndoableEditHappened(UndoableEdit edit) {
         UndoableEditEvent event = null;
         if (listenerList.getListenerCount() > 0) {
@@ -93,6 +87,7 @@ public abstract class AbstractDrawing extends AbstractAttributedCompositeFigure 
         fontRenderContext = frc;
     }
 
+    @Override
     public void read(DOMInput in) throws IOException {
         in.openElement("figures");
         for (int i = 0; i < in.getElementCount(); i++) {
@@ -102,6 +97,7 @@ public abstract class AbstractDrawing extends AbstractAttributedCompositeFigure 
         in.closeElement();
     }
 
+    @Override
     public void write(DOMOutput out) throws IOException {
         out.openElement("figures");
         for (Figure f : getChildren()) {
@@ -113,6 +109,7 @@ public abstract class AbstractDrawing extends AbstractAttributedCompositeFigure 
     /**
      * The drawing view synchronizes on the lock when drawing a drawing.
      */
+    @Override
     public Object getLock() {
         return lock;
     }
@@ -147,6 +144,7 @@ public abstract class AbstractDrawing extends AbstractAttributedCompositeFigure 
         return outputFormats;
     }
 
+    @Override
     public Drawing getDrawing() {
         return this;
     }

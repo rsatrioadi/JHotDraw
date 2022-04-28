@@ -30,11 +30,11 @@ import org.jhotdraw.util.*;
  * <br>1.0 October 9, 2005 Created.
  */
 public class PasteAction extends AbstractAction {
-    public final static String ID = "paste";
+    public final static String ID = "edit.paste";
     
     /** Creates a new instance. */
     public PasteAction() {
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
         labels.configureAction(this, ID);
     }
     

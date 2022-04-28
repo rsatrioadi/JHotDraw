@@ -36,13 +36,13 @@ import org.jhotdraw.app.*;
  * <br>1.0 2006-04-07 Created.
  */
 public class ExportAction extends AbstractViewAction {
-    public final static String ID = "export";
+    public final static String ID = "file.export";
     private Component oldFocusOwner;
     
     /** Creates a new instance. */
     public ExportAction(Application app) {
         super(app);
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
         labels.configureAction(this, ID);
     }
     
@@ -50,7 +50,7 @@ public class ExportAction extends AbstractViewAction {
     public void actionPerformed(ActionEvent evt) {
         final ExportableView view = (ExportableView) getActiveView();
         if (view.isEnabled()) {
-            ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+            ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
             
             oldFocusOwner = SwingUtilities.getWindowAncestor(view.getComponent()).getFocusOwner();
             view.setEnabled(false);

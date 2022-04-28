@@ -1,15 +1,15 @@
 /*
  * @(#)TeddyView.java  1.1  2006-11-02
  *
- * Copyright (c) 2005 Werner Randelshofer
- * Staldenmattweg 2, Immensee, CH-6405, Switzerland.
+ * Copyright (c) 2006 by the original authors of JHotDraw
+ * and all its contributors.
  * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * Werner Randelshofer. ("Confidential Information").  You shall not
- * disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Werner Randelshofer.
+ * The copyright of this software is owned by the authors and
+ * contributors of the JHotDraw project ("the copyright holders").
+ * You may not use, copy or modify this software, except in
+ * accordance with the license agreement you entered into with
+ * the copyright holders. For details see accompanying license terms.
  */
 
 package org.jhotdraw.samples.teddy;
@@ -31,6 +31,8 @@ import javax.swing.event.*;
 import javax.swing.text.*;
 import javax.swing.undo.*;
 import java.io.*;
+import org.jhotdraw.app.action.RedoAction;
+import org.jhotdraw.app.action.UndoAction;
 /**
  * TeddyView.
  *
@@ -190,8 +192,8 @@ public class TeddyView extends AbstractView {
     }
     
     private void initActions() {
-        putAction("undo", undoManager.getUndoAction());
-        putAction("redo", undoManager.getRedoAction());
+        putAction(UndoAction.ID, undoManager.getUndoAction());
+        putAction(RedoAction.ID, undoManager.getRedoAction());
     }
     
     private CharacterSetAccessory getAccessory() {
@@ -200,11 +202,13 @@ public class TeddyView extends AbstractView {
         }
         return characterSetAccessory;
     }
+    @Override
     public JFileChooser getOpenChooser() {
         JFileChooser chooser = super.getOpenChooser();
         chooser.setAccessory(getAccessory());
         return chooser;
     }
+    @Override
     public JFileChooser getSaveChooser() {
         JFileChooser chooser = super.getSaveChooser();
         chooser.setAccessory(getAccessory());

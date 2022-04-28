@@ -107,7 +107,8 @@ public abstract class ODGAttributedFigure extends AbstractAttributedFigure imple
             g.setTransform(savedTransform);
         }
     }
-    public void setAttribute(AttributeKey key, Object newValue) {
+    @Override
+    public <T> void setAttribute(AttributeKey<T> key, T newValue) {
         if (key == TRANSFORM) {
             invalidate();
         }
@@ -116,13 +117,13 @@ public abstract class ODGAttributedFigure extends AbstractAttributedFigure imple
     @Override public Collection<Action> getActions(Point2D.Double p) {
         LinkedList<Action> actions = new LinkedList<Action>();
         if (TRANSFORM.get(this) != null) {
-            ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.samples.odg.Labels");
-            actions.add(new AbstractAction(labels.getString("removeTransform")) {
+            ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.samples.odg.Labels");
+            actions.add(new AbstractAction(labels.getString("edit.removeTransform.text")) {
                 public void actionPerformed(ActionEvent evt) {
-                    ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.samples.odg.Labels");
+                    ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.samples.odg.Labels");
                     ODGAttributedFigure.this.willChange();
                     fireUndoableEditHappened(
-                            TRANSFORM.setUndoable(ODGAttributedFigure.this, null, labels)
+                            TRANSFORM.setUndoable(ODGAttributedFigure.this, null)
                             );
                     ODGAttributedFigure.this.changed();
                 }

@@ -29,6 +29,16 @@ import org.jhotdraw.geom.*;
 /**
  * A CompositeFigure is composed of several child Figures.
  * A CompositeFigure can be laid out using a Layouter.
+ * <p>
+ * Design pattern:<br>
+ * Name: Composite.<br>
+ * Role: Composite.<br>
+ * Partners: {@link Figure} as Component. 
+ * <p>
+ * Design pattern:<br>
+ * Name: Strategy.<br>
+ * Role: Context.<br>
+ * Partners: {@link Layouter} as Strategy.
  *
  * @author Werner Randelshofer
  * @version 2.1 2007-12-20 Clarified purpose of basicAdd/basicRemove methods. 
@@ -42,7 +52,7 @@ public interface CompositeFigure extends Figure {
     /**
      * The value of this attribute is a Insets2D.Double object.
      */
-    public final static AttributeKey<Insets2D.Double> LAYOUT_INSETS = new AttributeKey<Insets2D.Double>("layoutInsets", new Insets2D.Double());
+    public final static AttributeKey<Insets2D.Double> LAYOUT_INSETS = new AttributeKey<Insets2D.Double>("layoutInsets", Insets2D.Double.class, new Insets2D.Double());
     
     /**
      * Adds a child to the figure.

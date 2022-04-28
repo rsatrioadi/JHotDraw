@@ -15,6 +15,7 @@
 package org.jhotdraw.samples.svg;
 
 import org.jhotdraw.app.*;
+import org.jhotdraw.util.ResourceBundleUtil;
 /**
  * Main.
  *
@@ -25,6 +26,9 @@ public class Main {
     
     /** Creates a new instance. */
     public static void main(String[] args) {
+        // Debug resource bundle
+        ResourceBundleUtil.setVerbose(true);
+
         Application app;
         String os = System.getProperty("os.name").toLowerCase();
         if (os.startsWith("mac")) {
@@ -35,11 +39,10 @@ public class Main {
         } else {
             app = new DefaultSDIApplication();
         }
-        
         SVGApplicationModel model = new SVGApplicationModel();
         model.setName("JHotDraw SVG");
         model.setVersion(Main.class.getPackage().getImplementationVersion());
-        model.setCopyright("Copyright 2006-2008 (c) by the authors of JHotDraw\n" +
+        model.setCopyright("Copyright 2006-2009 (c) by the authors of JHotDraw\n" +
                 "This software is licensed under LGPL or Creative Commons 3.0 BY");
         model.setViewClassName("org.jhotdraw.samples.svg.SVGView");
         app.setModel(model);

@@ -1,7 +1,7 @@
 /*
- * @(#)GroupAction.java  2.0  2007-12-21
+ * @(#)GroupAction.java  2.0.3  2008-06-08
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2008 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -18,12 +18,18 @@ import org.jhotdraw.undo.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.undo.*;
+import org.jhotdraw.util.ResourceBundleUtil;
 
 /**
  * GroupAction.
  *
  * @author  Werner Randelshofer
- * @version 2.0 2007-12-21 Refactored this class, so that it can be used as
+ * @version 2.0.3 2008-06-08 Fixed NPE in methods canGroup/canUngroup. 
+ * <br>2.0.2 2008-05-12 Undoable edit events fired by this action
+ * did not work.
+ * <br>2.0.1 2008-04-12 Ungrouped figures must be inserted at the
+ * z-index of the original group.
+ * <br>2.0 2007-12-21 Refactored this class, so that it can be used as
  * a base class for UngroupAction. 
  * <br>1.1 2006-07-12 Changed to support any CompositeFigure.
  * <br>1.0.1 2006-07-09 Fixed enabled state.
@@ -31,7 +37,7 @@ import javax.swing.undo.*;
  */
 public class GroupAction extends AbstractSelectedAction {
 
-    public final static String ID = "selectionGroup";
+    public final static String ID = "edit.groupSelection";
     private CompositeFigure prototype;
     /**
      * If this variable is true, this action groups figures.
@@ -53,6 +59,7 @@ public class GroupAction extends AbstractSelectedAction {
         this.prototype = prototype;
         this.isGroupingAction = isGroupingAction;
         labels.configureAction(this, ID);
+        updateEnabledState();
     }
 
     @Override
@@ -65,11 +72,13 @@ public class GroupAction extends AbstractSelectedAction {
     }
 
     protected boolean canGroup() {
-        return getView().getSelectionCount() > 1;
+        return getView() != null && getView().getSelectionCount() > 1;
     }
 
     protected boolean canUngroup() {
-        return getView().getSelectionCount() == 1 &&
+        return getView() != null &&
+                getView().getSelectionCount() == 1 &&
+                prototype != null && 
                 getView().getSelectedFigures().iterator().next().getClass().equals(
                 prototype.getClass());
     }
@@ -80,23 +89,29 @@ public class GroupAction extends AbstractSelectedAction {
                 final DrawingView view = getView();
                 final LinkedList<Figure> ungroupedFigures = new LinkedList<Figure>(view.getSelectedFigures());
                 final CompositeFigure group = (CompositeFigure) prototype.clone();
-                CompositeEdit edit = new CompositeEdit(labels.getString("selectionGroup")) {
+                UndoableEdit edit = new AbstractUndoableEdit() {
+
+                    @Override
+                    public String getPresentationName() {
+                        return labels.getString("edit.groupSelection.text");
+                    }
 
                     public void redo() throws CannotRedoException {
                         super.redo();
                         groupFigures(view, group, ungroupedFigures);
                     }
 
+                    @Override
                     public void undo() throws CannotUndoException {
                         ungroupFigures(view, group);
                         super.undo();
                     }
 
+                    @Override
                     public boolean addEdit(UndoableEdit anEdit) {
                         return super.addEdit(anEdit);
                     }
                 };
-                fireUndoableEditHappened(edit);
                 groupFigures(view, group, ungroupedFigures);
                 fireUndoableEditHappened(edit);
             }
@@ -105,19 +120,25 @@ public class GroupAction extends AbstractSelectedAction {
                 final DrawingView view = getView();
                 final CompositeFigure group = (CompositeFigure) getView().getSelectedFigures().iterator().next();
                 final LinkedList<Figure> ungroupedFigures = new LinkedList<Figure>();
-                CompositeEdit edit = new CompositeEdit(labels.getString("selectionUngroup")) {
+                UndoableEdit edit = new AbstractUndoableEdit() {
 
+                    @Override
+                    public String getPresentationName() {
+                        return labels.getString("edit.ungroupSelection.text");
+                    }
+
+                    @Override
                     public void redo() throws CannotRedoException {
                         super.redo();
                         ungroupFigures(view, group);
                     }
 
+                    @Override
                     public void undo() throws CannotUndoException {
                         groupFigures(view, group, ungroupedFigures);
                         super.undo();
                     }
                 };
-                fireUndoableEditHappened(edit);
                 ungroupedFigures.addAll(ungroupFigures(view, group));
                 fireUndoableEditHappened(edit);
             }
@@ -129,7 +150,7 @@ public class GroupAction extends AbstractSelectedAction {
         LinkedList<Figure> figures = new LinkedList<Figure>(group.getChildren());
         view.clearSelection();
         group.basicRemoveAllChildren();
-        view.getDrawing().basicAddAll(view.getDrawing().getChildCount(), figures);
+        view.getDrawing().basicAddAll(view.getDrawing().indexOf(group), figures);
         view.getDrawing().remove(group);
         view.addToSelection(figures);
         return figures;
@@ -137,9 +158,10 @@ public class GroupAction extends AbstractSelectedAction {
 
     public void groupFigures(DrawingView view, CompositeFigure group, Collection<Figure> figures) {
         Collection<Figure> sorted = view.getDrawing().sort(figures);
+        int index = view.getDrawing().indexOf(sorted.iterator().next());
         view.getDrawing().basicRemoveAll(figures);
         view.clearSelection();
-        view.getDrawing().add(group);
+        view.getDrawing().add(index, group);
         group.willChange();
         for (Figure f : sorted) {
             group.basicAdd(f);

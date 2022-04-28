@@ -1,7 +1,7 @@
 /*
- * @(#)CombinePathsAction.java  2.0  2007-12-21
+ * @(#)CombinePathsAction.java  2.0.1  2008-06-08
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 2006-2008 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -26,29 +26,52 @@ import javax.swing.undo.*;
  * CombinePathsAction.
  *
  * @author  Werner Randelshofer
- * @version 2.0 2007-12-21 Refactored this class, so that it can be used
+ * @version 2.0.1 2008-06-08 Fixed combining/splitting of
+ * transformed paths.
+ * <br>2.0 2007-12-21 Refactored this class, so that it can be used
  * as a base class for SplitAction. 
  * <br>1.0 2006-07-12 Created.
  */
-public class CombineAction extends GroupAction {
+public class CombineAction extends AbstractSelectedAction {
 
-    public final static String ID = "selectionCombine";
+    public final static String ID = "edit.combinePaths";
+    private CompositeFigure prototype;
+    /**
+     * If this variable is true, this action groups figures.
+     * If this variable is false, this action ungroups figures.
+     */
+    private boolean isCombineAction;
 
     /** Creates a new instance. */
     public CombineAction(DrawingEditor editor) {
-        this(editor, new SVGPathFigure(), true);
+        this(editor, new SVGPathFigure(true), true);
     }
 
-    public CombineAction(DrawingEditor editor, SVGPathFigure prototype, boolean isCombiningAction) {
-        super(editor, prototype, isCombiningAction);
+    public CombineAction(DrawingEditor editor, SVGPathFigure prototype) {
+        this(editor, prototype, true);
+    }
 
-        labels = ResourceBundleUtil.getLAFBundle(
+    public CombineAction(DrawingEditor editor, SVGPathFigure prototype, boolean isGroupingAction) {
+        super(editor);
+        this.prototype = prototype;
+        this.isCombineAction = isGroupingAction;
+
+        labels = ResourceBundleUtil.getBundle(
                 "org.jhotdraw.samples.svg.Labels",
                 Locale.getDefault());
         labels.configureAction(this, ID);
     }
 
-    @Override protected boolean canGroup() {
+    @Override
+    protected void updateEnabledState() {
+        if (getView() != null) {
+            setEnabled(isCombineAction ? canGroup() : canUngroup());
+        } else {
+            setEnabled(false);
+        }
+    }
+
+    protected boolean canGroup() {
         boolean canCombine = getView().getSelectionCount() > 1;
         if (canCombine) {
             for (Figure f : getView().getSelectedFigures()) {
@@ -60,49 +83,152 @@ public class CombineAction extends GroupAction {
         }
         return canCombine;
     }
-    
-    @Override protected boolean canUngroup() {
-        if (super.canUngroup()) {
-           return ((CompositeFigure) getView().getSelectedFigures().iterator().next()).getChildCount() > 1;
-        }
-        return false;
+
+    protected boolean canUngroup() {
+        return getView()!=null&&getView().getSelectionCount() == 1 &&
+                prototype!=null&&
+                getView().getSelectedFigures().iterator().next().getClass().equals(
+                prototype.getClass()) &&
+                ((CompositeFigure) getView().getSelectedFigures().iterator().next()).getChildCount() > 1;
     }
 
-    @Override public Collection<Figure> ungroupFigures(DrawingView view, CompositeFigure group) {
-        LinkedList<Figure> figures = new LinkedList<Figure>(group.getChildren());
-        view.clearSelection();
-        group.basicRemoveAllChildren();
-        LinkedList<Figure> paths = new LinkedList<Figure>();
-        for (Figure f : figures) {
-            SVGPathFigure path = new SVGPathFigure();
-            path.removeAllChildren();
-            for (Map.Entry<AttributeKey, Object> entry : group.getAttributes().entrySet()) {
-                path.setAttribute(entry.getKey(), entry.getValue());
+    public void actionPerformed(java.awt.event.ActionEvent e) {
+        if (isCombineAction) {
+            combineActionPerformed(e);
+        } else {
+            splitActionPerformed(e);
+        }
+    }
+
+    public void combineActionPerformed(java.awt.event.ActionEvent e) {
+        final DrawingView view = getView();
+        Drawing drawing = view.getDrawing();
+        if (canGroup()) {
+            final List<Figure> ungroupedPaths = drawing.sort(view.getSelectedFigures());
+            final int[] ungroupedPathsIndices = new int[ungroupedPaths.size()];
+            final int[] ungroupedPathsChildCounts = new int[ungroupedPaths.size()];
+
+            int i = 0;
+            for (Figure f : ungroupedPaths) {
+                ungroupedPathsIndices[i] = drawing.indexOf(f);
+                ungroupedPathsChildCounts[i] = ((CompositeFigure) f).getChildCount();
+                //System.out.print("CombineAction indices[" + i + "] = " + ungroupedPathsIndices[i]);
+                //System.out.println(" childCount[" + i + "] = " + ungroupedPathsChildCounts[i]);
+                i++;
             }
-            path.add(f);
-            view.getDrawing().basicAdd(path);
-            paths.add(path);
+            final CompositeFigure group = (CompositeFigure) prototype.clone();
+            combinePaths(view, group, ungroupedPaths, ungroupedPathsIndices[0]);
+            UndoableEdit edit = new AbstractUndoableEdit() {
+
+                @Override
+                public String getPresentationName() {
+                    return labels.getTextProperty("edit.combinePaths");
+                }
+
+                @Override
+                public void redo() throws CannotRedoException {
+                    super.redo();
+                    combinePaths(view, group, ungroupedPaths, ungroupedPathsIndices[0]);
+                }
+
+                @Override
+                public void undo() throws CannotUndoException {
+                    super.undo();
+                    splitPath(view, group, ungroupedPaths, ungroupedPathsIndices, ungroupedPathsChildCounts);
+                }
+
+                @Override
+                public boolean addEdit(UndoableEdit anEdit) {
+                    return super.addEdit(anEdit);
+                }
+            };
+            fireUndoableEditHappened(edit);
         }
-        view.getDrawing().remove(group);
-        view.addToSelection(paths);
-        return figures;
     }
 
-    @Override public void groupFigures(DrawingView view, CompositeFigure group, Collection<Figure> figures) {
-        Collection<Figure> sorted = view.getDrawing().sort(figures);
+    @SuppressWarnings("unchecked")
+    public void splitActionPerformed(java.awt.event.ActionEvent e) {
+        final DrawingView view = getView();
+        Drawing drawing = view.getDrawing();
+        if (canUngroup()) {
+            final CompositeFigure group = (CompositeFigure) view.getSelectedFigures().iterator().next();
+            final LinkedList<Figure> ungroupedPaths = new LinkedList<Figure>();
+            final int[] ungroupedPathsIndices = new int[group.getChildCount()];
+            final int[] ungroupedPathsChildCounts = new int[group.getChildCount()];
+            int i = 0;
+            int index = drawing.indexOf(group);
+            for (Figure f : group.getChildren()) {
+                SVGPathFigure path = new SVGPathFigure(true);
+                for (Map.Entry<AttributeKey, Object> entry : group.getAttributes().entrySet()) {
+                    path.setAttribute(entry.getKey(), entry.getValue());
+                }
+                ungroupedPaths.add(path);
+                ungroupedPathsIndices[i] = index + i;
+                ungroupedPathsChildCounts[i] = 1;
+                i++;
+            }
+            splitPath(view, group, ungroupedPaths, ungroupedPathsIndices, ungroupedPathsChildCounts);
+            UndoableEdit edit = new AbstractUndoableEdit() {
+
+                @Override
+                public String getPresentationName() {
+                    return labels.getTextProperty("edit.splitPath");
+                }
+
+                @Override
+                public void redo() throws CannotRedoException {
+                    super.redo();
+                    splitPath(view, group, ungroupedPaths, ungroupedPathsIndices, ungroupedPathsChildCounts);
+                }
+
+                @Override
+                public void undo() throws CannotUndoException {
+                    super.undo();
+                    combinePaths(view, group, ungroupedPaths, ungroupedPathsIndices[0]);
+                }
+            };
+            fireUndoableEditHappened(edit);
+        }
+    }
+
+    public void splitPath(DrawingView view, CompositeFigure group, List<Figure> ungroupedPaths, int[] ungroupedPathsIndices, int[] ungroupedPathsChildCounts) {
+        view.clearSelection();
+        Iterator<Figure> groupedFigures = new LinkedList<Figure>(group.getChildren()).iterator();
+        group.basicRemoveAllChildren();
+        view.getDrawing().remove(group);
+        for (int i = 0; i < ungroupedPaths.size(); i++) {
+            CompositeFigure path = (CompositeFigure) ungroupedPaths.get(i);
+            view.getDrawing().add(ungroupedPathsIndices[i], path);
+            path.willChange();
+            for (int j = 0; j < ungroupedPathsChildCounts[i]; j++) {
+                path.basicAdd(groupedFigures.next());
+            }
+            path.changed();
+        }
+        view.addToSelection(ungroupedPaths);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void combinePaths(DrawingView view, CompositeFigure group, Collection<Figure> figures, int groupIndex) {
         view.getDrawing().basicRemoveAll(figures);
         view.clearSelection();
-        view.getDrawing().add(group);
+        view.getDrawing().add(groupIndex, group);
         group.willChange();
-        ((SVGPathFigure) group).removeAllChildren();
+        group.basicRemoveAllChildren();
         for (Map.Entry<AttributeKey, Object> entry : figures.iterator().next().getAttributes().entrySet()) {
             group.setAttribute(entry.getKey(), entry.getValue());
         }
-        for (Figure f : sorted) {
+
+        for (Figure f : figures) {
             SVGPathFigure path = (SVGPathFigure) f;
-            for (Figure child : path.getChildren()) {
+            List<Figure> children = new LinkedList<Figure>(path.getChildren());
+            path.basicRemoveAllChildren();
+            for (Figure child : children) {
+                SVGBezierFigure bez = (SVGBezierFigure) child;
+                bez.flattenTransform();
                 group.basicAdd(child);
             }
+
         }
         group.changed();
         view.addToSelection(group);

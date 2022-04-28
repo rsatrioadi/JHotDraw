@@ -15,9 +15,7 @@
 package org.jhotdraw.samples.net;
 
 import java.awt.print.Pageable;
-import java.util.*;
 import java.util.prefs.*;
-import org.jhotdraw.draw.*;
 import org.jhotdraw.gui.*;
 import org.jhotdraw.io.*;
 import org.jhotdraw.samples.net.figures.*;
@@ -33,8 +31,6 @@ import org.jhotdraw.app.*;
 import org.jhotdraw.app.action.*;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.action.*;
-import org.jhotdraw.xml.*;
-import org.jhotdraw.samples.pert.figures.*;
 
 /**
  * A view for Network diagrams.
@@ -46,7 +42,8 @@ import org.jhotdraw.samples.pert.figures.*;
  * <br>1.1 2006-06-10 Extended to support DefaultDrawApplicationModel.
  * <br>1.0 2006-02-07 Created.
  */
-public class NetView extends AbstractView {
+public class NetView extends AbstractView  {
+    public final static String GRID_VISIBLE_PROPERTY = "gridVisible";
     
     /**
      * Each NetView uses its own undo redo manager.
@@ -60,7 +57,6 @@ public class NetView extends AbstractView {
      */
     private DrawingEditor editor;
     
-    private Preferences prefs;
     private AbstractButton toggleGridButton;
     
     /**
@@ -92,7 +88,7 @@ public class NetView extends AbstractView {
             }
         });
         
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
         
         JPanel placardPanel = new JPanel(new BorderLayout());
         javax.swing.AbstractButton pButton;
@@ -105,19 +101,18 @@ public class NetView extends AbstractView {
         pButton.putClientProperty("Quaqua.Button.style","placard");
         pButton.putClientProperty("Quaqua.Component.visualMargin",new Insets(0,0,0,0));
         pButton.setFont(UIManager.getFont("SmallSystemFont"));
-        labels.configureToolBarButton(pButton, "alignGridSmall");
+        labels.configureToolBarButton(pButton, "view.toggleGrid.placard");
         placardPanel.add(pButton, BorderLayout.EAST);
         scrollPane.add(placardPanel, JScrollPane.LOWER_LEFT_CORNER);
         
-        prefs = Preferences.userNodeForPackage(getClass());
-        toggleGridButton.setSelected(prefs.getBoolean("view.gridVisible", false));
-        view.setScaleFactor(prefs.getDouble("view.scaleFactor", 1d));
+        toggleGridButton.setSelected(preferences.getBoolean("view.gridVisible", false));
+        view.setScaleFactor(preferences.getDouble("view.scaleFactor", 1d));
         
         view.addPropertyChangeListener(new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt) {
                 String name = evt.getPropertyName();
                 if (name.equals("scaleFactor")) {
-                    prefs.putDouble("view.scaleFactor", (Double) evt.getNewValue());
+                    preferences.putDouble("view.scaleFactor", (Double) evt.getNewValue());
                     firePropertyChange("scaleFactor", evt.getOldValue(), evt.getNewValue());
                 }
             }
@@ -130,7 +125,7 @@ public class NetView extends AbstractView {
     public void setGridVisible(boolean newValue) {
         boolean oldValue = isGridVisible();
         view.setConstrainerVisible(newValue);
-        firePropertyChange("gridVisible", oldValue, newValue);
+        firePropertyChange(GRID_VISIBLE_PROPERTY, oldValue, newValue);
     }
     
     /**
@@ -202,7 +197,7 @@ public class NetView extends AbstractView {
         try {
             final Drawing drawing = createDrawing();
             InputFormat inputFormat = drawing.getInputFormats().get(0);
-            inputFormat.read(f, drawing);
+            inputFormat.read(f, drawing, true);
             SwingUtilities.invokeAndWait(new Runnable() { public void run() {
                 view.getDrawing().removeUndoableEditListener(undo);
                 view.setDrawing(drawing);
@@ -263,13 +258,19 @@ public class NetView extends AbstractView {
     
     
     @Override protected JFileChooser createOpenChooser() {
-        JFileChooser c = super.createOpenChooser();
+        JFileChooser c =  new JFileChooser();
         c.addChoosableFileFilter(new ExtensionFileFilter("Net Diagram","xml"));
+        if (preferences != null) {
+            c.setSelectedFile(new File(preferences.get("projectFile", System.getProperty("user.home"))));
+        }
         return c;
     }
     @Override protected JFileChooser createSaveChooser() {
-        JFileChooser c = super.createSaveChooser();
+        JFileChooser c = new JFileChooser();
         c.addChoosableFileFilter(new ExtensionFileFilter("Net Diagram","xml"));
+        if (preferences != null) {
+            c.setSelectedFile(new File(preferences.get("projectFile", System.getProperty("user.home"))));
+        }
         return c;
     }
     @Override

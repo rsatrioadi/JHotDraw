@@ -48,22 +48,17 @@ public class EditorSample {
                 drawing.add(tc);
                 drawing.add(cf);
                 
-                // Show the drawing
+                // Create a frame with a drawing view and a drawing editor
                 JFrame f = new JFrame("My Drawing");
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.setSize(400,300);
-                
-                // Set up the drawing view
                 DrawingView view = new DefaultDrawingView();
                 view.setDrawing(drawing);
                 f.getContentPane().add(view.getComponent());
-                
-                // Set up the drawing editor
                 DrawingEditor editor = new DefaultDrawingEditor();
                 editor.add(view);
                 editor.setTool(new DelegationSelectionTool());
-                
-                f.show();
+                f.setVisible(true);
             }
         });
     }

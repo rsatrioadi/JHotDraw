@@ -44,12 +44,12 @@ import org.jhotdraw.util.*;
  * @version 1.0 March 21, 2007 Created.
  */
 public class FindAction extends AbstractViewAction {
-    public final static String ID = "find";
+    public final static String ID = "edit.find";
     
     /** Creates a new instance. */
     public FindAction(Application app) {
         super(app);
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
         labels.configureAction(this, ID);
     }
     

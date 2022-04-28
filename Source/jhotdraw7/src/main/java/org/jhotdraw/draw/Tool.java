@@ -1,7 +1,7 @@
 /*
- * @(#)Tool.java  1.0  11. November 2003
+ * @(#)Tool.java  3.0  2008-05-26
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2008 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -17,7 +17,6 @@ package org.jhotdraw.draw;
 
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.event.*;
 /**
  * A tool defines a mode of the drawing view. All input events targeted to the
  * drawing view are forwarded to its current tool.
@@ -32,9 +31,27 @@ import javax.swing.event.*;
  * <p>
  * A Tool forwards UndoableEdit events to the Drawing object onto which it
  * is performing changes.
+ * <p>
+ * Design pattern:<br>
+ * Name: Mediator.<br>
+ * Role: Colleague.<br>
+ * Partners: {@link DrawingEditor} as Mediator, {@link Tool} as
+ * Colleague.
+ * <p>
+ * Design pattern:<br>
+ * Name: Model-View-Controller.<br>
+ * Role: Controller.<br>
+ * Partners: {@link DrawingView} as View, {@link Figure} as Model.
+ * <p>
+ * Design pattern:<br>
+ * Name: Observer.<br>
+ * Role: Subject.<br>
+ * Partners: {@link ToolListener} as Observer.
  *
  * @author Werner Randelshofer
- * @version 1.0 2003-12-01 Derived from JHotDraw 5.4b1.
+ * @version 3.0 2008-05-26 Added method supportsHandleInteraction.  
+ * <br>2.0 2008-05-17 Added method getToolTipText. 
+ * <br>1.0 2003-12-01 Derived from JHotDraw 5.4b1.
  */
 public interface Tool extends MouseListener, MouseMotionListener, KeyListener {
     
@@ -95,4 +112,22 @@ public interface Tool extends MouseListener, MouseMotionListener, KeyListener {
      * or selected text.
      */
     public void editPaste();
+    
+    /**
+     * Returns the tooltip text for a mouse event on a drawing view.
+     * 
+     * @param view A drawing view.
+     * @param evt A mouse event.
+     * @return A tooltip text or null.
+     */
+    public String getToolTipText(DrawingView view, MouseEvent evt);
+    
+    /**
+     * Returns true, if this tool lets the user interact with handles.
+     * <p>
+     * Handles may draw differently, if interaction is not possible.
+     * 
+     * @return True, if this tool supports interaction with the handles.
+     */
+    public boolean supportsHandleInteraction();
 }

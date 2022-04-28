@@ -28,9 +28,9 @@ import java.awt.*;
  * @version 1.0 7. Februar 2006 Created.
  */
 public class ArrangeAction extends AbstractAction {
-    public final static String VERTICAL_ID = "arrangeVertical";
-    public final static String HORIZONTAL_ID = "arrangeHorizontal";
-    public final static String CASCADE_ID = "arrangeCascade";
+    public final static String VERTICAL_ID = "window.arrangeVertical";
+    public final static String HORIZONTAL_ID = "window.arrangeHorizontal";
+    public final static String CASCADE_ID = "window.arrangeCascade";
     private Arrangeable arrangeable;
     private Arrangeable.Arrangement arrangement;
     
@@ -38,7 +38,7 @@ public class ArrangeAction extends AbstractAction {
     public ArrangeAction(Arrangeable arrangeable, Arrangeable.Arrangement arrangement) {
         this.arrangeable = arrangeable;
         this.arrangement = arrangement;
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
         String labelID;
         switch (arrangement) {
             case VERTICAL : labelID = VERTICAL_ID; break;

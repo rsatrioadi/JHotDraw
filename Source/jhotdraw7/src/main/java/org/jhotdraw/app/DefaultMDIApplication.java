@@ -27,11 +27,13 @@ import javax.swing.event.*;
 import org.jhotdraw.app.action.*;
 
 /**
- * A DefaultMDIApplication can handle the life cycle of multiple document windows each
- * being presented in a JInternalFrame of its own.  A parent JFrame provides all
- * the functionality needed to work with documents, such as a menu bar, tool
- * bars and palette windows.
- *
+ * A DefaultMDIApplication can handle the life cycle of multiple document 
+ * windows each being presented in a JInternalFrame of its own. A parent JFrame
+ * provides all the functionality needed to work with documents, such as a menu
+ * bar, tool bars and palette windows.
+ * <p>
+ * The life cycle of the application is tied t the parent JFrame. Closing the
+ * parent JFrame quits the application.
  *
  * @author Werner Randelshofer.
  * @version 1.1 2007-12-25 Added method updateViewTitle. 
@@ -71,8 +73,8 @@ public class DefaultMDIApplication extends AbstractApplication {
         mo.putAction(DuplicateAction.ID, new DuplicateAction());
         mo.putAction(SelectAllAction.ID, new SelectAllAction());
         /*
-        mo.putAction(MaximizeAction.ID, new MaximizeAction(this));
-        mo.putAction(MinimizeAction.ID, new MinimizeAction(this));
+        model.putAction(MaximizeAction.ID, new MaximizeAction(this));
+        model.putAction(MinimizeAction.ID, new MinimizeAction(this));
          */
         mo.putAction(ArrangeAction.VERTICAL_ID, new ArrangeAction(desktopPane, Arrangeable.Arrangement.VERTICAL));
         mo.putAction(ArrangeAction.HORIZONTAL_ID, new ArrangeAction(desktopPane, Arrangeable.Arrangement.HORIZONTAL));
@@ -288,23 +290,23 @@ public class DefaultMDIApplication extends AbstractApplication {
     /*
     protected void addStandardActionsTo(JToolBar tb) {
     JButton b;
-    ApplicationModel mo = getModel();
-    b = tb.add(mo.getAction(NewAction.ID));
+    ApplicationModel model = getModel();
+    b = tb.add(model.getAction(NewAction.ID));
     b.setFocusable(false);
-    b = tb.add(mo.getAction(OpenAction.ID));
+    b = tb.add(model.getAction(OpenAction.ID));
     b.setFocusable(false);
-    b = tb.add(mo.getAction(SaveAction.ID));
+    b = tb.add(model.getAction(SaveAction.ID));
     tb.addSeparator();
-    b = tb.add(mo.getAction(UndoAction.ID));
+    b = tb.add(model.getAction(UndoAction.ID));
     b.setFocusable(false);
-    b = tb.add(mo.getAction(RedoAction.ID));
+    b = tb.add(model.getAction(RedoAction.ID));
     b.setFocusable(false);
     tb.addSeparator();
-    b = tb.add(mo.getAction(CutAction.ID));
+    b = tb.add(model.getAction(CutAction.ID));
     b.setFocusable(false);
-    b = tb.add(mo.getAction(CopyAction.ID));
+    b = tb.add(model.getAction(CopyAction.ID));
     b.setFocusable(false);
-    b = tb.add(mo.getAction(PasteAction.ID));
+    b = tb.add(model.getAction(PasteAction.ID));
     b.setFocusable(false);
     }*/
 
@@ -323,8 +325,8 @@ public class DefaultMDIApplication extends AbstractApplication {
     }
 
     protected JMenu createFileMenu() {
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
-        ApplicationModel mo = getModel();
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
+        ApplicationModel model = getModel();
 
         JMenuBar mb = new JMenuBar();
         JMenu m;
@@ -333,26 +335,30 @@ public class DefaultMDIApplication extends AbstractApplication {
 
         m = new JMenu();
         labels.configureMenu(m, "file");
-        m.add(mo.getAction(NewAction.ID));
-        m.add(mo.getAction(OpenAction.ID));
+        m.add(model.getAction(NewAction.ID));
+        m.add(model.getAction(OpenAction.ID));
+        if (model.getAction(OpenDirectoryAction.ID) != null) {
+            mi = m.add(model.getAction(OpenDirectoryAction.ID));
+            mi.setIcon(null);
+        }
         openRecentMenu = new JMenu();
-        labels.configureMenu(openRecentMenu, "openRecent");
-        openRecentMenu.add(mo.getAction(ClearRecentFilesAction.ID));
+        labels.configureMenu(openRecentMenu, "file.openRecent");
+        openRecentMenu.add(model.getAction(ClearRecentFilesAction.ID));
         updateOpenRecentMenu(openRecentMenu);
         m.add(openRecentMenu);
         m.addSeparator();
-        m.add(mo.getAction(CloseAction.ID));
-        m.add(mo.getAction(SaveAction.ID));
-        m.add(mo.getAction(SaveAsAction.ID));
-        if (mo.getAction(ExportAction.ID) != null) {
-            mi = m.add(mo.getAction(ExportAction.ID));
+        m.add(model.getAction(CloseAction.ID));
+        m.add(model.getAction(SaveAction.ID));
+        m.add(model.getAction(SaveAsAction.ID));
+        if (model.getAction(ExportAction.ID) != null) {
+            mi = m.add(model.getAction(ExportAction.ID));
         }
-        if (mo.getAction(PrintAction.ID) != null) {
+        if (model.getAction(PrintAction.ID) != null) {
             m.addSeparator();
-            m.add(mo.getAction(PrintAction.ID));
+            m.add(model.getAction(PrintAction.ID));
         }
         m.addSeparator();
-        m.add(mo.getAction(ExitAction.ID));
+        m.add(model.getAction(ExitAction.ID));
 
         addPropertyChangeListener(new PropertyChangeListener() {
 
@@ -385,7 +391,7 @@ public class DefaultMDIApplication extends AbstractApplication {
         if (v.hasUnsavedChanges()) {
             title += "*";
         }
-        v.setTitle(labels.getFormatted("frameTitle", title, getName(), v.getMultipleOpenId()));
+        v.setTitle(labels.getFormatted("internalFrame.title", title, getName(), v.getMultipleOpenId()));
         f.setTitle(v.getTitle());
     }
 
@@ -410,7 +416,7 @@ public class DefaultMDIApplication extends AbstractApplication {
     }
 
     protected JMenu createWindowMenu() {
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
         ApplicationModel mo = getModel();
 
         JMenu m;
@@ -475,7 +481,7 @@ public class DefaultMDIApplication extends AbstractApplication {
     }
 
     protected JMenu createHelpMenu() {
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
         ApplicationModel mo = getModel();
 
         JMenu m;

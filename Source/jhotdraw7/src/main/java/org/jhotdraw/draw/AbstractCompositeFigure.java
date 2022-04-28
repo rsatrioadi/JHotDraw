@@ -1,7 +1,7 @@
 /*
- * @(#)AbstractCompositeFigure.java  1.0  July 17, 2007
+ * @(#)AbstractCompositeFigure.java  1.0.2  2009-04-16
  *
- * Copyright (c) 2007 by the original authors of JHotDraw
+ * Copyright (c) 2007-2009 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -15,12 +15,11 @@ package org.jhotdraw.draw;
 
 import java.io.IOException;
 import org.jhotdraw.util.*;
-import org.jhotdraw.util.*;
 import java.awt.*;
 import java.awt.geom.*;
+import java.io.Serializable;
 import java.util.*;
 import javax.swing.event.*;
-import javax.swing.undo.*;
 import org.jhotdraw.geom.*;
 import org.jhotdraw.xml.DOMInput;
 import org.jhotdraw.xml.DOMOutput;
@@ -30,7 +29,9 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * AbstractCompositeFigure.
  *
  * @author Werner Randelshofer
- * @version 1.0 July 17, 2007 Created.
+ * @version 1.0.2 2009-04-16 Guard against infinity in method setBounds.
+ * <br>1.0.1 2008-03-30 Made basicRemove method non-final.
+ * <br>1.0 July 17, 2007 Created.
  */
 public abstract class AbstractCompositeFigure
         extends AbstractFigure
@@ -51,17 +52,17 @@ public abstract class AbstractCompositeFigure
     /**
      * Cached draw cachedBounds.
      */
-    protected Rectangle2D.Double cachedDrawingArea;
+    protected transient Rectangle2D.Double cachedDrawingArea;
     /**
      * Cached layout cachedBounds.
      */
-    protected Rectangle2D.Double cachedBounds;
+    protected transient Rectangle2D.Double cachedBounds;
     /**
      * Handles figure changes in the children.
      */
     protected EventHandler eventHandler;
 
-    protected class EventHandler extends FigureAdapter implements UndoableEditListener {
+    protected class EventHandler extends FigureAdapter implements UndoableEditListener, Serializable {
 
         @Override
         public void figureRequestRemove(FigureEvent e) {
@@ -107,6 +108,7 @@ public abstract class AbstractCompositeFigure
     public Collection<Handle> createHandles(int detailLevel) {
         LinkedList<Handle> handles = new LinkedList<Handle>();
         if (detailLevel == 0) {
+        handles.add(new BoundsOutlineHandle(this, true, false));
             TransformHandleKit.addScaleMoveTransformHandles(this, handles);
         }
         return handles;
@@ -130,11 +132,11 @@ public abstract class AbstractCompositeFigure
         invalidate();
     }
 
-    public void addAll(Collection<Figure> figures) {
+    public void addAll(Collection<? extends Figure> figures) {
         addAll(getChildCount(), figures);
     }
 
-    public final void addAll(int index, Collection<Figure> figures) {
+    public final void addAll(int index, Collection<? extends Figure> figures) {
         for (Figure f : figures) {
             basicAdd(index++, f);
             if (getDrawing() != null) {
@@ -149,7 +151,7 @@ public abstract class AbstractCompositeFigure
         basicAdd(getChildCount(), figure);
     }
 
-    public void basicAddAll(int index, Collection<Figure> newFigures) {
+    public void basicAddAll(int index, Collection<? extends Figure> newFigures) {
         for (Figure f : newFigures) {
             basicAdd(index++, f);
         }
@@ -197,7 +199,7 @@ public abstract class AbstractCompositeFigure
      *
      * @see #add
      */
-    public void removeAll(Collection<Figure> figures) {
+    public void removeAll(Collection<? extends Figure> figures) {
         for (Figure f : figures) {
             remove(f);
         }
@@ -235,7 +237,7 @@ public abstract class AbstractCompositeFigure
      *
      * @see #add
      */
-    public void basicRemoveAll(Collection<Figure> figures) {
+    public void basicRemoveAll(Collection<? extends Figure> figures) {
         for (Figure f : figures) {
             basicRemove(f);
         }
@@ -258,7 +260,7 @@ public abstract class AbstractCompositeFigure
      *
      * @param figure that is part of the drawing
      */
-    public synchronized void sendToFront(Figure figure) {
+    public synchronized void bringToFront(Figure figure) {
         if (basicRemove(figure) != -1) {
             basicAdd(figure);
             fireAreaInvalidated(figure.getDrawingArea());
@@ -276,6 +278,7 @@ public abstract class AbstractCompositeFigure
     //invalidate();
     }
 
+    @Override
     public void setBounds(Point2D.Double anchor, Point2D.Double lead) {
         Rectangle2D.Double oldBounds = getBounds();
         Rectangle2D.Double newBounds = new Rectangle2D.Double(
@@ -290,6 +293,7 @@ public abstract class AbstractCompositeFigure
         AffineTransform tx = new AffineTransform();
         tx.translate(-oldBounds.x, -oldBounds.y);
         if (!Double.isNaN(sx) && !Double.isNaN(sy) &&
+                !Double.isInfinite(sx) && !Double.isInfinite(sy) &&
                 (sx != 1d || sy != 1d) &&
                 !(sx < 0.0001) && !(sy < 0.0001)) {
             transform(tx);
@@ -310,14 +314,14 @@ public abstract class AbstractCompositeFigure
         return children.size() == 0 ? new LinkedList<Figure>() : new ReversedList<Figure>(getChildren());
     }
 
-    public void setAttribute(AttributeKey key, Object value) {
+    public <T> void setAttribute(AttributeKey<T> key, T value) {
         for (Figure child : getChildren()) {
             child.setAttribute(key, value);
         }
         invalidate();
     }
 
-    public Object getAttribute(AttributeKey name) {
+    public <T> T getAttribute(AttributeKey<T> name) {
         return null;
     }
 
@@ -334,6 +338,7 @@ public abstract class AbstractCompositeFigure
     }
 
     public void restoreAttributesTo(Object newData) {
+        @SuppressWarnings("unchecked")
         Iterator<Object> data = ((LinkedList<Object>) newData).iterator();
         for (Figure child : getChildren()) {
             child.restoreAttributesTo(data.next());
@@ -443,6 +448,7 @@ public abstract class AbstractCompositeFigure
         this.layouter = newLayouter;
     }
 
+    @Override
     public Dimension2DDouble getPreferredSize() {
         if (this.layouter != null) {
             Rectangle2D.Double r = layouter.calculateLayout(this, getStartPoint(), getEndPoint());
@@ -469,6 +475,7 @@ public abstract class AbstractCompositeFigure
         }
     }
 
+    @Override
     public Collection<Figure> getDecomposition() {
         LinkedList<Figure> list = new LinkedList<Figure>();
         list.add(this);
@@ -508,24 +515,8 @@ public abstract class AbstractCompositeFigure
         }
         return list;
     }
-    /*
-    public void willChange() {
-    super.willChange();
-    if (getChangingDepth() == 1) {
-    for (Figure child : getChildren()) {
-    child.willChange();
-    }
-    }
-    }
-    public void changed() {
-    if (getChangingDepth() == 1) {
-    for (Figure child : getChildren()) {
-    child.changed();
-    }
-    }
-    super.changed();
-    }*/
 
+    @Override
     protected void validate() {
         super.validate();
         layout();
@@ -555,6 +546,7 @@ public abstract class AbstractCompositeFigure
         return children.get(index);
     }
 
+    @Override
     public AbstractCompositeFigure clone() {
         AbstractCompositeFigure that = (AbstractCompositeFigure) super.clone();
         that.children = new ArrayList<Figure>();
@@ -567,14 +559,15 @@ public abstract class AbstractCompositeFigure
         return that;
     }
 
+    @Override
     protected void invalidate() {
         cachedBounds = null;
         cachedDrawingArea = null;
     }
 
-    final public int basicRemove(Figure child) {
+    public int basicRemove(Figure child) {
         int index = children.indexOf(child);
-        basicRemoveChild(index);
+        if (index != -1) { basicRemoveChild(index); }
         return index;
     }
 

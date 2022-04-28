@@ -59,7 +59,7 @@ public class LabelFigure extends TextFigure implements FigureListener {
      * <p>Returns null, if no specialized tool is available.
      */
     public Tool getTool(Point2D.Double p) {
-        return (target != null && contains(p)) ? new TextTool(target) : null;
+        return (target != null && contains(p)) ? new TextEditingTool(target) : null;
     }
     
     
@@ -85,8 +85,9 @@ public class LabelFigure extends TextFigure implements FigureListener {
     public void figureRequestRemove(FigureEvent e) {
     }
     
-    public void remap(HashMap oldToNew) {
-        super.remap(oldToNew);
+    @Override
+    public void remap(Map<Figure,Figure> oldToNew, boolean disconnectIfNotInMap) {
+        super.remap(oldToNew, disconnectIfNotInMap);
         if (target != null) {
             Figure newTarget = (Figure) oldToNew.get(target);
             if (newTarget != null) {

@@ -43,8 +43,8 @@ public class ODGPathFigure extends AbstractAttributedCompositeFigure implements 
     /**
      * This cachedPath is used for drawing.
      */
-    private GeneralPath cachedPath;
-    private Rectangle2D.Double cachedDrawingArea;
+    private transient GeneralPath cachedPath;
+    //private transient Rectangle2D.Double cachedDrawingArea;
     
     private final static boolean DEBUG = false;
     
@@ -258,6 +258,8 @@ public class ODGPathFigure extends AbstractAttributedCompositeFigure implements 
         }
         invalidate();
     }
+    @Override
+    @SuppressWarnings("unchecked")
     public void restoreTransformTo(Object geometry) {
         invalidate();
         Object[] restoreData = (Object[]) geometry;
@@ -270,6 +272,8 @@ public class ODGPathFigure extends AbstractAttributedCompositeFigure implements 
         STROKE_GRADIENT.basicSetClone(this, (Gradient) restoreData[3]);
     }
     
+    @Override
+    @SuppressWarnings("unchecked")
     public Object getTransformRestoreData() {
         ArrayList<BezierPath> paths = new ArrayList<BezierPath>(getChildCount());
         for (int i=0, n = getChildCount(); i < n; i++) {
@@ -282,11 +286,13 @@ public class ODGPathFigure extends AbstractAttributedCompositeFigure implements 
             STROKE_GRADIENT.getClone(this),
         };
     }
-    public void setAttribute(AttributeKey key, Object newValue) {
+    @Override
+    public <T> void setAttribute(AttributeKey<T> key, T newValue) {
         super.setAttribute(key, newValue);
         invalidate();
     }
-    protected void setAttributeOnChildren(AttributeKey key, Object newValue) {
+    @Override
+    protected <T> void setAttributeOnChildren(AttributeKey<T> key, T newValue) {
         // empty!
     }
     
@@ -319,20 +325,20 @@ public class ODGPathFigure extends AbstractAttributedCompositeFigure implements 
     }
     
     @Override public Collection<Action> getActions(Point2D.Double p) {
-        final ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.samples.odg.Labels");
+        final ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.samples.odg.Labels");
         LinkedList<Action> actions = new LinkedList<Action>();
         if (TRANSFORM.get(this) != null) {
-            actions.add(new AbstractAction(labels.getString("removeTransform")) {
+            actions.add(new AbstractAction(labels.getString("edit.removeTransform.text")) {
                 public void actionPerformed(ActionEvent evt) {
-                    ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.samples.odg.Labels");
+                    ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.samples.odg.Labels");
                     ODGPathFigure.this.willChange();
                     fireUndoableEditHappened(
-                            TRANSFORM.setUndoable(ODGPathFigure.this, null, labels)
+                            TRANSFORM.setUndoable(ODGPathFigure.this, null)
                             );
                     ODGPathFigure.this.changed();
                 }
             });
-            actions.add(new AbstractAction(labels.getString("flattenTransform")) {
+            actions.add(new AbstractAction(labels.getString("edit.flattenTransform.text")) {
                 public void actionPerformed(ActionEvent evt) {
                     // CompositeEdit edit = new CompositeEdit(labels.getString("flattenTransform"));
                     //TransformEdit edit = new TransformEdit(ODGPathFigure.this, )
@@ -369,7 +375,7 @@ public class ODGPathFigure extends AbstractAttributedCompositeFigure implements 
                 for (Figure child : getChildren()) {
                     ODGPathFigure.this.willChange();
                     getDrawing().fireUndoableEditHappened(
-                            CLOSED.setUndoable(child, true, labels)
+                            CLOSED.setUndoable(child, true)
                             );
                     ODGPathFigure.this.changed();
                 }
@@ -380,7 +386,7 @@ public class ODGPathFigure extends AbstractAttributedCompositeFigure implements 
                 for (Figure child : getChildren()) {
                     ODGPathFigure.this.willChange();
                     getDrawing().fireUndoableEditHappened(
-                            CLOSED.setUndoable(child, false, labels)
+                            CLOSED.setUndoable(child, false)
                             );
                     ODGPathFigure.this.changed();
                 }
@@ -390,7 +396,7 @@ public class ODGPathFigure extends AbstractAttributedCompositeFigure implements 
             public void actionPerformed(ActionEvent evt) {
                 ODGPathFigure.this.willChange();
                 getDrawing().fireUndoableEditHappened(
-                        WINDING_RULE.setUndoable(ODGPathFigure.this, WindingRule.EVEN_ODD, labels)
+                        WINDING_RULE.setUndoable(ODGPathFigure.this, WindingRule.EVEN_ODD)
                         );
                 ODGPathFigure.this.changed();
             }
@@ -399,7 +405,7 @@ public class ODGPathFigure extends AbstractAttributedCompositeFigure implements 
             public void actionPerformed(ActionEvent evt) {
                 WINDING_RULE.set(ODGPathFigure.this, WindingRule.NON_ZERO);
                 getDrawing().fireUndoableEditHappened(
-                        WINDING_RULE.setUndoable(ODGPathFigure.this, WindingRule.EVEN_ODD, labels)
+                        WINDING_RULE.setUndoable(ODGPathFigure.this, WindingRule.EVEN_ODD)
                         );
             }
         });

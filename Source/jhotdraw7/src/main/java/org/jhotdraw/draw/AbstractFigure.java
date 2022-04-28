@@ -272,8 +272,7 @@ public abstract class AbstractFigure
      */
     protected void fireAttributeChanged(AttributeKey attribute, Object oldValue, Object newValue) {
         if (listenerList.getListenerCount() > 0 &&
-                (oldValue == null || newValue == null || !oldValue.equals(newValue))
-                ) {
+                (oldValue == null || newValue == null || !oldValue.equals(newValue))) {
             FigureEvent event = null;
             // Notify all listeners that have registered interest for
             // Guaranteed to return a non-null array
@@ -333,6 +332,7 @@ public abstract class AbstractFigure
     }
      */
 
+    @Override
     public AbstractFigure clone() {
         AbstractFigure that = (AbstractFigure) super.clone();
         that.listenerList = new EventListenerList();
@@ -345,13 +345,19 @@ public abstract class AbstractFigure
         return null;
     }
 
-    public void remap(HashMap<Figure, Figure> oldToNew) {
+    public void remap(Map<Figure, Figure> oldToNew, boolean disconnectIfNotInMap) {
     }
 
     public Collection<Handle> createHandles(int detailLevel) {
         LinkedList<Handle> handles = new LinkedList<Handle>();
-        //handles.add(new DragHandle(this));
-        ResizeHandleKit.addResizeHandles(this, handles);
+        switch (detailLevel) {
+            case -1:
+                handles.add(new BoundsOutlineHandle(this,false,true));
+                break;
+            case 0:
+                ResizeHandleKit.addResizeHandles(this, handles);
+                break;
+        }
         return handles;
     }
 
@@ -414,7 +420,6 @@ public abstract class AbstractFigure
     }
 
     protected void validate() {
-
     }
 
     /**
@@ -502,9 +507,6 @@ public abstract class AbstractFigure
         return new Dimension2DDouble(r.width, r.height);
     }
 
-    public void remap(Map oldToNew) {
-    }
-
     public boolean isSelectable() {
         return isSelectable;
     }
@@ -582,7 +584,7 @@ public abstract class AbstractFigure
     }
 
     public Collection<Connector> getConnectors(ConnectionFigure prototype) {
-        LinkedList connectors = new LinkedList<Connector>();
+        LinkedList<Connector> connectors = new LinkedList<Connector>();
         connectors.add(new ChopRectangleConnector(this));
         return connectors;
     }

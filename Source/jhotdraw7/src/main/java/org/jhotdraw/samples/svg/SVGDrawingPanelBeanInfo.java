@@ -1,5 +1,5 @@
 /*
- * @(#)SVGDrawingPanelBeanInfo.java  1.0  11. November 2003
+ * @(#)JSVGDrawingAppletPanelBeanInfo.java  1.0  11. November 2003
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
  * and all its contributors.
@@ -25,7 +25,7 @@ public class SVGDrawingPanelBeanInfo extends SimpleBeanInfo {
         // Here you can add code for customizing the BeanDescriptor.
          if (beanDescriptor == null) beanDescriptor = new BeanDescriptor(SVGDrawingPanelBeanInfo.class);
          beanDescriptor.setValue("isContainer", Boolean.FALSE);
-     beanDescriptor.setDisplayName("DrawingPanel");
+     beanDescriptor.setDisplayName("SVGDrawingPanel");
         
         return beanDescriptor;     }//GEN-LAST:BeanDescriptor
     

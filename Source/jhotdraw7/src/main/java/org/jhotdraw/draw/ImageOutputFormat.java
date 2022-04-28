@@ -32,7 +32,7 @@ import org.jhotdraw.io.*;
  *
  * @author Werner Randelshofer
  * @version 1.1 2007-12-16 Adapted to changes in OutputFormat. 
- * Added support for AttributeKeys.CANVAS_FILL_COLOR. 
+ * Added support for AttributeKeys.CANVAS_FILL_COLOR.
  * <br>1.0 January 2, 2007 Created.
  */
 public class ImageOutputFormat implements OutputFormat {
@@ -265,6 +265,7 @@ public class ImageOutputFormat implements OutputFormat {
                     imageType
                     );
             g = buf2.createGraphics();
+            setRenderingHints(g);
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC));
             g.drawImage(buf, 0, 0, null);
             g.dispose();

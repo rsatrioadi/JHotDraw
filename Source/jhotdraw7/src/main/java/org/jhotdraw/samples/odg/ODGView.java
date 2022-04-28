@@ -14,20 +14,12 @@
  */
 package org.jhotdraw.samples.odg;
 
-import org.jhotdraw.app.ExportableView;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.Pageable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.prefs.Preferences;
-import org.jhotdraw.draw.ImageInputFormat;
-import org.jhotdraw.draw.ImageOutputFormat;
-import org.jhotdraw.draw.OutputFormat;
-import org.jhotdraw.geom.Dimension2DDouble;
 import org.jhotdraw.gui.*;
-import org.jhotdraw.io.*;
-import org.jhotdraw.draw.InputFormat;
 import org.jhotdraw.samples.odg.io.ODGInputFormat;
 import org.jhotdraw.samples.svg.figures.*;
 import org.jhotdraw.samples.svg.io.*;
@@ -43,7 +35,6 @@ import org.jhotdraw.app.*;
 import org.jhotdraw.app.action.*;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.action.*;
-import org.jhotdraw.xml.*;
 
 /**
  * A view for ODG drawings.
@@ -55,6 +46,7 @@ import org.jhotdraw.xml.*;
  * <br>1.0 2006-02-07 Created.
  */
 public class ODGView extends AbstractView implements ExportableView {
+    public final static String GRID_VISIBLE_PROPERTY = "gridVisible";
     protected JFileChooser exportChooser;
     
     /**
@@ -74,7 +66,6 @@ public class ODGView extends AbstractView implements ExportableView {
     
     private GridConstrainer visibleConstrainer = new GridConstrainer(10, 10);
     private GridConstrainer invisibleConstrainer = new GridConstrainer(1, 1);
-    private Preferences prefs;
     /**
      * Creates a new view.
      */
@@ -86,7 +77,6 @@ public class ODGView extends AbstractView implements ExportableView {
      */
     public void init() {
         super.init();
-        prefs = Preferences.userNodeForPackage(getClass());
         
         initComponents();
         
@@ -105,7 +95,7 @@ public class ODGView extends AbstractView implements ExportableView {
             }
         });
         
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
         
         JPanel placardPanel = new JPanel(new BorderLayout());
         javax.swing.AbstractButton pButton;
@@ -118,11 +108,11 @@ public class ODGView extends AbstractView implements ExportableView {
         pButton.putClientProperty("Quaqua.Button.style","placard");
         pButton.putClientProperty("Quaqua.Component.visualMargin",new Insets(0,0,0,0));
         pButton.setFont(UIManager.getFont("SmallSystemFont"));
-        labels.configureToolBarButton(pButton, "alignGridSmall");
+        labels.configureToolBarButton(pButton, "view.toggleGrid.placard");
         placardPanel.add(pButton, BorderLayout.EAST);
         scrollPane.add(placardPanel, JScrollPane.LOWER_LEFT_CORNER);
         
-        propertiesPanel.setVisible(prefs.getBoolean("propertiesPanelVisible", false));
+        propertiesPanel.setVisible(preferences.getBoolean("propertiesPanelVisible", false));
         propertiesPanel.setView(view);
     }
     
@@ -207,7 +197,7 @@ public class ODGView extends AbstractView implements ExportableView {
             if (sf == null) {
                 sf = drawing.getInputFormats().get(0);
             }
-            sf.read(f, drawing);
+            sf.read(f, drawing, true);
             
             System.out.println("ODCView read("+f+") drawing.childCount="+drawing.getChildCount());
             
@@ -229,13 +219,6 @@ public class ODGView extends AbstractView implements ExportableView {
     }
     
     
-    /**
-     * Gets the drawing editor of the view.
-     */
-    public DrawingEditor getDrawingEditor() {
-        return editor;
-    }
-    
     public Drawing getDrawing() {
         return view.getDrawing();
     }
@@ -249,7 +232,7 @@ public class ODGView extends AbstractView implements ExportableView {
         boolean oldValue = propertiesPanel.isVisible();
         propertiesPanel.setVisible(newValue);
         firePropertyChange("propertiesPanelVisible", oldValue, newValue);
-        prefs.putBoolean("propertiesPanelVisible", newValue);
+        preferences.putBoolean("propertiesPanelVisible", newValue);
         validate();
     }
     public boolean isPropertiesPanelVisible() {
@@ -261,7 +244,7 @@ public class ODGView extends AbstractView implements ExportableView {
     public void setGridVisible(boolean newValue) {
         boolean oldValue = isGridVisible();
         view.setConstrainerVisible(newValue);
-        firePropertyChange("gridVisible", oldValue, newValue);
+        firePropertyChange(GRID_VISIBLE_PROPERTY, oldValue, newValue);
     }
     public double getScaleFactor() {
         return view.getScaleFactor();
@@ -295,7 +278,7 @@ public class ODGView extends AbstractView implements ExportableView {
     }
     
     @Override protected JFileChooser createOpenChooser() {
-        final JFileChooser c = super.createOpenChooser();
+        final JFileChooser c = new JFileChooser();
         fileFilterInputFormatMap = new HashMap<javax.swing.filechooser.FileFilter,InputFormat>();
         javax.swing.filechooser.FileFilter firstFF = null;
         for (InputFormat format : view.getDrawing().getInputFormats()) {
@@ -315,11 +298,14 @@ public class ODGView extends AbstractView implements ExportableView {
                 }
             }
         });
+        if (preferences != null) {
+            c.setSelectedFile(new File(preferences.get("projectFile", System.getProperty("user.home"))));
+        }
         
         return c;
     }
     @Override protected JFileChooser createSaveChooser() {
-        JFileChooser c = super.createSaveChooser();
+        JFileChooser c = new JFileChooser();
         
         fileFilterOutputFormatMap = new HashMap<javax.swing.filechooser.FileFilter,OutputFormat>();
         //  c.addChoosableFileFilter(new ExtensionFileFilter("SVG Drawing","svg"));
@@ -328,6 +314,9 @@ public class ODGView extends AbstractView implements ExportableView {
             fileFilterOutputFormatMap.put(ff, format);
             c.addChoosableFileFilter(ff);
             break; // only add the first file filter
+        }
+        if (preferences != null) {
+            c.setSelectedFile(new File(preferences.get("projectFile", System.getProperty("user.home"))));
         }
         
         return c;
@@ -346,14 +335,14 @@ public class ODGView extends AbstractView implements ExportableView {
             javax.swing.filechooser.FileFilter ff = format.getFileFilter();
             fileFilterOutputFormatMap.put(ff, format);
             c.addChoosableFileFilter(ff);
-            if (ff.getDescription().equals(prefs.get("viewExportFormat",""))) {
+            if (ff.getDescription().equals(preferences.get("viewExportFormat",""))) {
                 currentFilter = ff;
             }
         }
         if (currentFilter != null) {
             c.setFileFilter(currentFilter);
         }
-        c.setSelectedFile(new File(prefs.get("viewExportFile", System.getProperty("user.home"))));
+        c.setSelectedFile(new File(preferences.get("viewExportFile", System.getProperty("user.home"))));
         
         return c;
     }
@@ -397,8 +386,8 @@ public class ODGView extends AbstractView implements ExportableView {
         
         format.write(f, view.getDrawing());
         
-        prefs.put("viewExportFile", f.getPath());
-        prefs.put("viewExportFormat", filter.getDescription());
+        preferences.put("viewExportFile", f.getPath());
+        preferences.put("viewExportFormat", filter.getDescription());
     }
     
     

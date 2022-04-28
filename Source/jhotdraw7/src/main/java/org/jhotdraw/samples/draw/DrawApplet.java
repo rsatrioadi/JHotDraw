@@ -44,6 +44,7 @@ public class DrawApplet extends JApplet {
      * We override getParameter() to make it work even if we have no Applet
      * context.
      */
+    @Override
     public String getParameter(String name) {
         try {
             return super.getParameter(name);
@@ -56,6 +57,7 @@ public class DrawApplet extends JApplet {
     }
     
     /** Initializes the applet DrawApplet */
+    @Override
     public void init() {
         // Set look and feel
         // -----------------
@@ -139,6 +141,7 @@ public class DrawApplet extends JApplet {
     /**
      * Configure Drawing object to support copy and paste.
      */
+    @SuppressWarnings("unchecked")
     private void initDrawing(Drawing d) {
         d.setInputFormats((java.util.List<InputFormat>) Collections.EMPTY_LIST);
         d.setOutputFormats((java.util.List<OutputFormat>) Collections.EMPTY_LIST);
@@ -198,7 +201,7 @@ public class DrawApplet extends JApplet {
     public String getAppletInfo() {
         return NAME +
                 "\nVersion "+getVersion() +
-                "\n\nCopyright 2006-2008 (c) by the authors of JHotDraw" +
+                "\n\nCopyright 1996-2009 (c) by the original authors of JHotDraw and all its contributors" +
                 "\nThis software is licensed under LGPL or" +
                 "\nCreative Commons 3.0 BY";
     }

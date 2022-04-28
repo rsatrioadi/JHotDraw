@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="build-pert" default="all" basedir=".">
     <target name="init">
+        <!-- properties for copyright and versioning -->
+        <property name="author" value="the authors and contributors of JHotDraw"/>
+        <property name="version" value="7.2"/>
+
+        <!-- build properties -->
         <property name="libdir" value="lib"/>
         <property name="srcdir" value="src/main/java"/>
         <property name="builddir" value="build"/>
         <property name="classdir" value="${builddir}/classes"/>
-        <property name="distdir" value="dist/PERT"/>
-        <property name="author" value="jhotdraw.org and contributors"/>
-        <property name="version" value="7.1"/>
+        <property name="distdir" value="dist/JHotdraw ${version}/Samples/PERT"/>
+
+        <!-- properties for jar signing -->
         <property name="keystore.file" value="../../../../_Keystore/JavaKeystore"/>
         <property name="keystore.alias" value="werner"/>
         <property name="keystore.storepass" value="werner"/>
@@ -51,6 +56,11 @@
         <copy todir="${classdir}/org/jhotdraw/draw">
             <fileset file="${srcdir}/org/jhotdraw/draw/Label*.properties"/>
         </copy>
+        <copy todir="${classdir}/org/jhotdraw/gui">
+            <fileset dir="${srcdir}/org/jhotdraw/gui">
+                <include name="*.properties"/>
+            </fileset>
+        </copy>
         <copy todir="${classdir}/org/jhotdraw/app">
             <fileset file="${srcdir}/org/jhotdraw/app/Label*.properties"/>
         </copy>
@@ -62,8 +72,8 @@
         </copy>
     </target>
     <target name="applet.jar" depends="init,applet.compile">
-        <mkdir dir="${distdir}"/>
-        <jar destfile="${distdir}/jhotdraw_pert.jar" basedir="${classdir}"
+        <mkdir dir="${distdir}/unsigned"/>
+        <jar destfile="${distdir}/unsigned/jhotdraw_pert.jar" basedir="${classdir}"
         index="true" compress="false">
             <manifest>
                 <attribute name="Built-By" value="${author}"/>
@@ -71,11 +81,11 @@
                 <attribute name="Implementation-Version" value="${version}"/>
             </manifest>
         </jar>
-        <exec executable="gzip" dir="${distdir}">
+        <exec executable="gzip" dir="${distdir}/unsigned">
             <arg value="-f"/>
             <arg value="jhotdraw_pert.jar"/>
         </exec>
-        <jar destfile="${distdir}/jhotdraw_pert.jar" basedir="${classdir}" index="true">
+        <jar destfile="${distdir}/unsigned/jhotdraw_pert.jar" basedir="${classdir}" index="true">
             <manifest>
                 <attribute name="Built-By" value="${author}"/>
                 <attribute name="Main-Class" value="org.jhotdraw.samples.pert.PertApplet"/>
@@ -83,23 +93,23 @@
             </manifest>
         </jar>
         <exec executable="pack200">
-            <arg value="${distdir}/jhotdraw_pert.jar.pack.gz"/>
-            <arg value="${distdir}/jhotdraw_pert.jar"/>
+            <arg value="${distdir}/unsigned/jhotdraw_pert.jar.pack.gz"/>
+            <arg value="${distdir}/unsigned/jhotdraw_pert.jar"/>
         </exec>
     </target>
     <target name="applet.jarsigned" depends="init,applet.jar">
-        <copy tofile="${distdir}/jhotdraw_pert_signed.jar">
-            <fileset file="${distdir}/jhotdraw_pert.jar"/>
+        <copy tofile="${distdir}/signed/jhotdraw_pert.jar">
+            <fileset file="${distdir}/unsigned/jhotdraw_pert.jar"/>
         </copy>
           <signjar alias="${keystore.alias}" 
                 storepass="${keystore.storepass}"
                 keystore="${keystore.file}" 
-                jar="${distdir}/jhotdraw_pert_signed.jar"
+                jar="${distdir}/signed/jhotdraw_pert.jar"
                 >
         </signjar>        
         <exec executable="pack200">
-            <arg value="${distdir}/jhotdraw_pert_signed.jar.pack.gz"/>
-            <arg value="${distdir}/jhotdraw_pert_signed.jar"/>
+            <arg value="${distdir}/signed/jhotdraw_pert.jar.pack.gz"/>
+            <arg value="${distdir}/signed/jhotdraw_pert.jar"/>
         </exec>
     </target>
     <target name="application.compile" depends="init,clean">
@@ -141,11 +151,14 @@
                 <include name="*.png"/>
             </fileset>
         </copy>
+        <copy todir="${classdir}/org/jhotdraw/app">
+            <fileset file="${srcdir}/org/jhotdraw/app/Label*.properties"/>
+        </copy>
         <copy todir="${classdir}/org/jhotdraw/draw">
             <fileset file="${srcdir}/org/jhotdraw/draw/Label*.properties"/>
         </copy> 
-        <copy todir="${classdir}/org/jhotdraw/app">
-            <fileset file="${srcdir}/org/jhotdraw/app/Label*.properties"/>
+        <copy todir="${classdir}/org/jhotdraw/gui">
+            <fileset file="${srcdir}/org/jhotdraw/gui/Label*.properties"/>
         </copy>
         <copy todir="${classdir}/org/jhotdraw/samples/pert">
             <fileset file="${srcdir}/org/jhotdraw/samples/pert/Label*.properties"/>
@@ -155,8 +168,8 @@
         </copy>
     </target>
     <target name="application.jar" depends="init,application.compile">
-        <mkdir dir="${distdir}"/>
-        <jar destfile="${distdir}/JHotDraw PERT.jar" basedir="${classdir}">
+        <mkdir dir="${distdir}/unsigned"/>
+        <jar destfile="${distdir}/unsigned/JHotDraw PERT.jar" basedir="${classdir}">
             <manifest>
                 <attribute name="Built-By" value="${author}"/>
                 <attribute name="Main-Class" value="org.jhotdraw.samples.pert.Main"/>
@@ -164,14 +177,15 @@
                 <attribute name="Implementation-Version" value="${version}"/>
             </manifest>
         </jar>
-        <copy todir="${distdir}">
+        <copy todir="${distdir}/unsigned">
+            <fileset file="${libdir}/*.jar"/>
             <fileset file="${libdir}/*.jnilib"/>
         </copy>
     </target>
     <target name="application.jarsigned" depends="init,application.jar">
         <unjar src="${libdir}/quaqua.jar" dest="${classdir}" />
         <unjar src="${libdir}/MRJAdapter.jar" dest="${classdir}" />
-        <jar destfile="${distdir}/JHotDraw PERT_signed.jar" basedir="${classdir}">
+        <jar destfile="${distdir}/signed/JHotDraw PERT.jar" basedir="${classdir}">
             <manifest>
                 <attribute name="Built-By" value="${author}"/>
                 <attribute name="Main-Class" value="org.jhotdraw.samples.pert.Main"/>
@@ -181,35 +195,70 @@
           <signjar alias="${keystore.alias}" 
                 storepass="${keystore.storepass}"
                 keystore="${keystore.file}" 
-                jar="${distdir}/JHotDraw PERT_signed.jar"
+                jar="${distdir}/signed/JHotDraw PERT.jar"
                 
                 >
         </signjar>        
         <jar basedir="${libdir}" compress="true"
-             jarfile="${distdir}/libquaqua.jnilib_signed.jar" 
+             jarfile="${distdir}/signed/libquaqua.jnilib.jar"
              >
             <include name="libquaqua.jnilib"/>
         </jar>
         <signjar alias="${keystore.alias}" 
             storepass="${keystore.storepass}"
             keystore="${keystore.file}" 
-            jar="${distdir}/libquaqua.jnilib_signed.jar"
+            jar="${distdir}/signed/libquaqua.jnilib.jar"
+            >
+        </signjar>        
+        <jar basedir="${libdir}" compress="true"
+             jarfile="${distdir}/signed/libquaqua64.jnilib.jar"
+             >
+            <include name="libquaqua64.jnilib"/>
+        </jar>
+        <signjar alias="${keystore.alias}" 
+            storepass="${keystore.storepass}"
+            keystore="${keystore.file}" 
+            jar="${distdir}/signed/libquaqua64.jnilib.jar"
             >
         </signjar>        
     </target>
-    <target name="application.run" depends="init">
-        <java fork="true" jar="${distdir}/JHotDraw Pert.jar">
+    <target name="application.run-jar" depends="init">
+        <java fork="true" jar="${distdir}/unsigned/JHotDraw Pert.jar">
+            <jvmarg value="-Xdock:name=JHotDraw Pert"/>
+            <jvmarg value="-Dlocale=en"/>
+            <jvmarg value="-Dapple.awt.graphics.UseQuartz=false"/>
+            <jvmarg value="-Djava.library.path=${libdir}"/>
+        </java>
+    </target>
+    <target name="application.run-compiled" depends="init">
+        <java fork="true" classname="org.jhotdraw.samples.pert.Main">
+            <classpath>
+                <path path="${classdir}"/>
+                <fileset dir="${libdir}">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+            <jvmarg value="-Djava.library.path=${libdir}"/>
             <jvmarg value="-Xdock:name=JHotDraw Pert"/>
             <jvmarg value="-Dlocale=en"/>
             <jvmarg value="-Dapple.awt.graphics.UseQuartz=false"/>
         </java>
     </target>
-    <target name="applet.run" depends="init">
+    <target name="applet.run-jar" depends="init">
         <java fork="true" jar="${distdir}/jhotdraw_pert.jar"/>
+    </target>
+    <target name="applet.run-compiled" depends="init">
+        <java fork="true" classname="org.jhotdraw.samples.pert.PertApplet">
+            <classpath>
+                <pathelement path="${classdir}"/>
+            </classpath>
+        </java>
     </target>
     <target name="applet.appletviewer" depends="init">
         <exec executable="appletviewer">
         <arg value="${builddir}/PertApplet.html"/>
         </exec>
+    </target>
+    <target name="dist" depends="init,applet.jarsigned,application.jarsigned">
     </target>
 </project>

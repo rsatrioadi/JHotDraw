@@ -17,20 +17,14 @@ package org.jhotdraw.samples.draw;
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.awt.print.Pageable;
-import org.jhotdraw.draw.ImageInputFormat;
-import org.jhotdraw.draw.ImageOutputFormat;
-import org.jhotdraw.draw.InputFormat;
-import org.jhotdraw.draw.OutputFormat;
 import org.jhotdraw.gui.*;
 import org.jhotdraw.io.*;
-import org.jhotdraw.draw.DOMStorableInputOutputFormat;
 import org.jhotdraw.undo.*;
 import org.jhotdraw.util.*;
 import java.awt.*;
 import java.beans.*;
 import java.io.*;
 import java.lang.reflect.*;
-import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import org.jhotdraw.app.AbstractView;
@@ -38,7 +32,6 @@ import org.jhotdraw.app.action.RedoAction;
 import org.jhotdraw.app.action.UndoAction;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.action.*;
-import org.jhotdraw.xml.*;
 
 /**
  * A view for JHotDraw drawings.
@@ -93,7 +86,7 @@ public class DrawView extends AbstractView {
             }
         });
         
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
         
         JPanel placardPanel = new JPanel(new BorderLayout());
         javax.swing.AbstractButton pButton;
@@ -106,7 +99,7 @@ public class DrawView extends AbstractView {
         pButton.putClientProperty("Quaqua.Button.style","placard");
         pButton.putClientProperty("Quaqua.Component.visualMargin",new Insets(0,0,0,0));
         pButton.setFont(UIManager.getFont("SmallSystemFont"));
-        labels.configureToolBarButton(pButton, "alignGridSmall");
+        labels.configureToolBarButton(pButton, "view.toggleGrid.placard");
         placardPanel.add(pButton, BorderLayout.EAST);
         scrollPane.add(placardPanel, JScrollPane.LOWER_LEFT_CORNER);
     }
@@ -137,19 +130,6 @@ public class DrawView extends AbstractView {
         return drawing;
     }
     
-    public DrawingEditor getEditor() {
-        return editor;
-    }
-    public void setEditor(DrawingEditor newValue) {
-        DrawingEditor oldValue = editor;
-        if (oldValue != null) {
-            oldValue.remove(view);
-        }
-        editor = newValue;
-        if (newValue != null) {
-            newValue.add(view);
-        }
-    }
     
     /**
      * Creates a Pageable object for printing the view.
@@ -193,7 +173,7 @@ public class DrawView extends AbstractView {
             boolean success = false;
                 for (InputFormat sfi : drawing.getInputFormats()) {
                         try {
-                            sfi.read(f, drawing);
+                            sfi.read(f, drawing, true);
                             success = true;
                             break;
                         } catch (Exception e) {
@@ -201,8 +181,8 @@ public class DrawView extends AbstractView {
                         }
                     }
             if (!success) {
-                ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
-                throw new IOException(labels.getFormatted("errorUnsupportedFileFormat", f.getName()));
+                ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
+                throw new IOException(labels.getFormatted("file.open.unsupportedFileFormat.message", f.getName()));
             }
             SwingUtilities.invokeAndWait(new Runnable() {
 
@@ -228,7 +208,7 @@ public class DrawView extends AbstractView {
     /**
      * Sets a drawing editor for the view.
      */
-    public void setDrawingEditor(DrawingEditor newValue) {
+    public void setEditor(DrawingEditor newValue) {
         if (editor != null) {
             editor.remove(view);
         }
@@ -241,7 +221,7 @@ public class DrawView extends AbstractView {
     /**
      * Gets the drawing editor of the view.
      */
-    public DrawingEditor getDrawingEditor() {
+    public DrawingEditor getEditor() {
         return editor;
     }
     
@@ -267,13 +247,19 @@ public class DrawView extends AbstractView {
     }
     
     @Override protected JFileChooser createOpenChooser() {
-        JFileChooser c = super.createOpenChooser();
+        JFileChooser c = new JFileChooser();
         c.addChoosableFileFilter(new ExtensionFileFilter("Drawing .xml","xml"));
+        if (preferences != null) {
+            c.setSelectedFile(new File(preferences.get("projectFile", System.getProperty("user.home"))));
+        }
         return c;
     }
     @Override protected JFileChooser createSaveChooser() {
-        JFileChooser c = super.createSaveChooser();
+        JFileChooser c = new JFileChooser();
         c.addChoosableFileFilter(new ExtensionFileFilter("Drawing .xml","xml"));
+        if (preferences != null) {
+            c.setSelectedFile(new File(preferences.get("projectFile", System.getProperty("user.home"))));
+        }
         return c;
     }
     @Override

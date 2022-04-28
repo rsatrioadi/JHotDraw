@@ -17,12 +17,8 @@ package org.jhotdraw.samples.pert;
 import java.awt.print.Pageable;
 import java.util.*;
 import java.util.prefs.*;
-import org.jhotdraw.draw.ImageOutputFormat;
-import org.jhotdraw.draw.InputFormat;
-import org.jhotdraw.draw.OutputFormat;
 import org.jhotdraw.gui.*;
 import org.jhotdraw.io.*;
-import org.jhotdraw.draw.DOMStorableInputOutputFormat;
 import org.jhotdraw.undo.*;
 import org.jhotdraw.util.*;
 import java.awt.*;
@@ -35,8 +31,6 @@ import org.jhotdraw.app.*;
 import org.jhotdraw.app.action.*;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.action.*;
-import org.jhotdraw.xml.*;
-import org.jhotdraw.samples.pert.figures.*;
 
 /**
  * A view for Pert diagrams.
@@ -48,6 +42,7 @@ import org.jhotdraw.samples.pert.figures.*;
  * <br>1.0 2006-02-07 Created.
  */
 public class PertView extends AbstractView {
+    public final static String GRID_VISIBLE_PROPERTY = "gridVisible";
    
     /**
      * Each view uses its own undo redo manager.
@@ -60,8 +55,6 @@ public class PertView extends AbstractView {
      * view, or a single shared editor for all views.
      */
     private DrawingEditor editor;
-    
-    private Preferences prefs;
     
     /**
      * Creates a new view.
@@ -92,7 +85,7 @@ public class PertView extends AbstractView {
             }
         });
         
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
         
         JPanel placardPanel = new JPanel(new BorderLayout());
         javax.swing.AbstractButton pButton;
@@ -105,13 +98,12 @@ public class PertView extends AbstractView {
         pButton.putClientProperty("Quaqua.Button.style","placard");
         pButton.putClientProperty("Quaqua.Component.visualMargin",new Insets(0,0,0,0));
         pButton.setFont(UIManager.getFont("SmallSystemFont"));
-        labels.configureToolBarButton(pButton, "alignGridSmall");
+        labels.configureToolBarButton(pButton, "view.toggleGrid.placard");
         placardPanel.add(pButton, BorderLayout.EAST);
         scrollPane.add(placardPanel, JScrollPane.LOWER_LEFT_CORNER);
 
-        prefs = Preferences.userNodeForPackage(getClass());
-        setGridVisible(prefs.getBoolean("view.gridVisible", false));
-        setScaleFactor(prefs.getDouble("view.scaleFactor", 1d));   
+        setGridVisible(preferences.getBoolean("view.gridVisible", false));
+        setScaleFactor(preferences.getDouble("view.scaleFactor", 1d));
     }
     
     /**
@@ -155,8 +147,8 @@ public class PertView extends AbstractView {
     public void setGridVisible(boolean newValue) {
         boolean oldValue = isGridVisible();
         view.setConstrainerVisible(newValue);
-        firePropertyChange("gridVisible", oldValue, newValue);
-        prefs.putBoolean("view.gridVisible", newValue);
+        firePropertyChange(GRID_VISIBLE_PROPERTY, oldValue, newValue);
+        preferences.putBoolean("view.gridVisible", newValue);
     }
     public boolean isGridVisible() {
        return view.isConstrainerVisible();
@@ -169,7 +161,7 @@ public class PertView extends AbstractView {
         view.setScaleFactor(newValue);
         
         firePropertyChange("scaleFactor", oldValue, newValue);
-        prefs.putDouble("view.scaleFactor", newValue);
+        preferences.putDouble("view.scaleFactor", newValue);
     }
     /**
      * Initializes view specific actions.
@@ -199,7 +191,7 @@ public class PertView extends AbstractView {
         try {
             final Drawing drawing = createDrawing();
             InputFormat inputFormat = drawing.getInputFormats().get(0);
-            inputFormat.read(f, drawing);
+            inputFormat.read(f, drawing, true);
             SwingUtilities.invokeAndWait(new Runnable() { public void run() {
                 view.getDrawing().removeUndoableEditListener(undo);
                 view.setDrawing(drawing);
@@ -215,26 +207,6 @@ public class PertView extends AbstractView {
             e.initCause(e);
             throw error;
         }
-    }
-    
-    /**
-     * Sets a drawing editor for the view.
-     */
-    public void setDrawingEditor(DrawingEditor newValue) {
-        if (editor != null) {
-            editor.remove(view);
-        }
-        editor = newValue;
-        if (editor != null) {
-            editor.add(view);
-        }
-    }
-    
-    /**
-     * Gets the drawing editor of the view.
-     */
-    public DrawingEditor getDrawingEditor() {
-        return editor;
     }
     
     /**
@@ -259,13 +231,19 @@ public class PertView extends AbstractView {
     }
     
     @Override protected JFileChooser createOpenChooser() {
-        JFileChooser c = super.createOpenChooser();
+        JFileChooser c = new JFileChooser();
         c.addChoosableFileFilter(new ExtensionFileFilter("Pert Diagram","xml"));
+        if (preferences != null) {
+            c.setSelectedFile(new File(preferences.get("projectFile", System.getProperty("user.home"))));
+        }
         return c;
     }
     @Override protected JFileChooser createSaveChooser() {
-        JFileChooser c = super.createSaveChooser();
+        JFileChooser c = new JFileChooser();
         c.addChoosableFileFilter(new ExtensionFileFilter("Pert Diagram","xml"));
+        if (preferences != null) {
+            c.setSelectedFile(new File(preferences.get("projectFile", System.getProperty("user.home"))));
+        }
         return c;
     }
     @Override

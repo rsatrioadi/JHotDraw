@@ -45,10 +45,11 @@ public class PathTool extends BezierTool {
         this(pathPrototype, bezierPrototype, null);
     }
     /** Creates a new instance. */
-    public PathTool(SVGPathFigure pathPrototype, SVGBezierFigure bezierPrototype, Map attributes) {
+    public PathTool(SVGPathFigure pathPrototype, SVGBezierFigure bezierPrototype, Map<AttributeKey,Object> attributes) {
         super(bezierPrototype, attributes);
         this.pathPrototype = pathPrototype;
     }
+    @SuppressWarnings("unchecked")
     protected SVGPathFigure createPath() {
         SVGPathFigure f = (SVGPathFigure) pathPrototype.clone();
         getEditor().applyDefaultAttributesTo(f);
@@ -59,14 +60,14 @@ public class PathTool extends BezierTool {
         }
         return f;
     }
-    @Override protected void finishCreation(BezierFigure createdFigure) {
+    @Override protected void finishCreation(BezierFigure createdFigure, DrawingView creationView) {
         if (DEBUG) System.out.println("PathTool.finishCreation "+createdFigure);
-        getDrawing().remove(createdFigure);
+        creationView.getDrawing().remove(createdFigure);
         SVGPathFigure createdPath = createPath();
         createdPath.removeAllChildren();
         createdPath.add(createdFigure);
-        getDrawing().add(createdPath);
-        getView().addToSelection(createdPath);
-        fireUndoEvent(createdPath);
+        creationView.getDrawing().add(createdPath);
+        creationView.addToSelection(createdPath);
+        fireUndoEvent(createdPath, creationView);
     }
 }

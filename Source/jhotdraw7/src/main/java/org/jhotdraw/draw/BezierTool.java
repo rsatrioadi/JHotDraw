@@ -1,7 +1,7 @@
 /*
- * @(#)BezierTool.java  1.2  2007-11-30
+ * @(#)BezierTool.java  2.0.2  2009-03-15
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2009 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -15,7 +15,6 @@ package org.jhotdraw.draw;
 
 import javax.swing.undo.*;
 import org.jhotdraw.util.*;
-import org.jhotdraw.undo.*;
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.event.*;
@@ -26,7 +25,13 @@ import org.jhotdraw.geom.*;
  * Tool to scribble a BezierFigure
  *
  * @author  Werner Randelshofer
- * @version 1.2 2007-11-30 Huw Jones: Factored calls to Bezier.fitBezierCurve out
+ * @version 2.0.2 2009-03-15 Finish creation if the user switches to another
+ * view.
+ * <br>2.0.1 2008-06-08 FittedCurve did not include the point which
+ * was digitized on mouse pressed.
+ * <br>2.0 2008-05-17 Added support for property toolDoneAfterCreation. 
+ * Draw rubberband while editing.
+ * <br>1.2 2007-11-30 Huw Jones: Factored calls to Bezier.fitBezierPath out
  * into method calculateFittedPath.
  * <br>1.1 2006-07-12 Werner Randelshofer: Extended support for subclassing.
  * <br>1.0 2006-01-21 Werner Randelshofer: Created.
@@ -39,6 +44,7 @@ public class BezierTool extends AbstractTool {
     private final static boolean DEBUG = false;
     private Boolean finishWhenMouseReleased;
     protected Map<AttributeKey, Object> attributes;
+    private boolean isToolDoneAfterCreation;
     /**
      * The prototype for new figures.
      */
@@ -53,6 +59,9 @@ public class BezierTool extends AbstractTool {
      * UndoableEdit.
      */
     private String presentationName;
+    private Point mouseLocation;
+    /** Holds the view on which we are currently creating a figure. */
+    private DrawingView creationView;
 
     /** Creates a new instance. */
     public BezierTool(BezierFigure prototype) {
@@ -60,16 +69,16 @@ public class BezierTool extends AbstractTool {
     }
 
     /** Creates a new instance. */
-    public BezierTool(BezierFigure prototype, Map attributes) {
+    public BezierTool(BezierFigure prototype, Map<AttributeKey, Object> attributes) {
         this(prototype, attributes, null);
     }
 
-    public BezierTool(BezierFigure prototype, Map attributes, String name) {
+    public BezierTool(BezierFigure prototype, Map<AttributeKey, Object> attributes, String name) {
         this.prototype = prototype;
         this.attributes = attributes;
         if (name == null) {
-            ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
-            name = labels.getString("createFigure");
+            ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
+            name = labels.getString("edit.createFigure.text");
         }
         this.presentationName = name;
     }
@@ -78,50 +87,78 @@ public class BezierTool extends AbstractTool {
         return presentationName;
     }
 
+    @Override
     public void activate(DrawingEditor editor) {
         super.activate(editor);
-        getView().clearSelection();
         getView().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
     }
 
+    @Override
     public void deactivate(DrawingEditor editor) {
         super.deactivate(editor);
         getView().setCursor(Cursor.getDefaultCursor());
         if (createdFigure != null) {
-
-            finishCreation(createdFigure);
+            if (anchor != null && mouseLocation != null) {
+                Rectangle r = new Rectangle(anchor);
+                r.add(mouseLocation);
+                if (createdFigure.getNodeCount() > 0 && createdFigure.isClosed()) {
+                    r.add(getView().drawingToView(createdFigure.getStartPoint()));
+                }
+                fireAreaInvalidated(r);
+            }
+            finishCreation(createdFigure, creationView);
             createdFigure = null;
         }
     }
 
+    @Override
     public void mousePressed(MouseEvent evt) {
+
         if (DEBUG) {
             System.out.println("BezierTool.mousePressed " + evt);
         }
+        if (mouseLocation != null) {
+            Rectangle r = new Rectangle(mouseLocation);
+            r.add(evt.getPoint());
+            r.grow(1, 1);
+            fireAreaInvalidated(r);
+        }
+        mouseLocation = evt.getPoint();
         super.mousePressed(evt);
+
+
+        if (createdFigure != null && creationView != getView()) {
+            finishCreation(createdFigure, creationView);
+            createdFigure = null;
+        }
+
+
         if (createdFigure == null) {
+            creationView = getView();
+            creationView.clearSelection();
             finishWhenMouseReleased = null;
 
             createdFigure = createFigure();
             createdFigure.addNode(new BezierPath.Node(
-                    getView().getConstrainer().constrainPoint(
-                    getView().viewToDrawing(anchor))));
+                    creationView.getConstrainer().constrainPoint(
+                    creationView.viewToDrawing(anchor))));
             getDrawing().add(createdFigure);
         } else {
             if (evt.getClickCount() == 1) {
-                addPointToFigure(getView().getConstrainer().constrainPoint(
-                        getView().viewToDrawing(anchor)));
+                addPointToFigure(creationView.getConstrainer().constrainPoint(
+                        creationView.viewToDrawing(anchor)));
             }
         }
         nodeCountBeforeDrag = createdFigure.getNodeCount();
     }
 
+    @SuppressWarnings("unchecked")
     protected BezierFigure createFigure() {
         BezierFigure f = (BezierFigure) prototype.clone();
         getEditor().applyDefaultAttributesTo(f);
         if (attributes != null) {
             for (Map.Entry<AttributeKey, Object> entry : attributes.entrySet()) {
-                f.setAttribute(entry.getKey(), entry.getValue());
+                entry.getKey().basicSet(f, entry.getValue());
             }
         }
         return f;
@@ -145,7 +182,7 @@ public class BezierTool extends AbstractTool {
             Point2D.Double endPoint = createdFigure.getEndPoint();
             Point2D.Double secondLastPoint = (pointCount <= 1) ? endPoint : createdFigure.getPoint(pointCount - 2, 0);
             if (newPoint.equals(endPoint)) {
-            // nothing to do
+                // nothing to do
             } else if (pointCount > 1 && Geom.lineContainsPoint(newPoint.x, newPoint.y, secondLastPoint.x, secondLastPoint.y, endPoint.x, endPoint.y, 0.9f / getView().getScaleFactor())) {
                 createdFigure.setPoint(pointCount - 1, 0, newPoint);
             } else {
@@ -155,6 +192,7 @@ public class BezierTool extends AbstractTool {
         createdFigure.changed();
     }
 
+    @Override
     public void mouseClicked(MouseEvent evt) {
         if (createdFigure != null) {
             switch (evt.getClickCount()) {
@@ -165,30 +203,28 @@ public class BezierTool extends AbstractTool {
                         if (r.contains(evt.getX(), evt.getY())) {
                             createdFigure.setClosed(true);
 
-                            finishCreation(createdFigure);
+                            finishCreation(createdFigure, creationView);
                             createdFigure = null;
-                            fireToolDone();
+                            if (isToolDoneAfterCreation) {
+                                fireToolDone();
+                            }
                         }
                     }
                     break;
                 case 2:
                     finishWhenMouseReleased = null;
 
-                    finishCreation(createdFigure);
-                    /*
-                    getView().addToSelection(createdFigure);
-                     */
+                    finishCreation(createdFigure, creationView);
                     createdFigure = null;
-                    fireToolDone();
                     break;
             }
         }
     }
 
-    protected void fireUndoEvent(Figure createdFigure) {
+    protected void fireUndoEvent(Figure createdFigure, DrawingView creationView) {
         final Figure addedFigure = createdFigure;
-        final Drawing addedDrawing = getDrawing();
-        final DrawingView addedView = getView();
+        final Drawing addedDrawing = creationView.getDrawing();
+        final DrawingView addedView = creationView;
         getDrawing().fireUndoableEditHappened(new AbstractUndoableEdit() {
 
             public String getPresentationName() {
@@ -213,54 +249,104 @@ public class BezierTool extends AbstractTool {
         if (DEBUG) {
             System.out.println("BezierTool.mouseReleased " + evt);
         }
+        isWorking = false;
         if (createdFigure.getNodeCount() > nodeCountBeforeDrag + 1) {
             createdFigure.willChange();
             BezierPath figurePath = createdFigure.getBezierPath();
-            BezierPath fittedPath = new BezierPath();
-            for (int i = nodeCountBeforeDrag,  n = figurePath.size(); i < n; i++) {
-                fittedPath.add(figurePath.get(nodeCountBeforeDrag));
-                figurePath.remove(nodeCountBeforeDrag);
+            BezierPath digitizedPath = new BezierPath();
+            for (int i = nodeCountBeforeDrag - 1, n = figurePath.size(); i < n; i++) {
+                digitizedPath.add(figurePath.get(nodeCountBeforeDrag - 1));
+                figurePath.remove(nodeCountBeforeDrag - 1);
             }
-            fittedPath = calculateFittedCurve(fittedPath);
+            BezierPath fittedPath = calculateFittedCurve(digitizedPath);
+            //figurePath.addAll(digitizedPath);
             figurePath.addAll(fittedPath);
             createdFigure.setBezierPath(figurePath);
             createdFigure.changed();
             nodeCountBeforeDrag = createdFigure.getNodeCount();
         }
-        
+
         if (finishWhenMouseReleased == Boolean.TRUE) {
-            if (createdFigure.getNodeCount() > 2) {
-                finishCreation(createdFigure);
+            if (createdFigure.getNodeCount() > 1) {
+                finishCreation(createdFigure, creationView);
                 createdFigure = null;
                 finishWhenMouseReleased = null;
-                fireToolDone();
                 return;
             }
         } else if (finishWhenMouseReleased == null) {
             finishWhenMouseReleased = Boolean.FALSE;
         }
 
+        // repaint dotted line
+        Rectangle r = new Rectangle(anchor);
+        r.add(mouseLocation);
+        r.add(evt.getPoint());
+        r.grow(1, 1);
+        fireAreaInvalidated(r);
+        anchor.x = evt.getX();
+        anchor.y = evt.getY();
+        mouseLocation = evt.getPoint();
     }
 
-    protected void finishCreation(BezierFigure createdFigure) {
-        getView().addToSelection(createdFigure);
-        fireUndoEvent(createdFigure);
+    protected void finishCreation(BezierFigure createdFigure, DrawingView creationView) {
+        fireUndoEvent(createdFigure, creationView);
+        creationView.addToSelection(createdFigure);
+        if (isToolDoneAfterCreation) {
+            fireToolDone();
+        }
     }
 
     public void mouseDragged(MouseEvent evt) {
-            if (finishWhenMouseReleased == null) {
-                finishWhenMouseReleased = Boolean.TRUE;
-            }
-
-            int x = evt.getX();
-            int y = evt.getY();
-            addPointToFigure(getView().viewToDrawing(new Point(x, y)));
+        if (finishWhenMouseReleased == null) {
+            finishWhenMouseReleased = Boolean.TRUE;
+        }
+        int x = evt.getX();
+        int y = evt.getY();
+        addPointToFigure(getView().viewToDrawing(new Point(x, y)));
     }
 
+    @Override
+    public void draw(Graphics2D g) {
+        if (createdFigure != null && //
+                anchor != null && //
+                mouseLocation != null &&//
+                getView() == creationView) {
+            g.setColor(Color.BLACK);
+            g.setStroke(new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0f, new float[]{1f, 5f}, 0f));
+            g.drawLine(anchor.x, anchor.y, mouseLocation.x, mouseLocation.y);
+            if (!isWorking && createdFigure.isClosed() && createdFigure.getNodeCount() > 1) {
+                Point p = creationView.drawingToView(createdFigure.getStartPoint());
+                g.drawLine(mouseLocation.x, mouseLocation.y, p.x, p.y);
+            }
+        }
+    }
+
+    @Override
     public void mouseMoved(MouseEvent evt) {
+        if (createdFigure != null && anchor != null && mouseLocation != null) {
+            if (evt.getSource() == creationView) {
+                Rectangle r = new Rectangle(anchor);
+                r.add(mouseLocation);
+                r.add(evt.getPoint());
+                if (createdFigure.isClosed() && createdFigure.getNodeCount() > 0) {
+                    r.add(creationView.drawingToView(createdFigure.getStartPoint()));
+                }
+                r.grow(1, 1);
+                fireAreaInvalidated(r);
+                mouseLocation = evt.getPoint();
+            }
+        }
     }
 
     protected BezierPath calculateFittedCurve(BezierPath path) {
-        return Bezier.fitBezierCurve(path, 1);
+        return Bezier.fitBezierPath(path, 1.5d / getView().getScaleFactor());
+    }
+
+    public void setToolDoneAfterCreation(boolean b) {
+        isToolDoneAfterCreation = b;
+    }
+
+    public boolean isToolDoneAfterCreation() {
+        return isToolDoneAfterCreation;
     }
 }

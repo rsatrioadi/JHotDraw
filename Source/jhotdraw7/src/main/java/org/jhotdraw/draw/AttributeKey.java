@@ -1,7 +1,7 @@
 /*
- * @(#)AttributeKey.java  2.0.1  2008-02-13
+ * @(#)AttributeKey.java  3.0  2009-04-19
  *
- * Copyright (c) 1996-2008 by the original authors of JHotDraw
+ * Copyright (c) 1996-2009 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -11,13 +11,13 @@
  * accordance with the license agreement you entered into with  
  * the copyright holders. For details see accompanying license terms. 
  */
-
 package org.jhotdraw.draw;
 
-import java.lang.reflect.*;
+import java.io.Serializable;
 import java.util.*;
 import javax.swing.undo.*;
 import org.jhotdraw.util.*;
+
 /**
  * AttributeKey provides typesafe access to figure attributes.
  * <p>
@@ -34,7 +34,10 @@ import org.jhotdraw.util.*;
  * See {@link AttributeKeys} for a list of useful attribute keys.
  * 
  * @author Werner Randelshofer
- * @version 2.0.1 2008-02-13 Fixed comments. Removed equals and hashCode.
+ * @version 3.0 2009-04-19 Added explicit
+ * <br>2.1 2009-04-15 Added method getPresentationName. The labels are now
+ * part of the attribute key.
+ * <br>2.0.1 2008-02-13 Fixed comments. Removed equals and hashCode.
  * <br>2.0 2007-05-12 Removed basicSet methods.
  * <br>1.2 2007-04-10 Convenience methods for getting and setting a clone
  * of an attribute added.
@@ -44,44 +47,109 @@ import org.jhotdraw.util.*;
  * values are not allowed.
  * <br>1.0 7. Juni 2006 Created.
  */
-public class AttributeKey<T> {
+public class AttributeKey<T> implements Serializable {
+
+    /**
+     * Holds a String representation of the attribute key.
+     */
     private String key;
+    /**
+     * Holds the default value.
+     */
     private T defaultValue;
+    /**
+     * Specifies whether null values are allowed.
+     */
     private boolean isNullValueAllowed;
-    
-    /** Creates a new instance. */
-    public AttributeKey(String key) {
-        this(key, null, true);
+    /**
+     * Holds labels for the localization of the attribute.
+     */
+    private ResourceBundleUtil labels;
+    /** This variable is used as a "type token" so that we can check for
+     * assignability of attribute values at runtime.
+     */
+    private Class<T> clazz;
+
+    /** Creates a new instance with the specified attribute key, type token class,
+     * default value null, and allowing null values. */
+    public AttributeKey(String key, Class<T> clazz) {
+        this(key, clazz, null, true);
     }
-    public AttributeKey(String key, T defaultValue) {
-        this(key, defaultValue, true);
+
+    /** Creates a new instance with the specified attribute key, type token class,
+     * and default value, and allowing null values. */
+    public AttributeKey(String key, Class<T> clazz, T defaultValue) {
+        this(key, clazz, defaultValue, true);
     }
-    public AttributeKey(String key, T defaultValue, boolean isNullValueAllowed) {
+
+    /** Creates a new instance with the specified attribute key, type token class,
+     * default value, and allowing or disallowing null values. */
+    public AttributeKey(String key, Class<T> clazz, T defaultValue, boolean isNullValueAllowed) {
         this.key = key;
+        this.clazz = clazz;
         this.defaultValue = defaultValue;
         this.isNullValueAllowed = isNullValueAllowed;
     }
-    
+
+    /** Creates a new instance with the specified attribute key, type token class,
+     * default value, and allowing or disallowing null values. 
+     * 
+     * @param key The key string. 
+     * @param clazz This is used as a "type token" for assignability checks
+     * at runtime.
+     * @param isNullValueAllowed whether null values are allowed.
+     * @param labels ResourceBundle for human friendly representation of this
+     * attribute key. The ResourceBundle must have a property named
+     * {@code "attribute." + key + ".text"}.
+     */
+    public AttributeKey(String key, Class<T> clazz, T defaultValue, boolean isNullValueAllowed, ResourceBundleUtil labels) {
+        this.key = key;
+        this.clazz = clazz;
+        this.defaultValue = defaultValue;
+        this.isNullValueAllowed = isNullValueAllowed;
+        this.labels = labels;
+    }
+
+    /**
+     * Returns the key string.
+     * @return key string.
+     */
     public String getKey() {
         return key;
     }
+
+    /**
+     * Returns a localized human friendly presentation of the key.
+     * @return the presentation name of the key.
+     */
+    public String getPresentationName() {
+        return (labels == null) ? key : labels.getString("attribute." + key + ".text");
+    }
+
+    /**
+     * Returns the default value of the attribute.
+     *
+     * @return the default value.
+     */
     public T getDefaultValue() {
         return defaultValue;
     }
+
     /**
      * Gets a clone of the value from the Figure.
      */
+    @SuppressWarnings("unchecked")
     public T getClone(Figure f) {
         T value = get(f);
         try {
-            return value == null ? null : (T) Methods.invoke(value,"clone");
+            return value == null ? null : clazz.cast(Methods.invoke(value, "clone"));
         } catch (NoSuchMethodException ex) {
             InternalError e = new InternalError();
             e.initCause(ex);
             throw e;
         }
     }
-    
+
     /**
      * Gets the value of the attribute denoted by this AttributeKey from
      * a Figure.
@@ -91,8 +159,9 @@ public class AttributeKey<T> {
      */
     public T get(Figure f) {
         T value = (T) f.getAttribute(this);
-        return (value == null && ! isNullValueAllowed) ? defaultValue : value;
+        return (value == null && !isNullValueAllowed) ? defaultValue : value;
     }
+
     /**
      * Gets the value of the attribute denoted by this AttributeKey from
      * a Map.
@@ -100,11 +169,12 @@ public class AttributeKey<T> {
      * @param a A Map.
      * @return The value of the attribute.
      */
-    public T get(Map<AttributeKey,Object> a) {
+    @SuppressWarnings("unchecked")
+    public T get(Map<AttributeKey, Object> a) {
         T value = (T) a.get(this);
-        return (value == null && ! isNullValueAllowed) ? defaultValue : value;
+        return (value == null && !isNullValueAllowed) ? defaultValue : value;
     }
-    
+
     /**
      * Convenience method for setting a value on the 
      * specified figure and calling willChange before and changed 
@@ -118,6 +188,7 @@ public class AttributeKey<T> {
         basicSet(f, value);
         f.changed();
     }
+
     /**
      * Sets a value on the specified figure without invoking {@code willChange}
      * and {@code changed} on the figure.
@@ -129,36 +200,42 @@ public class AttributeKey<T> {
      * @param value the attribute value
      */
     public void basicSet(Figure f, T value) {
-        if (value == null && ! isNullValueAllowed) {
-            throw new NullPointerException("Null value not allowed for AttributeKey "+key);
+        if (value == null && !isNullValueAllowed) {
+            throw new NullPointerException("Null value not allowed for AttributeKey " + key);
         }
         f.setAttribute(this, value);
     }
-    
+
     /**
      * Sets the attribute and returns an UndoableEditEvent which can be used
      * to undo it.
      */
-    public UndoableEdit setUndoable(final Figure figure, final T value, final ResourceBundleUtil labels) {
-        if (value == null && ! isNullValueAllowed) {
-            throw new NullPointerException("Null value not allowed for AttributeKey "+key);
+    public UndoableEdit setUndoable(final Figure figure, final T value) {
+        if (value == null && !isNullValueAllowed) {
+            throw new NullPointerException("Null value not allowed for AttributeKey " + key);
         }
-        
+
         final Object restoreData = figure.getAttributesRestoreData();
         figure.willChange();
         figure.setAttribute(this, value);
         figure.changed();
-        
+
         UndoableEdit edit = new AbstractUndoableEdit() {
+
+            @Override
             public String getPresentationName() {
-                return labels.getString(getKey());
+                return AttributeKey.this.getPresentationName();
             }
+
+            @Override
             public void undo() {
                 super.undo();
                 figure.willChange();
                 figure.restoreAttributesTo(restoreData);
                 figure.changed();
             }
+
+            @Override
             public void redo() {
                 super.redo();
                 figure.willChange();
@@ -167,8 +244,9 @@ public class AttributeKey<T> {
             }
         };
         return edit;
-        
+
     }
+
     /**
      * Convenience method for seting a clone of a value on the 
      * specified figure and calling willChange before and changed 
@@ -182,6 +260,7 @@ public class AttributeKey<T> {
         basicSetClone(f, value);
         f.changed();
     }
+
     /**
      * Sets a clone of a value on the specified figure, without invoking
      * {@code willChange} and {@code changed} on the figure.
@@ -194,51 +273,93 @@ public class AttributeKey<T> {
      */
     public void basicSetClone(Figure f, T value) {
         try {
-            basicSet(f, value == null ? null : (T) Methods.invoke(value,"clone"));
+            basicSet(f, value == null ? null : clazz.cast(Methods.invoke(value, "clone")));
+
         } catch (NoSuchMethodException ex) {
             InternalError e = new InternalError();
             e.initCause(ex);
             throw e;
         }
     }
-    public void set(Map<AttributeKey,Object> a, T value) {
-        if (value == null && ! isNullValueAllowed) {
-            throw new NullPointerException("Null value not allowed for AttributeKey "+key);
-        }
-        a.put(this, value);
+
+    /**
+     * Use this method to perform a typeface put operation of an attribute
+     * into a Map.
+     *
+     * @param a An attribute map.
+     * @param value The new value.
+     */
+    public void set(Map<AttributeKey, Object> a, T value) {
+        put(a, value);
     }
+
+    /**
+     * Use this method to perform a typeface put operation of an attribute
+     * into a Map.
+     *
+     * @param a An attribute map.
+     * @param value The new value.
+     * @return The old value.
+     */
+    @SuppressWarnings("unchecked")
+    public T put(Map<AttributeKey, Object> a, T value) {
+        if (value == null && !isNullValueAllowed) {
+            throw new NullPointerException("Null value not allowed for AttributeKey " + key);
+        }
+        return (T) a.put(this, value);
+    }
+
     /**
      * Sets a clone of the value to the Figure without firing events.
      */
-    public void setClone(Map<AttributeKey,Object> a, T value) {
+    @SuppressWarnings("unchecked")
+    public void setClone(Map<AttributeKey, Object> a, T value) {
         try {
-            set(a, value == null ? null : (T) Methods.invoke(value,"clone"));
+            set(a, value == null ? null : (T) Methods.invoke(value, "clone"));
         } catch (NoSuchMethodException ex) {
             InternalError e = new InternalError();
             e.initCause(ex);
             throw e;
         }
     }
-    
-    public String toString() {
-        return key;
-    }
-    
+
+    /**
+     * Returns true if null values are allowed.
+     * @return true if null values are allowed.
+     */
     public boolean isNullValueAllowed() {
         return isNullValueAllowed;
     }
-    
+
+    /**
+     * Returns true if the specified value is assignable with this key.
+     *
+     * @param value
+     * @return True if assignable.
+     */
     public boolean isAssignable(Object value) {
         if (value == null) {
             return isNullValueAllowed();
         }
-        
-        // XXX - This works, but maybe there is an easier way to do this?
-        try {
-            T a = (T) value;
-            return true;
-        } catch (ClassCastException e) {
-            return false;
+
+        return clazz.isInstance(value);
+    }
+
+    /** Returns the key string. */
+    @Override
+    public String toString() {
+        return key;
+    }
+
+    @Override
+    public int hashCode() {
+        return key.hashCode();
+    }
+    @Override
+    public boolean equals(Object that) {
+        if (that instanceof AttributeKey) {
+        return ((AttributeKey) that).key.equals(this.key);
         }
+        return false;
     }
 }

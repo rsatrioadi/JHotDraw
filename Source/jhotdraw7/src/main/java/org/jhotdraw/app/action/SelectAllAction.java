@@ -1,5 +1,5 @@
 /*
- * @(#)SelectAllActioin.java  1.0  February 27, 2006
+ * @(#)SelectAllAction.java  1.0  February 27, 2006
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
  * and all its contributors.
@@ -30,11 +30,11 @@ import org.jhotdraw.app.EditableComponent;
  * @version 1.0 February 27, 2006 Created.
  */
 public class SelectAllAction extends AbstractAction {
-    public final static String ID = "selectAll";
+    public final static String ID = "edit.selectAll";
     
     /** Creates a new instance. */
     public SelectAllAction() {
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
         labels.configureAction(this, ID);
     }
     

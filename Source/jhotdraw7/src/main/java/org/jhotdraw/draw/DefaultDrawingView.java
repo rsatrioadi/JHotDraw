@@ -1,7 +1,7 @@
 /*
- * @(#)DefaultDrawingView.java  4.3  2007-12-18
+ * @(#)DefaultDrawingView.java  4.6  2009-04-25
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2009 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -15,35 +15,33 @@ package org.jhotdraw.draw;
 
 import javax.swing.event.*;
 import javax.swing.undo.*;
-import org.jhotdraw.gui.datatransfer.*;
 import org.jhotdraw.util.*;
-import org.jhotdraw.undo.*;
-import org.jhotdraw.io.*;
-import org.jhotdraw.geom.*;
 import java.awt.*;
-import java.awt.datatransfer.*;
 import java.awt.geom.*;
-import java.awt.color.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import org.jhotdraw.app.EditableComponent;
-import org.jhotdraw.geom.*;
-import org.jhotdraw.xml.*;
-import org.jhotdraw.xml.XMLTransferable;
 import static org.jhotdraw.draw.AttributeKeys.*;
 
 /**
  * The DefaultDrawingView is suited for viewing drawings with a small number
  * of Figures.
  *
- * XXX - Implement clone Method.
- *
+ * FIXME - Implement clone Method.
+ * FIXME - Use double buffering for the drawing to improve performance.
  *
  * @author Werner Randelshofer
- * @version 4.4 2007-12-18 Reduced repaints of the drawing area. 
+ * @version 4.6 2009-04-25 Center drawing in view, if view is larger than
+ * the canvas size.
+ * <br>4.5.3 2008-09-01 Use an ordered set for the selected figures.
+ * <br>4.5.2 2008-06-09 A DrawingView must not create Handle's, if it
+ * has no DrawingEditor. 
+ * <br>4.5.1 2008-05-18 Delete method did not preserve z-index on undo. 
+ * <br>4.5 2008-05-18 Retrieve tooltip text from current tool.
+ * <br>4.4 2007-12-18 Reduced repaints of the drawing area. 
  * <br>4.3 2007-12-16 Retrieve canvasColor color from Drawing object.
  * <br>4.2 2007-09-12 The DrawingView is now responsible for
  * holding the Constrainer objects which affect editing on this view.
@@ -73,16 +71,21 @@ public class DefaultDrawingView
     private final static boolean DEBUG = false;
     private Drawing drawing;
     private Set<Figure> dirtyFigures = new HashSet<Figure>();
-    private Set<Figure> selectedFigures = new HashSet<Figure>();
+    /**
+     * Holds the selected figures in an ordered set. The ordering reflects
+     * the sequence that was used to select the figures.
+     */
+    private Set<Figure> selectedFigures = new LinkedHashSet<Figure>();
     //private int rainbow = 0;
     private LinkedList<Handle> selectionHandles = new LinkedList<Handle>();
     private boolean isConstrainerVisible = false;
     private Constrainer visibleConstrainer = new GridConstrainer(8, 8);
     private Constrainer invisibleConstrainer = new GridConstrainer();
     private Handle secondaryHandleOwner;
+    private Handle activeHandle;
     private LinkedList<Handle> secondaryHandles = new LinkedList<Handle>();
     private boolean handlesAreValid = true;
-    private Dimension cachedPreferredSize;
+    private transient Dimension cachedPreferredSize;
     private double scaleFactor = 1;
     private Point2D.Double translate = new Point2D.Double(0, 0);
     private int detailLevel;
@@ -101,17 +104,47 @@ public class DefaultDrawingView
             repaint();
         }
     };
-    private Rectangle2D.Double cachedDrawingArea;
+    private transient Rectangle2D.Double cachedDrawingArea;
+
+    public void repaintHandles() {
+        validateHandles();
+        Rectangle r = null;
+        for (Handle h : getSelectionHandles()) {
+            if (r == null) {
+                r = h.getDrawingArea();
+            } else {
+                r.add(h.getDrawingArea());
+            }
+        }
+        for (Handle h : getSecondaryHandles()) {
+            if (r == null) {
+                r = h.getDrawingArea();
+            } else {
+                r.add(h.getDrawingArea());
+            }
+        }
+        if (r != null) {
+            repaint(r);
+        }
+    }
 
     private class EventHandler implements FigureListener, CompositeFigureListener, HandleListener, FocusListener {
 
         public void figureAdded(CompositeFigureEvent evt) {
-            repaintDrawingArea(evt.getInvalidatedArea());
+            if (drawing.getChildCount() == 1 && getEmptyDrawingMessage() != null) {
+                repaint();
+            } else {
+                repaintDrawingArea(evt.getInvalidatedArea());
+            }
             invalidateDimension();
         }
 
         public void figureRemoved(CompositeFigureEvent evt) {
-            repaintDrawingArea(evt.getInvalidatedArea());
+            if (drawing.getChildCount() == 0 && getEmptyDrawingMessage() != null) {
+                repaint();
+            } else {
+                repaintDrawingArea(evt.getInvalidatedArea());
+            }
             removeFromSelection(evt.getChildFigure());
             invalidateDimension();
         }
@@ -145,7 +178,7 @@ public class DefaultDrawingView
         }
 
         public void focusLost(FocusEvent e) {
-        //   repaintHandles();
+            //   repaintHandles();
         }
 
         public void handleRequestRemove(HandleEvent e) {
@@ -157,6 +190,9 @@ public class DefaultDrawingView
 
         public void attributeChanged(FigureEvent e) {
             if (e.getSource() == drawing) {
+                if (e.getAttribute().equals(CANVAS_HEIGHT) || e.getAttribute().equals(CANVAS_WIDTH)) {
+                    validateViewTranslation();
+                }
                 repaint();
             } else {
                 repaintDrawingArea(e.getInvalidatedArea());
@@ -186,9 +222,11 @@ public class DefaultDrawingView
         initComponents();
         eventHandler = createEventHandler();
         setToolTipText("dummy"); // Set a dummy tool tip text to turn tooltips on
+
         setFocusable(true);
         addFocusListener(eventHandler);
         setTransferHandler(new DefaultDrawingViewTransferHandler());
+        //setBorder(new EmptyBorder(10,10,10,10));
     }
 
     protected EventHandler createEventHandler() {
@@ -212,14 +250,10 @@ public class DefaultDrawingView
         return drawing;
     }
 
+    @Override
     public String getToolTipText(MouseEvent evt) {
-        Handle handle = findHandle(evt.getPoint());
-        if (handle != null) {
-            return handle.getToolTipText(evt.getPoint());
-        }
-        Figure figure = findFigure(evt.getPoint());
-        if (figure != null) {
-            return figure.getToolTipText(viewToDrawing(evt.getPoint()));
+        if (getEditor() != null && getEditor().getTool() != null) {
+            return getEditor().getTool().getToolTipText(this, evt);
         }
         return null;
     }
@@ -245,6 +279,7 @@ public class DefaultDrawingView
      * Uses rendering hints for fast painting. Paints the canvasColor, the
      * grid, the drawing, the handles and the current tool.
      */
+    @Override
     public void paintComponent(Graphics gr) {
         Graphics2D g = (Graphics2D) gr;
 
@@ -253,7 +288,6 @@ public class DefaultDrawingView
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
         g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, (Options.isFractionalMetrics()) ? RenderingHints.VALUE_FRACTIONALMETRICS_ON : RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
-        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, (Options.isTextAntialiased()) ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
@@ -270,6 +304,7 @@ public class DefaultDrawingView
      * Uses high quality rendering hints for printing. Only prints the drawing.
      * Doesn't print the canvasColor, the grid, the handles and the tool.
      */
+    @Override
     public void printComponent(Graphics gr) {
 
         Graphics2D g = (Graphics2D) gr;
@@ -278,13 +313,10 @@ public class DefaultDrawingView
         g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
-        //g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, (Options.isFractionalMetrics()) ? RenderingHints.VALUE_FRACTIONALMETRICS_ON : RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
-        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, (Options.isTextAntialiased()) ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-
         drawDrawing(g);
     }
 
@@ -297,7 +329,15 @@ public class DefaultDrawingView
         int h = getHeight();
 
         // Retrieve the canvasColor color from the drawing
-        Color canvasColor = (drawing == null || CANVAS_FILL_COLOR.get(drawing) == null) ? getBackground() : new Color((CANVAS_FILL_COLOR.get(drawing).getRGB() & 0xffffff) | ((int) (CANVAS_FILL_OPACITY.get(drawing) * 255) << 24), true);
+        Color canvasColor;
+        if (drawing == null) {
+            canvasColor = getBackground();
+        } else {
+            canvasColor = CANVAS_FILL_COLOR.get(drawing);
+            if (canvasColor != null) {
+                canvasColor = new Color((canvasColor.getRGB() & 0xffffff) | ((int) (CANVAS_FILL_OPACITY.get(drawing) * 255) << 24), true);
+            }
+        }
         if (canvasColor == null || canvasColor.getAlpha() != 255) {
             g.setPaint(getBackgroundPaint(x, y));
             g.fillRect(x, y, w - x, h - y);
@@ -320,10 +360,11 @@ public class DefaultDrawingView
         }
 
         if (getDrawing() != null) {
-            Dimension2DDouble canvasSize = getDrawing().getCanvasSize();
-            if (canvasSize != null) {
+            Double cw = CANVAS_WIDTH.get(getDrawing());
+            Double ch = CANVAS_HEIGHT.get(getDrawing());
+            if (cw != null && ch != null) {
                 Point lowerRight = drawingToView(
-                        new Point2D.Double(canvasSize.width, canvasSize.height));
+                        new Point2D.Double(cw, ch));
                 if (lowerRight.x < w) {
                     g.setColor(outerBackground);
                     g.fillRect(lowerRight.x, y, w - lowerRight.x, h - y);
@@ -342,6 +383,7 @@ public class DefaultDrawingView
     new Color(Color.HSBtoRGB((float) (rainbow / 360f), 0.3f, 1.0f)));
     g.fill(g.getClipBounds());*/
     }
+    //int rainbow;
 
     protected void drawConstrainer(Graphics2D g) {
         getConstrainer().draw(g, this);
@@ -386,19 +428,19 @@ public class DefaultDrawingView
         }
     }
 
-    public void setDrawing(Drawing d) {
+    public void setDrawing(Drawing newValue) {
+        Drawing oldValue = drawing;
         if (this.drawing != null) {
             this.drawing.removeCompositeFigureListener(eventHandler);
             this.drawing.removeFigureListener(eventHandler);
             clearSelection();
         }
-        this.drawing = d;
+        this.drawing = newValue;
         if (this.drawing != null) {
             this.drawing.addCompositeFigureListener(eventHandler);
             this.drawing.addFigureListener(eventHandler);
         }
         invalidateDimension();
-        invalidate();
         if (getParent() != null) {
             getParent().validate();
             if (getParent() instanceof JViewport) {
@@ -408,6 +450,9 @@ public class DefaultDrawingView
                 vp.setViewPosition(drawingToView(new Point2D.Double(Math.min(0, -r.x), Math.min(0, -r.y))));
             }
         }
+        firePropertyChange(DRAWING_PROPERTY, oldValue, newValue);
+        validateViewTranslation();
+        revalidate();
         repaint();
     }
 
@@ -417,6 +462,7 @@ public class DefaultDrawingView
         repaint(vr);
     }
 
+    @Override
     public void invalidate() {
         invalidateDimension();
         super.invalidate();
@@ -434,7 +480,7 @@ public class DefaultDrawingView
             figure.addFigureListener(handleInvalidator);
             Set<Figure> newSelection = new HashSet<Figure>(selectedFigures);
             Rectangle invalidatedArea = null;
-            if (handlesAreValid) {
+            if (handlesAreValid && getEditor() != null) {
                 for (Handle h : figure.createHandles(detailLevel)) {
                     h.setView(this);
                     selectionHandles.add(h);
@@ -458,14 +504,33 @@ public class DefaultDrawingView
      */
     public void addToSelection(Collection<Figure> figures) {
         Set<Figure> oldSelection = new HashSet<Figure>(selectedFigures);
-        if (selectedFigures.addAll(figures)) {
-            Set<Figure> newSelection = new HashSet<Figure>(selectedFigures);
-            for (Figure f : figures) {
-                f.addFigureListener(handleInvalidator);
+        Set<Figure> newSelection = new HashSet<Figure>(selectedFigures);
+        boolean selectionChanged = false;
+        Rectangle invalidatedArea = null;
+        for (Figure figure : figures) {
+            if (selectedFigures.add(figure)) {
+                selectionChanged = true;
+                newSelection.add(figure);
+                figure.addFigureListener(handleInvalidator);
+                if (handlesAreValid && getEditor() != null) {
+                    for (Handle h : figure.createHandles(detailLevel)) {
+                        h.setView(this);
+                        selectionHandles.add(h);
+                        h.addHandleListener(eventHandler);
+                        if (invalidatedArea == null) {
+                            invalidatedArea = h.getDrawingArea();
+                        } else {
+                            invalidatedArea.add(h.getDrawingArea());
+                        }
+                    }
+                }
             }
-            invalidateHandles();
+        }
+        if (selectionChanged) {
             fireSelectionChanged(oldSelection, newSelection);
-        //repaintDrawingArea();
+            if (invalidatedArea != null) {
+                repaint(invalidatedArea);
+            }
         }
     }
 
@@ -495,18 +560,25 @@ public class DefaultDrawingView
         }
     }
 
+    @Override
     public void setEnabled(boolean b) {
         super.setEnabled(b);
         setCursor(Cursor.getPredefinedCursor(b ? Cursor.DEFAULT_CURSOR : Cursor.WAIT_CURSOR));
     }
 
     /**
-     * Selects all figures.
+     * Selects all selectable figures.
      */
     public void selectAll() {
         Set<Figure> oldSelection = new HashSet<Figure>(selectedFigures);
         selectedFigures.clear();
-        selectedFigures.addAll(drawing.getChildren());
+
+        for (Figure figure : drawing.getChildren()) {
+            if (figure.isSelectable()) {
+                selectedFigures.add(figure);
+            }
+        }
+
         Set<Figure> newSelection = new HashSet<Figure>(selectedFigures);
         invalidateHandles();
         fireSelectionChanged(oldSelection, newSelection);
@@ -582,8 +654,18 @@ public class DefaultDrawingView
                 }
                 handle.dispose();
             }
+            for (Handle handle : secondaryHandles) {
+                handle.removeHandleListener(eventHandler);
+                if (invalidatedArea == null) {
+                    invalidatedArea = handle.getDrawingArea();
+                } else {
+                    invalidatedArea.add(handle.getDrawingArea());
+                }
+                handle.dispose();
+            }
             selectionHandles.clear();
             secondaryHandles.clear();
+            setActiveHandle(null);
             if (invalidatedArea != null) {
                 repaint(invalidatedArea);
             }
@@ -594,7 +676,9 @@ public class DefaultDrawingView
      * Validates the handles.
      */
     private void validateHandles() {
-        if (!handlesAreValid) {
+        // Validate handles only, if they are invalid, and if
+        // the DrawingView has a DrawingEditor.
+        if (!handlesAreValid && getEditor() != null) {
             handlesAreValid = true;
             selectionHandles.clear();
             Rectangle invalidatedArea = null;
@@ -723,45 +807,115 @@ public class DefaultDrawingView
         return isConstrainerVisible() ? visibleConstrainer : invisibleConstrainer;
     }
 
-    /**
-     * Side effect: Changes view Translation!!!
-     */
+    @Override
     public Dimension getPreferredSize() {
         if (cachedPreferredSize == null) {
-            double oldTx = translate.x;
-            double oldTy = translate.y;
             Rectangle2D.Double r = getDrawingArea();
-            translate.x = Math.min(0, r.x);
-            translate.y = Math.min(0, r.y);
-            cachedPreferredSize = new Dimension(
-                    (int) ((r.width + 10 - translate.x) * scaleFactor),
-                    (int) ((r.height + 10 - translate.y) * scaleFactor));
-            fireViewTransformChanged();
-            if (oldTx != translate.x || oldTy != translate.y) {
-                repaint();
+            Double cw = getDrawing() == null ? null : CANVAS_WIDTH.get(getDrawing());
+            Double ch = getDrawing() == null ? null : CANVAS_HEIGHT.get(getDrawing());
+            Insets insets = getInsets();
+            if (cw == null || ch == null) {
+                cachedPreferredSize = new Dimension(
+                        (int) ((Math.max(0,r.x) + r.width) * scaleFactor) + insets.left + insets.right,
+                        (int) ((Math.max(0,r.y) + r.height) * scaleFactor) + insets.top + insets.bottom);
+            } else {
+                cachedPreferredSize = new Dimension(
+                        (int) (Math.max((Math.max(0,r.x) + r.width), cw) * scaleFactor) + insets.left + insets.right,
+                        (int) (Math.max((Math.max(0,r.y) + r.height), ch) * scaleFactor) + insets.top + insets.bottom);
             }
+            validateViewTranslation();
         }
-        return cachedPreferredSize;
+        return (Dimension) cachedPreferredSize.clone();
     }
 
-    /**
-     * Side effect: Changes view Translation!!! (really?)
-     */
     protected Rectangle2D.Double getDrawingArea() {
         if (cachedDrawingArea == null) {
-            cachedDrawingArea = new Rectangle2D.Double();
             if (drawing != null) {
                 cachedDrawingArea = drawing.getDrawingArea();
-                cachedDrawingArea.add(0d, 0d);
+            } else {
+                cachedDrawingArea = new Rectangle2D.Double();
             }
         }
         return (Rectangle2D.Double) cachedDrawingArea.clone();
     }
 
     /**
+     * Side effect: Changes view Translation.
+     */
+    @Override
+    public void setBounds(int x, int y, int width, int height) {
+        super.setBounds(x, y, width, height);
+        validateViewTranslation();
+    }
+
+    /**
+     * Updates the view translation taking into account the current dimension
+     * of the view JComponent, the size of the drawing, and the scale factor.
+     */
+    private void validateViewTranslation() {
+        if (getDrawing() == null) {
+            translate.x = translate.y = 0;
+            return;
+        }
+
+        Point2D.Double oldTranslate = (Point2D.Double) translate.clone();
+
+        int width = getWidth();
+        int height = getHeight();
+        Insets insets = getInsets();
+        Rectangle2D.Double r = getDrawingArea();
+        Double cw = CANVAS_WIDTH.get(getDrawing());
+        Double ch = CANVAS_HEIGHT.get(getDrawing());
+
+        if (cw == null || ch == null) {
+            // The canvas size is not specified. 
+
+            // Place the drawing at the top left corner.
+            translate.x = Math.min(0, r.x);
+            translate.y = Math.min(0, r.y);
+        } else {
+            // The canvas size is not specified.
+
+            //Place the canvas at the center
+            Dimension preferred = getPreferredSize();
+            if (cw != null && ch != null) {
+                if (cw * scaleFactor < width) {
+                    translate.x = (width / scaleFactor - cw) / -2d;
+                }
+                if (ch * scaleFactor < height) {
+                    translate.y = (height / scaleFactor - ch) / -2d;
+                }
+            }
+
+            if (r.y - translate.y < insets.top / scaleFactor) {
+            // We cut off the upper part of the drawing -> shift the canvas down
+                translate.y = r.y;
+            } else if (r.y - translate.y + r.height > (height-insets.bottom)/scaleFactor) {
+            // We cut off the lower part of the drawing -> shift the canvas up
+                translate.y = r.y + r.height - (height-insets.bottom)/scaleFactor;
+            }
+            if (r.x - translate.x < insets.left / scaleFactor) {
+            // We cut off the left part of the drawing -> shift the canvas right
+                translate.x = r.x;
+            } else if (r.x- translate.x + r.width > (width-insets.right)/scaleFactor) {
+            // We cut off the right part of the drawing -> shift the canvas left
+                translate.x = r.x + r.width - (width-insets.right)/scaleFactor;
+            }
+        }
+        // Move the canvas out of the center if needed
+
+        if (!oldTranslate.equals(translate)) {
+
+        fireViewTransformChanged();
+        repaint();
+        }
+    }
+
+    /**
      * Converts drawing coordinates to view coordinates.
      */
-    public Point drawingToView(Point2D.Double p) {
+    public Point drawingToView(
+            Point2D.Double p) {
         return new Point(
                 (int) ((p.x - translate.x) * scaleFactor),
                 (int) ((p.y - translate.y) * scaleFactor));
@@ -776,7 +930,8 @@ public class DefaultDrawingView
                 p.y / scaleFactor + translate.y);
     }
 
-    public Rectangle drawingToView(Rectangle2D.Double r) {
+    public Rectangle drawingToView(
+            Rectangle2D.Double r) {
         return new Rectangle(
                 (int) ((r.x - translate.x) * scaleFactor),
                 (int) ((r.y - translate.y) * scaleFactor),
@@ -802,17 +957,21 @@ public class DefaultDrawingView
 
     public void setScaleFactor(double newValue) {
         double oldValue = scaleFactor;
-        scaleFactor = newValue;
+        scaleFactor =
+                newValue;
 
-        fireViewTransformChanged();
+        //fireViewTransformChanged();
+        validateViewTranslation();
 
         firePropertyChange("scaleFactor", oldValue, newValue);
 
-        invalidateDimension();
         invalidate();
+        invalidateHandles();
+
         if (getParent() != null) {
             getParent().validate();
         }
+
         repaint();
     }
 
@@ -820,17 +979,23 @@ public class DefaultDrawingView
         for (Handle handle : selectionHandles) {
             handle.viewTransformChanged();
         }
+
         for (Handle handle : secondaryHandles) {
             handle.viewTransformChanged();
         }
+
     }
 
     public void setHandleDetailLevel(int newValue) {
         if (newValue != detailLevel) {
             detailLevel = newValue;
             invalidateHandles();
+
             validateHandles();
+
         }
+
+
     }
 
     public int getHandleDetailLevel() {
@@ -846,57 +1011,60 @@ public class DefaultDrawingView
 
     public void delete() {
         final LinkedList<CompositeFigureEvent> deletionEvents = new LinkedList<CompositeFigureEvent>();
-        final LinkedList<Figure> selectedFigures = new LinkedList<Figure>(getSelectedFigures());
+        final java.util.List<Figure> deletedFigures = drawing.sort(getSelectedFigures());
 
         // Abort, if not all of the selected figures may be removed from the
         // drawing
-        for (Figure f : selectedFigures) {
+        for (Figure f : deletedFigures) {
             if (!f.isRemovable()) {
                 getToolkit().beep();
                 return;
+
             }
+
+
         }
 
+        // Get z-indices of deleted figures
+        final int[] deletedFigureIndices = new int[deletedFigures.size()];
+        for (int i = 0; i <
+                deletedFigureIndices.length; i++) {
+            deletedFigureIndices[i] = drawing.indexOf(deletedFigures.get(i));
+        }
 
         clearSelection();
-        CompositeFigureListener removeListener = new CompositeFigureListener() {
-
-            public void areaInvalidated(CompositeFigureEvent e) {
-            }
-
-            public void figureAdded(CompositeFigureEvent e) {
-            }
-
-            public void figureRemoved(CompositeFigureEvent evt) {
-                deletionEvents.addFirst(evt);
-            }
-        };
-        getDrawing().addCompositeFigureListener(removeListener);
-        getDrawing().removeAll(selectedFigures);
-        getDrawing().removeCompositeFigureListener(removeListener);
+        getDrawing().removeAll(deletedFigures);
 
         getDrawing().fireUndoableEditHappened(new AbstractUndoableEdit() {
 
+            @Override
             public String getPresentationName() {
-                ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
-                return labels.getString("delete");
+                ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
+                return labels.getString("edit.delete.text");
             }
 
+            @Override
             public void undo() throws CannotUndoException {
                 super.undo();
                 clearSelection();
+
                 Drawing d = getDrawing();
-                for (CompositeFigureEvent evt : deletionEvents) {
-                    d.add(evt.getIndex(), evt.getChildFigure());
+                for (int i = 0; i <
+                        deletedFigureIndices.length; i++) {
+                    d.add(deletedFigureIndices[i], deletedFigures.get(i));
                 }
-                addToSelection(selectedFigures);
+
+                addToSelection(deletedFigures);
             }
 
+            @Override
             public void redo() throws CannotRedoException {
                 super.redo();
-                for (CompositeFigureEvent evt : new ReversedList<CompositeFigureEvent>(deletionEvents)) {
-                    getDrawing().remove(evt.getChildFigure());
+                for (int i = 0; i <
+                        deletedFigureIndices.length; i++) {
+                    drawing.remove(deletedFigures.get(i));
                 }
+
             }
         });
     }
@@ -906,7 +1074,7 @@ public class DefaultDrawingView
         HashMap<Figure, Figure> originalToDuplicateMap = new HashMap<Figure, Figure>(sorted.size());
 
         clearSelection();
-        Drawing drawing = getDrawing();
+
         final ArrayList<Figure> duplicates = new ArrayList<Figure>(sorted.size());
         AffineTransform tx = new AffineTransform();
         tx.translate(5, 5);
@@ -917,23 +1085,28 @@ public class DefaultDrawingView
             originalToDuplicateMap.put(f, d);
             drawing.add(d);
         }
+
         for (Figure f : duplicates) {
-            f.remap(originalToDuplicateMap);
+            f.remap(originalToDuplicateMap, false);
         }
+
         addToSelection(duplicates);
 
         getDrawing().fireUndoableEditHappened(new AbstractUndoableEdit() {
 
+            @Override
             public String getPresentationName() {
-                ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.draw.Labels");
-                return labels.getString("duplicate");
+                ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
+                return labels.getString("edit.duplicate.text");
             }
 
+            @Override
             public void undo() throws CannotUndoException {
                 super.undo();
                 getDrawing().removeAll(duplicates);
             }
 
+            @Override
             public void redo() throws CannotRedoException {
                 super.redo();
                 getDrawing().addAll(duplicates);
@@ -944,16 +1117,23 @@ public class DefaultDrawingView
     public void removeNotify(DrawingEditor editor) {
         this.editor = null;
         repaint();
+
     }
 
     public void addNotify(DrawingEditor editor) {
+        DrawingEditor oldValue = editor;
         this.editor = editor;
+        firePropertyChange("editor", oldValue, editor);
+        invalidateHandles();
+
         repaint();
+
     }
 
     public void setVisibleConstrainer(Constrainer newValue) {
         Constrainer oldValue = visibleConstrainer;
-        visibleConstrainer = newValue;
+        visibleConstrainer =
+                newValue;
         firePropertyChange(VISIBLE_CONSTRAINER_PROPERTY, oldValue, newValue);
     }
 
@@ -963,7 +1143,8 @@ public class DefaultDrawingView
 
     public void setInvisibleConstrainer(Constrainer newValue) {
         Constrainer oldValue = invisibleConstrainer;
-        invisibleConstrainer = newValue;
+        invisibleConstrainer =
+                newValue;
         firePropertyChange(INVISIBLE_CONSTRAINER_PROPERTY, oldValue, newValue);
     }
 
@@ -973,9 +1154,11 @@ public class DefaultDrawingView
 
     public void setConstrainerVisible(boolean newValue) {
         boolean oldValue = isConstrainerVisible;
-        isConstrainerVisible = newValue;
+        isConstrainerVisible =
+                newValue;
         firePropertyChange(CONSTRAINER_VISIBLE_PROPERTY, oldValue, newValue);
         repaint();
+
     }
 
     public boolean isConstrainerVisible() {
@@ -987,7 +1170,8 @@ public class DefaultDrawingView
      * Returns a paint for drawing the background of the drawing area.
      * @return Paint.
      */
-    protected Paint getBackgroundPaint(int x, int y) {
+    protected Paint getBackgroundPaint(
+            int x, int y) {
         if (backgroundTile == null) {
             backgroundTile = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = backgroundTile.createGraphics();
@@ -998,10 +1182,33 @@ public class DefaultDrawingView
             g.fillRect(8, 8, 8, 8);
             g.dispose();
         }
+
         return new TexturePaint(backgroundTile,
                 new Rectangle(x, y, backgroundTile.getWidth(), backgroundTile.getHeight()));
+    }
+
+    public DrawingEditor getEditor() {
+        return editor;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     // End of variables declaration//GEN-END:variables
+
+    public void setActiveHandle(Handle newValue) {
+        Handle oldValue = activeHandle;
+        if (oldValue != null) {
+            repaint(oldValue.getDrawingArea());
+        }
+
+        activeHandle = newValue;
+        if (newValue != null) {
+            repaint(newValue.getDrawingArea());
+        }
+
+        firePropertyChange(ACTIVE_HANDLE_PROPERTY, oldValue, newValue);
+    }
+
+    public Handle getActiveHandle() {
+        return activeHandle;
+    }
 }

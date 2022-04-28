@@ -31,12 +31,12 @@ import org.jhotdraw.app.EditableComponent;
  * @version 1.0 October 9, 2005 Created.
  */
 public class DeleteAction extends TextAction {
-    public final static String ID = "delete";
+    public final static String ID = "edit.delete";
     
     /** Creates a new instance. */
     public DeleteAction() {
         super(ID);
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
         labels.configureAction(this, ID);
     }
     

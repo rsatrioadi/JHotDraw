@@ -1,7 +1,7 @@
 /*
- * @(#)Figure.java  7.0  2008-02-13
+ * @(#)Figure.java  8.0  2009-04-19
  *
- * Copyright (c) 1996-2008 by the original authors of JHotDraw
+ * Copyright (c) 1996-2009 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -13,15 +13,11 @@
  */
 package org.jhotdraw.draw;
 
-import org.jhotdraw.util.*;
-import java.beans.*;
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.undo.*;
-import javax.swing.event.*;
 import java.io.*;
 import org.jhotdraw.geom.*;
 import org.jhotdraw.xml.DOMStorable;
@@ -39,10 +35,37 @@ import org.jhotdraw.xml.DOMStorable;
  * Specialized subinterfaces of Figure allow to compose a figure from
  * several figures, to connect a figure to other figures, to hold text or
  * an image, and to layout a figure.
+ * <p>
+ * Design pattern:<br>
+ * Name: Composite.<br>
+ * Role: Component.<br>
+ * Partners: {@link CompositeFigure} as Composite. 
+ * <p>
+ * Design pattern:<br>
+ * Name: Decorator.<br>
+ * Role: Decorator.<br>
+ * Partners: {@link DecoratedFigure} as Component. 
+ * <p>
+ * Design pattern:<br>
+ * Name: Model-View-Controller.<br>
+ * Role: Model.<br>
+ * Partners: {@link DrawingView} as View, {@link Tool} as Controller.
+ * <p>
+ * Design pattern:<br>
+ * Name: Observer.<br>
+ * Role: Subject.<br>
+ * Partners: {@link FigureListener} as Observer.
+ * <p>
+ * Design pattern:<br>
+ * Name: Prototype.<br>
+ * Role: Prototype.<br>
+ * Partners: {@link CreationTool} as Client.
  * 
  * 
  * @author Werner Randelshofer
- * @version 7.0.1 2008-02-13 Fixed comments on
+ * @version 8.0 2009-04-18 Made set/getAttribute methods type safe.
+ * <br>7.1 2008-05-17 Added support for mouse hover handles.
+ * <br>7.0.1 2008-02-13 Fixed comments on
  * setAttribute and getAttribute methods.
  * <br>7.0 2008-02-13 Huw Jones: Added method isTransformable.
  * <br>6.0 2007-12-19 Removed method invalidate. 
@@ -205,25 +228,25 @@ public interface Figure extends Cloneable, Serializable, DOMStorable {
      * Sets an attribute of the figure and calls attributeChanged on all
      * registered FigureListener's.
      * <p>
-     * This method is not typesafe, you should never call it directly, use 
-     * <code>AttributeKey.set</code> instead.
+     * For efficiency reasons, the drawing is not automatically repainted.
+     * If you want the drawing to be repainted when the attribute is changed,
+     * you can either use {@code key.set(figure, value); } or
+     * {@code figure.willChange(); figure.setAttribute(key, value);
+     * figure.changed(); }.
      * 
      * @see AttributeKey#set
      */
-    public void setAttribute(AttributeKey key, Object value);
+    public <T> void setAttribute(AttributeKey<T> key, T value);
 
     /**
      * Gets an attribute from the Figure.
-     * <p>
-     * This method is not typesafe, you should never call it directly, use 
-     * <code>AttributeKey.get</code> instead.
      * 
      * @see AttributeKey#get
      *
      * @return Returns the attribute value. If the Figure does not have an
      * attribute with the specified key, returns key.getDefaultValue().
      */
-    public Object getAttribute(AttributeKey key);
+    public <T> T getAttribute(AttributeKey<T> key);
 
     /**
      * Returns a view to all attributes of this figure.
@@ -286,7 +309,9 @@ public interface Figure extends Cloneable, Serializable, DOMStorable {
      * Creates handles used to manipulate the figure.
      *
      * @param detailLevel The detail level of the handles. Usually this is 0 for
-     * bounding box handles and 1 for point handles. 
+     * bounding box handles and 1 for point handles. The value -1 is used 
+     * by the SelectAreaTracker and the HandleTracker to highlight figures, over which the mouse
+     * pointer is hovering.
      * @return a Collection of handles
      * @see Handle
      */
@@ -392,7 +417,7 @@ public interface Figure extends Cloneable, Serializable, DOMStorable {
      * collection of figures to the new collection, connections can be remapped
      * to the new figures.
      */
-    public void remap(Map<Figure, Figure> oldToNew);
+    public void remap(Map<Figure, Figure> oldToNew, boolean disconnectIfNotInMap);
 
     // EVENT HANDLING
     /**

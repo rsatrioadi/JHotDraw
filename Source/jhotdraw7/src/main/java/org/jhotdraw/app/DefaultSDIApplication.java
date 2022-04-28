@@ -1,7 +1,7 @@
 /*
- * @(#)DefaultSDIApplication.java  1.5  2007-12-25
+ * @(#)DefaultSDIApplication.java  1.5.1  2008-07-13
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2008 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -25,13 +25,16 @@ import javax.swing.*;
 import org.jhotdraw.app.action.*;
 
 /**
- * A DefaultSDIApplication can handle the life cycle of a single document window being
- * presented in a JFrame. The JFrame provides all the functionality needed to
- * work with the document, such as a menu bar, tool bars and palette windows.
- *
+ * A DefaultSDIApplication can handle the life cycle of a single document window
+ * being presented in a JFrame. The JFrame provides all the functionality needed
+ * to work with the document, such as a menu bar, tool bars and palette windows.
+ * <p>
+ * The life cycle of the application is tied to the JFrame. Closing the JFrame
+ * quits the application.
  *
  * @author Werner Randelshofer
- * @version 1.5 2007-12-25 Added method updateViewTitle. Replaced 
+ * @version 1.5.1 2008-07-13 Don't add the view menu to the menu bar if it is empty. 
+ * <br>1.5 2007-12-25 Added method updateViewTitle. Replaced 
  * currentProject by activeProject in super class. 
  * <br>1.4 2007-01-11 Removed method addStandardActionsTo.
  * <br>1.3 2006-05-03 Show asterisk in window title, when view has
@@ -49,11 +52,13 @@ public class DefaultSDIApplication extends AbstractApplication {
     public DefaultSDIApplication() {
     }
 
+    @Override
     public void launch(String[] args) {
         System.setProperty("apple.awt.graphics.UseQuartz", "false");
         super.launch(args);
     }
 
+    @Override
     public void init() {
         initLookAndFeel();
         super.init();
@@ -62,6 +67,7 @@ public class DefaultSDIApplication extends AbstractApplication {
         initApplicationActions();
     }
 
+    @Override
     public void remove(View p) {
         super.remove(p);
         if (views().size() == 0) {
@@ -69,6 +75,7 @@ public class DefaultSDIApplication extends AbstractApplication {
         }
     }
 
+    @Override
     public void configure(String[] args) {
         System.setProperty("apple.laf.useScreenMenuBar", "false");
         System.setProperty("com.apple.macos.useScreenMenuBar", "false");
@@ -96,14 +103,14 @@ public class DefaultSDIApplication extends AbstractApplication {
     }
 
     protected void initApplicationActions() {
-        ResourceBundleUtil appLabels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil appLabels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
         ApplicationModel m = getModel();
         m.putAction(AboutAction.ID, new AboutAction(this));
         m.putAction(ExitAction.ID, new ExitAction(this));
 
         m.putAction(ClearAction.ID, new ClearAction(this));
         m.putAction(NewAction.ID, new NewAction(this));
-        appLabels.configureAction(m.getAction(NewAction.ID), "newWindow");
+        appLabels.configureAction(m.getAction(NewAction.ID), "window.new");
         m.putAction(LoadAction.ID, new LoadAction(this));
         m.putAction(ClearRecentFilesAction.ID, new ClearRecentFilesAction(this));
         m.putAction(SaveAction.ID, new SaveAction(this));
@@ -126,6 +133,7 @@ public class DefaultSDIApplication extends AbstractApplication {
         p.putAction(LoadAction.ID, m.getAction(LoadAction.ID));
     }
 
+@SuppressWarnings("unchecked")
     public void show(final View p) {
         if (!p.isShowing()) {
             p.setShowing(true);
@@ -205,7 +213,7 @@ public class DefaultSDIApplication extends AbstractApplication {
     protected Component wrapViewComponent(View p) {
         JComponent c = p.getComponent();
         if (getModel() != null) {
-            LinkedList<Action> toolBarActions = new LinkedList();
+            LinkedList<Action> toolBarActions = new LinkedList<Action>();
 
             int id = 0;
             for (JToolBar tb : new ReversedList<JToolBar>(getModel().createToolBars(this, p))) {
@@ -252,20 +260,38 @@ public class DefaultSDIApplication extends AbstractApplication {
             lastMenu = mm;
         }
         JMenu viewMenu = createViewMenu(p, toolBarActions);
-        if (lastMenu != null && lastMenu.getText().equals(viewMenu.getText())) {
-            for (Component c : lastMenu.getMenuComponents()) {
-                viewMenu.add(c);
+        if (viewMenu != null) {
+            if (lastMenu != null && lastMenu.getText().equals(viewMenu.getText())) {
+                for (Component c : lastMenu.getMenuComponents()) {
+                    viewMenu.add(c);
+                }
+                mb.remove(lastMenu);
             }
-            mb.remove(lastMenu);
+            mb.add(viewMenu);
         }
-        mb.add(viewMenu);
-        mb.add(createHelpMenu(p));
+
+        // Merge the help menu if one has been provided by the application model,
+        // otherwise just add it.
+        JMenu helpMenu = createHelpMenu(p);
+        for (Component mc : mb.getComponents()) {
+            JMenu m = (JMenu) mc;
+            if (m.getText().equals(helpMenu.getText())) {
+                for (Component c : helpMenu.getMenuComponents()) {
+                    m.add(c);
+                }
+                helpMenu = null;
+                break;
+            }
+        }
+        if (helpMenu != null) {
+            mb.add(helpMenu);
+        }
         return mb;
     }
 
     protected JMenu createFileMenu(final View p) {
         ApplicationModel model = getModel();
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
 
         JMenuBar mb = new JMenuBar();
         JMenu m;
@@ -273,12 +299,15 @@ public class DefaultSDIApplication extends AbstractApplication {
         final JMenu openRecentMenu;
 
         m = new JMenu();
-        labels.configureMenu(m, labels.getString("file"));
+        labels.configureMenu(m, "file");
         m.add(model.getAction(ClearAction.ID));
         m.add(model.getAction(NewAction.ID));
         m.add(model.getAction(LoadAction.ID));
+        if (model.getAction(LoadDirectoryAction.ID) != null) {
+            m.add(model.getAction(LoadDirectoryAction.ID));
+        }
         openRecentMenu = new JMenu();
-        labels.configureMenu(openRecentMenu, "openRecent");
+        labels.configureMenu(openRecentMenu, "file.openRecent");
         openRecentMenu.add(model.getAction(ClearRecentFilesAction.ID));
         updateOpenRecentMenu(openRecentMenu);
         m.add(openRecentMenu);
@@ -331,7 +360,7 @@ public class DefaultSDIApplication extends AbstractApplication {
         if (p.hasUnsavedChanges()) {
             title += "*";
         }
-        p.setTitle(labels.getFormatted("frameTitle", title, getName(), p.getMultipleOpenId()));
+        p.setTitle(labels.getFormatted("frame.title", title, getName(), p.getMultipleOpenId()));
         f.setTitle(p.getTitle());
     }
 
@@ -364,40 +393,48 @@ public class DefaultSDIApplication extends AbstractApplication {
         return (p == null) ? null : p.getComponent();
     }
 
-    protected JMenu createViewMenu(final View p, java.util.List<Action> toolBarActions) {
+    /**
+     * Creates the view menu.
+     * 
+     * @param p The View
+     * @param viewActions Actions for the view menu
+     * @return A JMenu or null, if no view actions are provided
+     */
+    protected JMenu createViewMenu(final View p, java.util.List<Action> viewActions) {
         ApplicationModel model = getModel();
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
 
-        JMenuBar mb = new JMenuBar();
         JMenu m, m2;
         JMenuItem mi;
         JCheckBoxMenuItem cbmi;
         final JMenu openRecentMenu;
 
         m = new JMenu();
-        if (toolBarActions != null && toolBarActions.size() > 0) {
-            m2 = (toolBarActions.size() == 1) ? m : new JMenu(labels.getString("toolBars"));
-            labels.configureMenu(m, labels.getString("view"));
-            for (Action a : toolBarActions) {
+        if (viewActions != null && viewActions.size() > 0) {
+            m2 = (viewActions.size() == 1) ? m : new JMenu(labels.getString("toolBars"));
+            labels.configureMenu(m, "view");
+            for (Action a : viewActions) {
                 cbmi = new JCheckBoxMenuItem(a);
                 Actions.configureJCheckBoxMenuItem(cbmi, a);
                 m2.add(cbmi);
             }
-            m.add(m2);
+            if (m2 != m) {
+                m.add(m2);
+            }
         }
 
-        return m;
+        return (m.getComponentCount() > 0) ? m : null;
     }
 
     protected JMenu createHelpMenu(View p) {
         ApplicationModel model = getModel();
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
+        ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
 
         JMenu m;
         JMenuItem mi;
 
         m = new JMenu();
-        labels.configureMenu(m, labels.getString("help"));
+        labels.configureMenu(m, "help");
         m.add(model.getAction(AboutAction.ID));
 
         return m;

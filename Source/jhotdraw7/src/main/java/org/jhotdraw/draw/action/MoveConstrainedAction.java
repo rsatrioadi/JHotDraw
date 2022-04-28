@@ -1,5 +1,5 @@
 /*
- * @(#)MoveConstrainedAction.java  2.1  2008-02-27
+ * @(#)MoveConstrainedAction.java  2.1.1  2008-07-06
  *
  * Copyright (c) 1996-2008 by the original authors of JHotDraw
  * and all its contributors.
@@ -15,18 +15,14 @@ package org.jhotdraw.draw.action;
 
 import org.jhotdraw.draw.*;
 import org.jhotdraw.undo.CompositeEdit;
-import javax.swing.*;
-import java.awt.*;
 import java.awt.geom.*;
-import java.util.*;
-import javax.swing.undo.*;
-import static org.jhotdraw.draw.AttributeKeys.*;
 
 /**
  * Moves the selected figures by one constrained unit.
  *
  * @author  Werner Randelshofer
- * @version 2.1 2008-02-27 Only move figures which are transformable. 
+ * @version 2.1.1 2008-07-06 Fixed NullPointerException when no figure is selected.
+ * <br>2.1 2008-02-27 Only move figures which are transformable. 
  * <br>2.0 2007-07-31 Reworked to take advantage of the new
  * Constrainer.translateRectangle method. 
  * <br>1.0 17. March 2004  Created.
@@ -42,6 +38,8 @@ public abstract class MoveConstrainedAction extends AbstractSelectedAction {
     }
 
     public void actionPerformed(java.awt.event.ActionEvent e) {
+        if (getView().getSelectionCount() > 0) {
+        
         Rectangle2D.Double r = null;
         for (Figure f : getView().getSelectedFigures()) {
             if (r == null) {
@@ -82,11 +80,12 @@ public abstract class MoveConstrainedAction extends AbstractSelectedAction {
         }
         CompositeEdit edit;
         fireUndoableEditHappened(new TransformEdit(getView().getSelectedFigures(), tx));
+        }
     }
 
     public static class East extends MoveConstrainedAction {
 
-        public final static String ID = "moveConstrainedEast";
+        public final static String ID = "edit.moveConstrainedEast";
 
         public East(DrawingEditor editor) {
             super(editor, TranslationDirection.EAST);
@@ -96,7 +95,7 @@ public abstract class MoveConstrainedAction extends AbstractSelectedAction {
 
     public static class West extends MoveConstrainedAction {
 
-        public final static String ID = "moveConstrainedWest";
+        public final static String ID = "edit.moveConstrainedWest";
 
         public West(DrawingEditor editor) {
             super(editor, TranslationDirection.WEST);
@@ -106,7 +105,7 @@ public abstract class MoveConstrainedAction extends AbstractSelectedAction {
 
     public static class North extends MoveConstrainedAction {
 
-        public final static String ID = "moveConstrainedNorth";
+        public final static String ID = "edit.moveConstrainedNorth";
 
         public North(DrawingEditor editor) {
             super(editor, TranslationDirection.NORTH);
@@ -116,7 +115,7 @@ public abstract class MoveConstrainedAction extends AbstractSelectedAction {
 
     public static class South extends MoveConstrainedAction {
 
-        public final static String ID = "moveConstrainedSouth";
+        public final static String ID = "edit.moveConstrainedSouth";
 
         public South(DrawingEditor editor) {
             super(editor, TranslationDirection.SOUTH);
