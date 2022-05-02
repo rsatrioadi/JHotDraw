@@ -40,7 +40,7 @@ import java.util.*;
  * @see SelectionTool
  *
  * @author Werner Randelshofer
- * @version $Id: DefaultHandleTracker.java 534 2009-06-13 14:54:19Z rawcoder $
+ * @version $Id: DefaultHandleTracker.java 575 2009-10-18 11:26:50Z rawcoder $
  */
 public class DefaultHandleTracker extends AbstractTool implements HandleTracker {
 
@@ -190,7 +190,7 @@ public class DefaultHandleTracker extends AbstractTool implements HandleTracker 
     public void mouseReleased(MouseEvent evt) {
         multicaster.trackEnd(anchor, new Point(evt.getX(), evt.getY()),
                 evt.getModifiersEx(), getView());
-       // fireToolDone();
+        fireToolDone();
     }
 
     protected void clearHoverHandles() {

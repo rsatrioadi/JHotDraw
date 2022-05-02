@@ -28,7 +28,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * represent a single BezierPath segment within an SVG path.
  *
  * @author Werner Randelshofer
- * @version $Id: SVGBezierFigure.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: SVGBezierFigure.java 575 2009-10-18 11:26:50Z rawcoder $
  */
 public class SVGBezierFigure extends BezierFigure {
 
@@ -41,7 +41,7 @@ public class SVGBezierFigure extends BezierFigure {
 
     public SVGBezierFigure(boolean isClosed) {
         super(isClosed);
-        set(FILL_OPEN_PATH, true);
+        set(UNCLOSED_PATH_FILLED, true);
     }
 
     public Collection<Handle> createHandles(SVGPathFigure pathFigure, int detailLevel) {

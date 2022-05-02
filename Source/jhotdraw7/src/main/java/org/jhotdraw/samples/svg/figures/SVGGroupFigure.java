@@ -27,7 +27,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * SVGGroupFigure.
  *
  * @author Werner Randelshofer
- * @version $Id: SVGGroupFigure.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: SVGGroupFigure.java 575 2009-10-18 11:26:50Z rawcoder $
  */
 public class SVGGroupFigure extends GroupFigure implements SVGFigure {
 
@@ -114,7 +114,7 @@ public class SVGGroupFigure extends GroupFigure implements SVGFigure {
                     if (f.get(TRANSFORM) != null) {
                         bounds.setRect(f.get(TRANSFORM).createTransformedShape(bounds).getBounds2D());
                     }
-                    if (cachedBounds == null || cachedBounds.isEmpty()) {
+                    if (cachedBounds == null) {
                         cachedBounds = bounds;
                     } else {
                         cachedBounds.add(bounds);

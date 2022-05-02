@@ -33,7 +33,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * DrawToolsPane.
  *
  * @author Werner Randelshofer
- * @version $Id: ToolsToolBar.java 549 2009-08-12 07:46:31Z rawcoder $
+ * @version $Id: ToolsToolBar.java 575 2009-10-18 11:26:50Z rawcoder $
  */
 public class ToolsToolBar extends AbstractToolBar {
 
@@ -113,7 +113,7 @@ public class ToolsToolBar extends AbstractToolBar {
 
                     attributes = new HashMap<AttributeKey, Object>();
                     attributes.put(AttributeKeys.FILL_COLOR, null);
-                    attributes.put(CLOSED, false);
+                    attributes.put(PATH_CLOSED, false);
                     btn = ButtonFactory.addToolTo(this, editor, creationTool = new CreationTool(new SVGPathFigure(), attributes), "createLine", labels);
                     creationTool.setToolDoneAfterCreation(false);
                     btn.setUI((PaletteButtonUI) PaletteButtonUI.createUI(btn));

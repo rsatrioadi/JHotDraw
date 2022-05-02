@@ -84,7 +84,7 @@ import org.jhotdraw.beans.Disposable;
  * a menu with the title "Help", it is inserted after the window menu.
  *
  * @author Werner Randelshofer
- * @version $Id: DefaultOSXApplication.java 562 2009-10-04 14:40:42Z rawcoder $
+ * @version $Id: DefaultOSXApplication.java 575 2009-10-18 11:26:50Z rawcoder $
  */
 public class DefaultOSXApplication extends AbstractApplication {
 
@@ -291,7 +291,7 @@ public class DefaultOSXApplication extends AbstractApplication {
             if (mm.getText().equals(helpMenuText)) {
                 helpMenu = mm;
             } else {
-            mb.add(mm);
+                mb.add(mm);
             }
         }
 
@@ -445,8 +445,10 @@ public class DefaultOSXApplication extends AbstractApplication {
     }
 
     public Component getComponent() {
+        return null;
+        /*
         net.roydesign.app.Application mrjapp = net.roydesign.app.Application.getInstance();
-        return mrjapp.getFramelessJMenuBar().getParent();
+        return mrjapp.getFramelessJMenuBar().getParent();*/
     }
 
     /** Updates the menu items in the "Open Recent" file menu. */
@@ -473,8 +475,6 @@ public class DefaultOSXApplication extends AbstractApplication {
 
         /**
          * Updates the "File &gt; Open Recent" menu.
-         *
-         * @param openRecentMenu
          */
         protected void updateOpenRecentMenu() {
             if (openRecentMenu.getItemCount() > 0) {

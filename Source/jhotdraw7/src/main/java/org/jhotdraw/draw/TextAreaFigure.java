@@ -53,7 +53,7 @@ import org.jhotdraw.xml.DOMOutput;
  *
  * @author    Eduardo Francos - InContext (original version),
  *            Werner Randelshofer (this derived version)
- * @version $Id: TextAreaFigure.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: TextAreaFigure.java 573 2009-10-13 05:59:20Z rawcoder $
  */
 public class TextAreaFigure extends AbstractAttributedDecoratedFigure implements TextHolderFigure {
 
@@ -139,7 +139,7 @@ public class TextAreaFigure extends AbstractAttributedDecoratedFigure implements
      * @param leftMargin the left bound of the paragraph
      * @param rightMargin the right bound of the paragraph
      * @param tabStops an array with tab stops
-     * @param tabCounts the number of entries in tabStops which contain actual
+     * @param tabCount the number of entries in tabStops which contain actual
      *        values
      * @return Returns the actual bounds of the paragraph.
      */

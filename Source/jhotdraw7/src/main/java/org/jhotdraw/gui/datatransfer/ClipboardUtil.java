@@ -20,7 +20,7 @@ import java.awt.datatransfer.Clipboard;
  * {@code ClipboardUtil} provides utility methods for the Java Clipboard API.
  *
  * @author Werner Randelshofer
- * @version $Id: ClipboardUtil.java 531 2009-06-13 10:20:39Z rawcoder $
+ * @version $Id: ClipboardUtil.java 574 2009-10-14 21:38:03Z rawcoder $
  */
 public class ClipboardUtil {
 
@@ -41,7 +41,8 @@ public class ClipboardUtil {
 
         // Try to access the system clipboard
         try {
-            instance = new AWTClipboard(Toolkit.getDefaultToolkit().getSystemClipboard());
+//          instance = new AWTClipboard(Toolkit.getDefaultToolkit().getSystemClipboard());
+            instance = new OSXClipboard(Toolkit.getDefaultToolkit().getSystemClipboard());
         } catch (SecurityException e1) {
 
             // Fall back to JNLP ClipboardService
@@ -58,6 +59,11 @@ public class ClipboardUtil {
         return instance;
     }
 
+    /** Sets the Clipboard singleton used by the JHotDraw framework.
+     * <p>
+     * If you set this null, the next call to getClipboard will create a new
+     * singleton.
+     */
     public static void setClipboard(Clipboard instance) {
         ClipboardUtil.instance = instance;
     }

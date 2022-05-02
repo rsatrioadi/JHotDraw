@@ -21,7 +21,7 @@ import javax.swing.undo.*;
  * GroupAction.
  *
  * @author  Werner Randelshofer
- * @version $Id: GroupAction.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: GroupAction.java 575 2009-10-18 11:26:50Z rawcoder $
  */
 public class GroupAction extends AbstractSelectedAction {
 
@@ -152,6 +152,7 @@ public class GroupAction extends AbstractSelectedAction {
         view.getDrawing().add(index, group);
         group.willChange();
         for (Figure f : sorted) {
+            f.willChange();
             group.basicAdd(f);
         }
         group.changed();

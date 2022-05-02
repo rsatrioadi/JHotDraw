@@ -49,7 +49,7 @@ import java.net.*;
  * values "win", "mac" and "other". Its fallback chain is "default".
  *
  * @author  Werner Randelshofer, Staldenmattweg 2, CH-6405 Immensee, Switzerland
- * @version $Id: ResourceBundleUtil.java 541 2009-07-04 14:24:31Z rawcoder $
+ * @version $Id: ResourceBundleUtil.java 573 2009-10-13 05:59:20Z rawcoder $
  */
 public class ResourceBundleUtil implements Serializable {
 
@@ -133,7 +133,6 @@ public class ResourceBundleUtil implements Serializable {
      * Recursive part of the getString method.
      *
      * @param key
-     * @return
      * @throws java.util.MissingResourceException
      */
     private String getStringRecursive(String key) throws MissingResourceException {

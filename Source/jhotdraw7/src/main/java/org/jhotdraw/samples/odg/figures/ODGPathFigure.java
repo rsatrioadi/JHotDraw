@@ -37,7 +37,7 @@ import static org.jhotdraw.samples.odg.ODGAttributeKeys.*;
  * ODGBezierFigures as its children.
  *
  * @author Werner Randelshofer
- * @version $Id: ODGPathFigure.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: ODGPathFigure.java 575 2009-10-18 11:26:50Z rawcoder $
  */
 public class ODGPathFigure extends AbstractAttributedCompositeFigure implements ODGFigure {
     /**
@@ -119,7 +119,7 @@ public class ODGPathFigure extends AbstractAttributedCompositeFigure implements 
     }
     
     public void drawFill(Graphics2D g) {
-        boolean isClosed = getChild(0).get(CLOSED);
+        boolean isClosed = getChild(0).get(PATH_CLOSED);
         if (isClosed) {
             g.fill(getPath());
         }
@@ -194,7 +194,7 @@ public class ODGPathFigure extends AbstractAttributedCompositeFigure implements 
         /*
         return cachedPath.contains(p2);
          */
-        boolean isClosed = getChild(0).get(CLOSED);
+        boolean isClosed = getChild(0).get(PATH_CLOSED);
         double tolerance = Math.max(2f, AttributeKeys.getStrokeTotalWidth(this) / 2d);
         if (isClosed) {
             if (getPath().contains(p)) {
@@ -374,7 +374,7 @@ public class ODGPathFigure extends AbstractAttributedCompositeFigure implements 
                 for (Figure child : getChildren()) {
                     willChange();
                     getDrawing().fireUndoableEditHappened(
-                            CLOSED.setUndoable(child, true)
+                            PATH_CLOSED.setUndoable(child, true)
                             );
                     changed();
                 }
@@ -385,7 +385,7 @@ public class ODGPathFigure extends AbstractAttributedCompositeFigure implements 
                 for (Figure child : getChildren()) {
                     willChange();
                     getDrawing().fireUndoableEditHappened(
-                            CLOSED.setUndoable(child, false)
+                            PATH_CLOSED.setUndoable(child, false)
                             );
                     changed();
                 }

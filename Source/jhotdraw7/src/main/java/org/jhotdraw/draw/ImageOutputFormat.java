@@ -30,7 +30,7 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * supported by javax.imageio.
  *
  * @author Werner Randelshofer
- * @version $Id: ImageOutputFormat.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: ImageOutputFormat.java 576 2009-10-18 15:23:32Z rawcoder $
  */
 public class ImageOutputFormat implements OutputFormat {
     /**
@@ -230,12 +230,13 @@ public class ImageOutputFormat implements OutputFormat {
         Color background = drawing.get(CANVAS_FILL_COLOR);
         double opacity = drawing.get(CANVAS_FILL_OPACITY);
         if (background == null) {
-            background = new Color(0xff, 0xff, 0xff, (int)(255 * opacity));
+            background = new Color(0xff, 0xff, 0xff, 0x0);
         } else {
             background = new Color(background.getRed(), background.getGreen(), background.getBlue(), (int)(background.getAlpha() * opacity));
         }
+
         BufferedImage buf = new BufferedImage(
-                imageSize.width, imageSize.height,
+                Math.max(1,imageSize.width), Math.max(1,imageSize.height),
                 (background.getAlpha() == 255) ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB
                 );
         Graphics2D g = buf.createGraphics();

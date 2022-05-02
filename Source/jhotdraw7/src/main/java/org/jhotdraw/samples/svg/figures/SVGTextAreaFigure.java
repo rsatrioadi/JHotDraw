@@ -27,7 +27,7 @@ import org.jhotdraw.geom.*;
  * SVGTextArea.
  *
  * @author Werner Randelshofer
- * @version $Id: SVGTextAreaFigure.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: SVGTextAreaFigure.java 573 2009-10-13 05:59:20Z rawcoder $
  */
 public class SVGTextAreaFigure extends SVGAttributedFigure
         implements SVGFigure, TextHolderFigure {
@@ -172,7 +172,7 @@ public class SVGTextAreaFigure extends SVGAttributedFigure
      * @param leftMargin the left bound of the paragraph
      * @param rightMargin the right bound of the paragraph
      * @param tabStops an array with tab stops
-     * @param tabCounts the number of entries in tabStops which contain actual
+     * @param tabCount the number of entries in tabStops which contain actual
      *        values
      * @return Returns the actual bounds of the paragraph.
      */

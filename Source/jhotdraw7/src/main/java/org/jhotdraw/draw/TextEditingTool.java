@@ -15,7 +15,6 @@ package org.jhotdraw.draw;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Point2D;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.UndoableEdit;
 import org.jhotdraw.util.ResourceBundleUtil;
@@ -44,7 +43,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: TextEditingTool.java 542 2009-07-06 05:57:55Z rawcoder $
+ * @version $Id: TextEditingTool.java 574 2009-10-14 21:38:03Z rawcoder $
  */
 public class TextEditingTool extends AbstractTool implements ActionListener {
 

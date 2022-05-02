@@ -32,6 +32,12 @@ import java.awt.event.*;
  * <p>
  * A Tool forwards UndoableEdit events to the Drawing object onto which it
  * is performing changes.
+ * <p>
+ * If a tool does not handle a specific keyboard event, it looks up the
+ * {@code InputMap} of the drawing editor and then invokes the
+ * corresponding action in the {@code ActionMap} of the drawing editor.
+ * A tool can have an InputMap and ActionMap of its own which take precedence
+ * over the ones provided by the drawing editor.
  *
  * <hr>
  * <b>Design Patterns</b>
@@ -48,6 +54,11 @@ import java.awt.event.*;
  * and drawing views:<br>
  * Mediator: {@link DrawingEditor}; Colleagues: {@link DrawingView}, {@link Tool}.
  *
+ * <p><em>Mediator</em><br>
+ * {@code DrawingEditor} acts as a mediator for coordinating keyboard input from
+ * {@code Tool}s and Swing action objects:<br>
+ * Mediator: {@link DrawingEditor}; Colleagues: {@link Tool}, javax.swing.Action.
+ *
  * <p><em>Observer</em><br>
  * State changes of tools can be observed by other objects. Specifically
  * {@code DrawingEditor} observes area invalidations of tools and repaints
@@ -57,7 +68,7 @@ import java.awt.event.*;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: Tool.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: Tool.java 574 2009-10-14 21:38:03Z rawcoder $
  */
 public interface Tool extends MouseListener, MouseMotionListener, KeyListener {
     

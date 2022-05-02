@@ -29,7 +29,7 @@ import org.jhotdraw.geom.*;
  *
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractFigure.java 565 2009-10-11 11:33:29Z rawcoder $
+ * @version $Id: AbstractFigure.java 575 2009-10-18 11:26:50Z rawcoder $
  */
 public abstract class AbstractFigure
         extends AbstractBean
@@ -415,7 +415,7 @@ public abstract class AbstractFigure
             validate();
             fireFigureChanged(getDrawingArea());
         } else if (changingDepth < 0) {
-            throw new InternalError("changed was called without a prior call to willChange.");
+            throw new InternalError("changed was called without a prior call to willChange. "+changingDepth);
         }
         changingDepth--;
     }

@@ -35,10 +35,10 @@ import org.jhotdraw.xml.*;
  * <p>
  * This class should no be used as a means to implement long-term storage of
  * drawings, since it does not support structural changes that might occur in
- * drawing application over time.
+ * a drawing application over time.
  *
  * @author Werner Randelshofer
- * @version $Id: DOMStorableInputOutputFormat.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: DOMStorableInputOutputFormat.java 574 2009-10-14 21:38:03Z rawcoder $
  */
 public class DOMStorableInputOutputFormat implements OutputFormat, InputFormat {
     private DOMFactory factory;

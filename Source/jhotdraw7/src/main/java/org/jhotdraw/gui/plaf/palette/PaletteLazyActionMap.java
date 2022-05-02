@@ -22,7 +22,7 @@ import javax.swing.plaf.*;
  * QuaquaLazyActionMap.
  *
  * @author Werner Randelshofer
- * @version $Id: PaletteLazyActionMap.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: PaletteLazyActionMap.java 573 2009-10-13 05:59:20Z rawcoder $
  */
 public class PaletteLazyActionMap extends ActionMapUIResource {
     /**
@@ -61,7 +61,6 @@ public class PaletteLazyActionMap extends ActionMapUIResource {
      * <p>
      * This should be used if the ActionMap can be shared.
      *
-     * @param c JComponent to install the ActionMap on.
      * @param loaderClass Class object that gets loadActionMap invoked
      *                    on.
      * @param defaultsKey Key to use to defaults table to check for

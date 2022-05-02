@@ -27,7 +27,7 @@ import org.jhotdraw.draw.*;
  * itself if the component no longer exists.
  *
  * @author Werner Randelshofer
- * @version $Id: SelectionComponentDisplayer.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: SelectionComponentDisplayer.java 575 2009-10-18 11:26:50Z rawcoder $
  */
 public class SelectionComponentDisplayer
         implements PropertyChangeListener, FigureSelectionListener {
@@ -82,6 +82,7 @@ public class SelectionComponentDisplayer
             dispose();
             return;
         }
+        if (newValue != component.isVisible()) {
         component.setVisible(newValue);
 
         // The following is needed to trick BoxLayout
@@ -92,6 +93,7 @@ public class SelectionComponentDisplayer
         }
 
         component.revalidate();
+        }
     }
 
     protected JComponent getComponent() {

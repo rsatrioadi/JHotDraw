@@ -83,7 +83,7 @@ import org.jhotdraw.app.action.*;
  *
  *
  * @author Werner Randelshofer.
- * @version $Id: DefaultMDIApplication.java 562 2009-10-04 14:40:42Z rawcoder $
+ * @version $Id: DefaultMDIApplication.java 573 2009-10-13 05:59:20Z rawcoder $
  */
 public class DefaultMDIApplication extends AbstractApplication {
 
@@ -530,8 +530,6 @@ public class DefaultMDIApplication extends AbstractApplication {
 
         /**
          * Updates the "File &gt; Open Recent" menu.
-         *
-         * @param openRecentMenu
          */
         protected void updateOpenRecentMenu() {
             if (openRecentMenu.getItemCount() > 0) {

@@ -20,7 +20,7 @@ import org.jhotdraw.app.*;
  * Main class.
  *
  * @author Werner Randelshofer.
- * @version $Id: Main.java 557 2009-09-06 16:12:08Z rawcoder $
+ * @version $Id: Main.java 577 2009-10-18 15:27:48Z rawcoder $
  */
 public class Main {
     public final static String NAME = "JHotDraw Teddy";
@@ -42,7 +42,8 @@ public class Main {
         if (System.getProperty("os.name").toLowerCase().startsWith("mac os x")) {
             app = new DefaultOSXApplication();
         } else if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
-            app = new DefaultMDIApplication();
+            //app = new DefaultMDIApplication();
+            app = new DefaultSDIApplication();
         } else {
             app = new DefaultSDIApplication();
         }
