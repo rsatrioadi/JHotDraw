@@ -13,8 +13,6 @@
  */
 package org.jhotdraw.gui.plaf.palette;
 
-import org.apache.batik.ext.awt.LinearGradientPaint;
-import org.apache.batik.ext.awt.MultipleGradientPaint;
 import java.awt.*;
 import java.awt.geom.*;
 import javax.swing.*;
@@ -24,7 +22,7 @@ import javax.swing.border.*;
  * PaletteToolBarBorder.
  *
  * @author  Werner Randelshofer
- * @version $Id: PaletteToolBarBorder.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: PaletteToolBarBorder.java 591 2009-12-18 22:54:10Z rawcoder $
  */
 public class PaletteToolBarBorder
         extends AbstractBorder
@@ -75,8 +73,7 @@ public class PaletteToolBarBorder
                         LinearGradientPaint lgp = new LinearGradientPaint(
                                 new Point2D.Float(1, 1), new Point2D.Float(19, 1),
                                 stops, stopColors,
-                                MultipleGradientPaint.REPEAT,
-                                MultipleGradientPaint.LINEAR_RGB);
+                                MultipleGradientPaint.CycleMethod.REPEAT);
                         g.setPaint(lgp);
                         g.fillRect(barX + 1, barX + 1, barW - 2, barH - 2);
 

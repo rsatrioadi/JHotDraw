@@ -1,7 +1,7 @@
 /*
  * @(#)UngroupAction.java
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -14,13 +14,15 @@
 
 package org.jhotdraw.draw.action;
 
+import org.jhotdraw.draw.GroupFigure;
+import org.jhotdraw.draw.CompositeFigure;
 import org.jhotdraw.draw.*;
 
 /**
  * UngroupAction.
  *
  * @author  Werner Randelshofer
- * @version $Id: UngroupAction.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: UngroupAction.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class UngroupAction extends GroupAction {
     public final static String ID = "edit.ungroupSelection";

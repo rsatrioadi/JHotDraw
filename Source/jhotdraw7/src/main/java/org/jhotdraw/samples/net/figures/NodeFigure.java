@@ -1,7 +1,7 @@
 /*
  * @(#)NodeFigure.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -13,10 +13,17 @@
  */
 package org.jhotdraw.samples.net.figures;
 
+import org.jhotdraw.draw.locator.RelativeLocator;
+import org.jhotdraw.draw.handle.MoveHandle;
+import org.jhotdraw.draw.handle.Handle;
+import org.jhotdraw.draw.connector.LocatorConnector;
+import org.jhotdraw.draw.handle.ConnectorHandle;
+import org.jhotdraw.draw.connector.Connector;
 import java.awt.geom.*;
 import java.io.*;
 import java.util.*;
 import org.jhotdraw.draw.*;
+import org.jhotdraw.draw.handle.BoundsOutlineHandle;
 import org.jhotdraw.geom.*;
 import static org.jhotdraw.draw.AttributeKeys.*;
 import org.jhotdraw.util.*;
@@ -26,7 +33,7 @@ import org.jhotdraw.xml.*;
  * NodeFigure.
  *
  * @author Werner Randelshofer
- * @version $Id: NodeFigure.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: NodeFigure.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class NodeFigure extends TextFigure {
 

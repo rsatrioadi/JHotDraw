@@ -1,7 +1,7 @@
 /*
  * @(#)AttributeToggler.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -32,7 +32,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * it will apply the text action to the JTextComponent.
  *
  * @author  Werner Randelshofer
- * @version $Id: AttributeToggler.java 567 2009-10-11 13:19:09Z rawcoder $
+ * @version $Id: AttributeToggler.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class AttributeToggler<T> extends AbstractAction {
     private DrawingEditor editor;
@@ -96,7 +96,7 @@ public class AttributeToggler<T> extends AbstractAction {
         UndoableEdit edit = new AbstractUndoableEdit() {
             @Override
             public String getPresentationName() {
-                String name = (String) getValue(Actions.UNDO_PRESENTATION_NAME_KEY);
+                String name = (String) getValue(ActionUtil.UNDO_PRESENTATION_NAME_KEY);
                 if (name == null) {
                     name = (String) getValue(AbstractAction.NAME);
                 }

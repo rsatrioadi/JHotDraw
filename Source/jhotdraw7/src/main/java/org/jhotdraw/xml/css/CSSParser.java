@@ -1,7 +1,7 @@
 /*
  * @(#)CSSLoader.java
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -66,7 +66,7 @@ import java.util.*;
  * </pre>
  *
  * @author Werner Randelshofer
- * @version $Id: CSSParser.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: CSSParser.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class CSSParser {
     public void parse(String css, StyleManager rm) throws IOException {
@@ -190,17 +190,4 @@ public class CSSParser {
         tt.pushBack();
         return map;
     }
-    /*
-    public static void main(String[] args) {
-        InputStreamReader in = null;
-        try {
-            CSSLoader l = new CSSLoader();
-            in = new InputStreamReader(CSSLoader.class.getResourceAsStream("/test.css"));
-            l.load(in, new StyleManager());
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try { if (in != null) in.close(); } catch (IOException e) {}
-        }
-    }*/
 }

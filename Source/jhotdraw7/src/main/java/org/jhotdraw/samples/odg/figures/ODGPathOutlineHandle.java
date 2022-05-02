@@ -14,16 +14,16 @@
 
 package org.jhotdraw.samples.odg.figures;
 
-import org.jhotdraw.draw.*;
+import org.jhotdraw.draw.handle.AbstractHandle;
 import java.awt.*;
 import static org.jhotdraw.samples.odg.ODGAttributeKeys.*;
 
 /**
- * A non-interactive {@link Handle} which draws the outline of a
+ * A non-interactive {@link org.jhotdraw.draw.handle.Handle} which draws the outline of a
  * {@link ODGPathFigure} to make adjustments easier.
  * 
  * @author Werner Randelshofer
- * @version $Id: ODGPathOutlineHandle.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: ODGPathOutlineHandle.java 582 2009-10-24 08:00:49Z rawcoder $
  */
 public class ODGPathOutlineHandle extends AbstractHandle {
     private final static Color HANDLE_FILL_COLOR = new Color(0x00a8ff);

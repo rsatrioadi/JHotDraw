@@ -24,7 +24,6 @@ import javax.swing.*;
 import javax.swing.plaf.LabelUI;
 import javax.swing.plaf.SliderUI;
 import javax.swing.plaf.TextUI;
-import org.jhotdraw.beans.Disposable;
 import org.jhotdraw.draw.action.*;
 import org.jhotdraw.gui.plaf.palette.*;
 import org.jhotdraw.text.ColorFormatter;
@@ -34,7 +33,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * CanvasToolBar.
  *
  * @author Werner Randelshofer
- * @version $Id: CanvasToolBar.java 549 2009-08-12 07:46:31Z rawcoder $
+ * @version $Id: CanvasToolBar.java 585 2009-11-24 21:53:05Z rawcoder $
  */
 public class CanvasToolBar extends AbstractToolBar {
 

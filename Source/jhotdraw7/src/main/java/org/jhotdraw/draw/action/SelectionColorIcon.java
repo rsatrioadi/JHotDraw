@@ -1,7 +1,7 @@
 /*
  * @(#)SelectionColorIcon.java
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -27,7 +27,7 @@ import org.jhotdraw.draw.*;
  * {@link SelectionColorChooserAction }.
  * 
  * @author Werner Randelshofer
- * @version $Id: SelectionColorIcon.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: SelectionColorIcon.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class SelectionColorIcon extends javax.swing.ImageIcon {
     private DrawingEditor editor;

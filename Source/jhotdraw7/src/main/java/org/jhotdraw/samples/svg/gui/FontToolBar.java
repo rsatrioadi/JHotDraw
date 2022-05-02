@@ -13,6 +13,10 @@
  */
 package org.jhotdraw.samples.svg.gui;
 
+import org.jhotdraw.draw.tool.TextCreationTool;
+import org.jhotdraw.draw.tool.TextAreaCreationTool;
+import org.jhotdraw.draw.TextHolderFigure;
+import org.jhotdraw.draw.CompositeFigure;
 import org.jhotdraw.gui.event.SelectionComponentRepainter;
 import org.jhotdraw.gui.event.SelectionComponentDisplayer;
 import javax.swing.border.*;
@@ -37,7 +41,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * StrokeToolBar.
  * 
  * @author Werner Randelshofer
- * @version $Id: FontToolBar.java 549 2009-08-12 07:46:31Z rawcoder $
+ * @version $Id: FontToolBar.java 582 2009-10-24 08:00:49Z rawcoder $
  */
 public class FontToolBar extends AbstractToolBar {
 

@@ -13,6 +13,11 @@
  */
 package org.jhotdraw.samples.odg.figures;
 
+import org.jhotdraw.draw.handle.TransformHandleKit;
+import org.jhotdraw.draw.handle.ResizeHandleKit;
+import org.jhotdraw.draw.handle.Handle;
+import org.jhotdraw.draw.connector.Connector;
+import org.jhotdraw.draw.ConnectionFigure;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
@@ -31,7 +36,7 @@ import org.jhotdraw.util.*;
  * ODGEllipse represents a ODG ellipse and a ODG circle element.
  *
  * @author Werner Randelshofer
- * @version $Id: ODGEllipseFigure.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: ODGEllipseFigure.java 603 2010-01-09 11:16:42Z rawcoder $
  */
 public class ODGEllipseFigure extends ODGAttributedFigure implements ODGFigure {
 
@@ -205,11 +210,6 @@ public class ODGEllipseFigure extends ODGAttributedFigure implements ODGFigure {
         return handles;
     }
     // CONNECTING
-
-    public boolean canConnect() {
-        return false; // ODG does not support connecting
-    }
-
     public Connector findConnector(Point2D.Double p, ConnectionFigure prototype) {
         return null; // ODG does not support connectors
     }

@@ -26,11 +26,11 @@ import java.awt.print.*;
  * The interfaces and classes listed below define together the contracts
  * of a smaller framework inside of the JHotDraw framework for document oriented
  * applications.<br>
- * Contract: {@link PrintableView}, {@link org.jhotdraw.app.action.PrintAction}.
+ * Contract: {@link PrintableView}, {@link org.jhotdraw.app.action.file.PrintFileAction}.
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: PrintableView.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: PrintableView.java 594 2009-12-21 23:32:52Z rawcoder $
  */
 public interface PrintableView extends View {
 public Pageable createPageable();   

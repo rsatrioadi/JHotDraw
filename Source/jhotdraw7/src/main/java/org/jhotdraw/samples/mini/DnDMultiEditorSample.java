@@ -1,7 +1,7 @@
 /*
  * @(#)MultiEditorSample.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -13,6 +13,11 @@
  */
 package org.jhotdraw.samples.mini;
 
+import org.jhotdraw.draw.tool.SelectionTool;
+import org.jhotdraw.draw.tool.CreationTool;
+import org.jhotdraw.draw.tool.DnDTracker;
+import org.jhotdraw.draw.io.SerializationInputOutputFormat;
+import org.jhotdraw.draw.io.ImageOutputFormat;
 import java.awt.*;
 import javax.swing.*;
 import org.jhotdraw.draw.*;
@@ -24,7 +29,7 @@ import org.jhotdraw.util.*;
  * views.
  *
  * @author Werner Randelshofer
- * @version $Id: DnDMultiEditorSample.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: DnDMultiEditorSample.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class DnDMultiEditorSample {
 
@@ -43,10 +48,6 @@ public class DnDMultiEditorSample {
                 view2.setDrawing(createDrawing());
                 view3.setDrawing(createDrawing());
                 view4.setDrawing(createDrawing());
-                view1.getComponent().setTransferHandler(new DnDDrawingViewTransferHandler());
-                view2.getComponent().setTransferHandler(new DnDDrawingViewTransferHandler());
-                view3.getComponent().setTransferHandler(new DnDDrawingViewTransferHandler());
-                view4.getComponent().setTransferHandler(new DnDDrawingViewTransferHandler());
 
                 // Create a common drawing editor for the views
                 DrawingEditor editor = new DefaultDrawingEditor();
@@ -95,7 +96,7 @@ public class DnDMultiEditorSample {
 
                 f.getContentPane().add(tb, BorderLayout.WEST);
 
-                f.show();
+                f.setVisible(true);
             }
         });
     }

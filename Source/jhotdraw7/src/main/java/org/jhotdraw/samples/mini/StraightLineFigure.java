@@ -1,7 +1,7 @@
 /*
  * @(#)StraightLineFigure.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -24,7 +24,7 @@ import org.jhotdraw.geom.*;
  * {@code Figure} by extending {@code AbstractAttributedFigure}.
  *
  * @author Werner Randelshofer
- * @version $Id: StraightLineFigure.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: StraightLineFigure.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class StraightLineFigure extends AbstractAttributedFigure {
     private Line2D.Double line;

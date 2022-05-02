@@ -1,7 +1,7 @@
 /*
  * @(#)EditableComponent.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -13,6 +13,8 @@
  */
 package org.jhotdraw.app;
 
+import java.beans.PropertyChangeListener;
+
 /**
  * This interface must be implemented by components
  * which are editable.
@@ -22,24 +24,43 @@ package org.jhotdraw.app;
  * See http://java.sun.com/docs/books/tutorial/uiswing/dnd/intro.html#cut
  *
  * @author Werner Randelshofer
- * @version $Id: EditableComponent.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: EditableComponent.java 605 2010-01-10 11:14:33Z rawcoder $
  */
-
 public interface EditableComponent {
-	/**
-	 * Deletes the component at (or after) the caret position.
-	 */
-	public void delete();
-	/**
-	 * Duplicates the selected region.
-	 */
-	public void duplicate();
-	/**
-	 * Selects all.
-	 */
-	public void selectAll();
-	/**
-	 * Selects nothing.
-	 */
-	public void clearSelection();
+
+    /** The name of the "selectionEmpty" property. */
+    public final static String SELECTION_EMPTY_PROPERTY = "selectionEmpty";
+
+    /**
+     * Deletes the selected components or the component at (or after) the
+     * caret position.
+     */
+    public void delete();
+
+    /**
+     * Duplicates the selected region.
+     */
+    public void duplicate();
+
+    /**
+     * Selects all.
+     */
+    public void selectAll();
+
+    /**
+     * Selects nothing.
+     */
+    public void clearSelection();
+
+    /**
+     * Returns true if the selection is empty.
+     * This is a bound property.
+     */
+    public boolean isSelectionEmpty();
+
+    /** Adds a property change listener. */
+    public void addPropertyChangeListener(PropertyChangeListener l);
+    
+    /** Removes a property change listener. */
+    public void removePropertyChangeListener(PropertyChangeListener l);
 }

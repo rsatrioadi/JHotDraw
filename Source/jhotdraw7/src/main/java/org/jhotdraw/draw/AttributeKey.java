@@ -1,7 +1,7 @@
 /*
  * @(#)AttributeKey.java
  *
- * Copyright (c) 1996-2009 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -35,7 +35,7 @@ import org.jhotdraw.util.*;
  * See {@link AttributeKeys} for a list of useful attribute keys.
  * 
  * @author Werner Randelshofer
- * @version $Id: AttributeKey.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: AttributeKey.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class AttributeKey<T> implements Serializable {
 

@@ -1,7 +1,7 @@
 /*
  * @(#)LinearGradient.java
  *
- * Copyright (c) 1996-2009 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -24,7 +24,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * Represents an SVG LinearGradient.
  *
  * @author Werner Randelshofer
- * @version $Id: LinearGradient.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: LinearGradient.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class LinearGradient implements Gradient {
     private double x1;
@@ -140,11 +140,11 @@ public class LinearGradient implements Gradient {
             return colors[0];
         }
         // Construct a gradient
-        org.apache.batik.ext.awt.LinearGradientPaint gp;
-        gp = new org.apache.batik.ext.awt.LinearGradientPaint(
+        LinearGradientPaint gp;
+        gp = new LinearGradientPaint(
                 p1, p2, fractions, colors,
-                org.apache.batik.ext.awt.LinearGradientPaint.NO_CYCLE,
-                org.apache.batik.ext.awt.LinearGradientPaint.SRGB,
+                LinearGradientPaint.CycleMethod.NO_CYCLE,
+                LinearGradientPaint.ColorSpaceType.SRGB,
                 t
                 );
         

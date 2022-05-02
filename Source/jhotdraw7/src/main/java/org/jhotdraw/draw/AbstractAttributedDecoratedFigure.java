@@ -1,7 +1,7 @@
 /*
  * @(#)AbstractAttributedDecoratedFigure.java
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -14,6 +14,8 @@
 
 package org.jhotdraw.draw;
 
+import org.jhotdraw.draw.DecoratedFigure;
+import org.jhotdraw.draw.*;
 import java.awt.*;
 import java.awt.geom.*;
 import java.io.*;
@@ -26,7 +28,7 @@ import org.jhotdraw.xml.*;
  * which has an attribute set.
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractAttributedDecoratedFigure.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: AbstractAttributedDecoratedFigure.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public abstract class AbstractAttributedDecoratedFigure
         extends AbstractAttributedFigure implements DecoratedFigure {

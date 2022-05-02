@@ -1,7 +1,7 @@
 /*
  * @(#)ImageFigure.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -13,6 +13,8 @@
  */
 package org.jhotdraw.draw;
 
+import org.jhotdraw.draw.connector.ChopRectangleConnector;
+import org.jhotdraw.draw.connector.Connector;
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.image.*;
@@ -27,14 +29,11 @@ import org.jhotdraw.xml.*;
 import static org.jhotdraw.draw.AttributeKeys.*;
 
 /**
- * An {@link ImageHolderFigure} which holds a buffered image.
- * <p>
- * A DrawingEditor should provide the ImageTool to create an ImageFigure.
- *
- * @see ImageTool
+ * A default implementation of {@link ImageHolderFigure} which can hold a
+ * buffered image.
  *
  * @author Werner Randelshofer
- * @version $Id: ImageFigure.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: ImageFigure.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class ImageFigure extends AbstractAttributedDecoratedFigure
         implements ImageHolderFigure {
@@ -298,9 +297,8 @@ public class ImageFigure extends AbstractAttributedDecoratedFigure
     }
 
     public void loadImage(File file) throws IOException {
-        InputStream in = null;
+        InputStream in = new FileInputStream(file);
         try {
-            in = new FileInputStream(file);
             loadImage(in);
         } catch (Throwable t) {
             ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
@@ -308,9 +306,7 @@ public class ImageFigure extends AbstractAttributedDecoratedFigure
             e.initCause(t);
             throw e;
         } finally {
-            if (in != null) {
-                in.close();
-            }
+            in.close();
         }
     }
 
@@ -335,5 +331,5 @@ public class ImageFigure extends AbstractAttributedDecoratedFigure
         // in the imageData array.
         getImageData();
         out.defaultWriteObject();
-        }
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * @(#)AbstractAttributeEditorHandler.java
  * 
- * Copyright (c) 2009 by the original authors of JHotDraw
+ * Copyright (c) 2009-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  * 
@@ -14,7 +14,7 @@
 package org.jhotdraw.gui.event;
 
 import org.jhotdraw.gui.*;
-import org.jhotdraw.draw.FigureEvent;
+import org.jhotdraw.draw.event.FigureEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collections;
@@ -32,9 +32,9 @@ import org.jhotdraw.draw.AttributeKey;
 import org.jhotdraw.draw.DrawingEditor;
 import org.jhotdraw.draw.DrawingView;
 import org.jhotdraw.draw.Figure;
-import org.jhotdraw.draw.FigureAdapter;
-import org.jhotdraw.draw.FigureSelectionEvent;
-import org.jhotdraw.draw.FigureSelectionListener;
+import org.jhotdraw.draw.event.FigureAdapter;
+import org.jhotdraw.draw.event.FigureSelectionEvent;
+import org.jhotdraw.draw.event.FigureSelectionListener;
 
 /**
  * AbstractAttributeEditorHandler mediates between an AttributeEditor and the
@@ -52,7 +52,7 @@ import org.jhotdraw.draw.FigureSelectionListener;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractAttributeEditorHandler.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: AbstractAttributeEditorHandler.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public abstract class AbstractAttributeEditorHandler<T> implements Disposable {
 

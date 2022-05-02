@@ -14,6 +14,9 @@
 
 package org.jhotdraw.draw;
 
+import org.jhotdraw.draw.event.FigureAdapter;
+import org.jhotdraw.draw.event.FigureEvent;
+import org.jhotdraw.draw.*;
 import org.jhotdraw.geom.Dimension2DDouble;
 import org.jhotdraw.geom.QuadTree;
 import org.jhotdraw.util.ReversedList;
@@ -29,7 +32,7 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * 
  * 
  * @author Werner Randelshofer
- * @version $Id: QuadTreeCompositeFigure.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: QuadTreeCompositeFigure.java 582 2009-10-24 08:00:49Z rawcoder $
  */
 public abstract class QuadTreeCompositeFigure 
         extends AbstractCompositeFigure {

@@ -1,7 +1,7 @@
 /*
  * @(#)EditorSample.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -13,6 +13,11 @@
  */
 package org.jhotdraw.samples.mini;
 
+import org.jhotdraw.draw.tool.DelegationSelectionTool;
+import org.jhotdraw.draw.TextAreaFigure;
+import org.jhotdraw.draw.LineConnectionFigure;
+import org.jhotdraw.draw.liner.ElbowLiner;
+import org.jhotdraw.draw.ConnectionFigure;
 import java.awt.geom.*;
 import javax.swing.*;
 import org.jhotdraw.draw.*;
@@ -23,7 +28,7 @@ import org.jhotdraw.geom.*;
  * drawing views. For simplicity, the editor can create rectangle figures only.
  *
  * @author Werner Randelshofer
- * @version $Id: EditorSample.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: EditorSample.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class EditorSample {
     public static void main(String[] args) {

@@ -13,6 +13,7 @@
  */
 package org.jhotdraw.draw.action;
 
+import org.jhotdraw.draw.TextHolderFigure;
 import javax.swing.undo.*;
 import javax.swing.*;
 import java.util.*;
@@ -25,7 +26,7 @@ import org.jhotdraw.gui.JFontChooser;
  * FontChooserHandler.
  *
  * @author Werner Randelshofer
- * @version $Id: FontChooserHandler.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: FontChooserHandler.java 582 2009-10-24 08:00:49Z rawcoder $
  */
 public class FontChooserHandler extends AbstractSelectedAction
         implements PropertyChangeListener {

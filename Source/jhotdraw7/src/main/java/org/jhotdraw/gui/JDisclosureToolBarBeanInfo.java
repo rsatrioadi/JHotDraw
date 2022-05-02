@@ -1,7 +1,7 @@
 /*
  * @(#)JDisclosureButtonBeanInfo.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -19,7 +19,7 @@ import java.beans.*;
  * BeanInfo for JDisclosureButton.
  *
  * @author  Werner Randelshofer
- * @version $Id: JDisclosureToolBarBeanInfo.java 538 2009-06-17 14:46:51Z rawcoder $
+ * @version $Id: JDisclosureToolBarBeanInfo.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class JDisclosureToolBarBeanInfo extends SimpleBeanInfo {
 

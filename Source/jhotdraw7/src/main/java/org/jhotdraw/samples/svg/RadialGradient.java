@@ -1,7 +1,7 @@
 /*
  * @(#)RadialGradient.java
  *
- * Copyright (c) 1996-2009 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -24,7 +24,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * Represents an SVG RadialGradient.
  *
  * @author Werner Randelshofer
- * @version $Id: RadialGradient.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: RadialGradient.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class RadialGradient implements Gradient {
     private double cx;
@@ -119,15 +119,15 @@ public class RadialGradient implements Gradient {
             return colors[0];
         }
         // Construct the paint
-        org.apache.batik.ext.awt.RadialGradientPaint gp;
-        gp = new org.apache.batik.ext.awt.RadialGradientPaint(
+        RadialGradientPaint gp;
+        gp = new RadialGradientPaint(
                 cp,
                 (float) rr,
                 fp,
                 fractions,
                 colors,
-                org.apache.batik.ext.awt.RadialGradientPaint.NO_CYCLE,
-                org.apache.batik.ext.awt.RadialGradientPaint.SRGB,
+                RadialGradientPaint.CycleMethod.NO_CYCLE,
+                RadialGradientPaint.ColorSpaceType.SRGB,
                 t
                 );
         return gp;

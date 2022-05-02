@@ -1,7 +1,7 @@
 /*
  * @(#)AlignAction.java
  *
- * Copyright (c) 1996-2008 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -16,7 +16,7 @@ package org.jhotdraw.draw.action;
 
 import org.jhotdraw.draw.DrawingEditor;
 import org.jhotdraw.draw.Figure;
-import org.jhotdraw.draw.TransformEdit;
+import org.jhotdraw.draw.event.TransformEdit;
 import org.jhotdraw.undo.CompositeEdit;
 import java.awt.geom.*;
 import java.util.*;
@@ -28,7 +28,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * XXX - Fire edit events
  *
  * @author  Werner Randelshofer
- * @version $Id: AlignAction.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: AlignAction.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public abstract class AlignAction extends AbstractSelectedAction {
     

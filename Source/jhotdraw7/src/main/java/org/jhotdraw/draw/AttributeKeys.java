@@ -1,7 +1,7 @@
 /*
  * @(#)AttributeKeys.java
  *
- * Copyright (c) 1996-2009 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -13,6 +13,8 @@
  */
 package org.jhotdraw.draw;
 
+import org.jhotdraw.draw.decoration.LineDecoration;
+import org.jhotdraw.draw.liner.Liner;
 import org.jhotdraw.util.ResourceBundleUtil;
 import java.awt.*;
 import java.awt.geom.*;
@@ -27,7 +29,7 @@ import org.jhotdraw.geom.*;
  * class, and to define all needed AttributeKeys as static variables in there.
  *
  * @author Werner Randelshofer
- * @version $Id: AttributeKeys.java 575 2009-10-18 11:26:50Z rawcoder $
+ * @version $Id: AttributeKeys.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class AttributeKeys {
 

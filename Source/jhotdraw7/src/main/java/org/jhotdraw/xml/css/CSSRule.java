@@ -1,7 +1,7 @@
 /*
  * @(#)CSSRule.java
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -35,7 +35,7 @@ import org.w3c.dom.Element;
  * This class supports net.n3.nanoxml as well as org.w3c.dom.
  *
  * @author Werner Randelshofer
- * @version $Id: CSSRule.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: CSSRule.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class CSSRule {
     private String selector;

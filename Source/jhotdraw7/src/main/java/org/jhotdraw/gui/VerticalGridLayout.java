@@ -1,7 +1,7 @@
 /*
  * @(#)VerticalGridLayout.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -22,7 +22,7 @@ import java.awt.*;
  * A grid layout which lays out columns first.
  *
  * @author  Werner Randelshofer
- * @version $Id: VerticalGridLayout.java 547 2009-07-25 14:23:11Z rawcoder $
+ * @version $Id: VerticalGridLayout.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class VerticalGridLayout implements LayoutManager, java.io.Serializable {
     

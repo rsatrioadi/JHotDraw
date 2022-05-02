@@ -19,12 +19,13 @@ import org.jhotdraw.app.action.*;
 import org.jhotdraw.samples.teddy.*;
 import org.jhotdraw.util.*;
 import java.awt.event.*;
+import javax.swing.Action;
 
 /**
  * ToggleLineNumbersAction.
  *
  * @author  Werner Randelshofer
- * @version $Id: ToggleLineNumbersAction.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: ToggleLineNumbersAction.java 606 2010-01-10 18:36:36Z rawcoder $
  */
 public class ToggleLineNumbersAction extends AbstractViewAction {
     public final static String ID = "view.toggleLineNumbers";
@@ -33,8 +34,8 @@ public class ToggleLineNumbersAction extends AbstractViewAction {
     /**
      * Creates a new instance.
      */
-    public ToggleLineNumbersAction(Application app) {
-        super(app);
+    public ToggleLineNumbersAction(Application app, View view) {
+        super(app, view);
         labels.configureAction(this, ID);
         setPropertyName("lineNumbersVisible");
     }
@@ -44,6 +45,7 @@ public class ToggleLineNumbersAction extends AbstractViewAction {
         return (TeddyView) super.getActiveView();
     }
     
+    @Override
     public void actionPerformed(ActionEvent e) {
         getActiveView().setLineNumbersVisible(! getActiveView().isLineNumbersVisible());
     }
@@ -52,7 +54,7 @@ public class ToggleLineNumbersAction extends AbstractViewAction {
     @Override
     protected void updateView() {
         putValue(
-                Actions.SELECTED_KEY,
+                Action.SELECTED_KEY,
                 getActiveView() != null && getActiveView().isLineNumbersVisible()
                 );
     }

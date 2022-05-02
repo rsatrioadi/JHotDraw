@@ -16,8 +16,8 @@ package org.jhotdraw.draw.action;
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.DrawingEditor;
 import org.jhotdraw.draw.DrawingView;
-import org.jhotdraw.draw.FigureSelectionEvent;
-import org.jhotdraw.draw.FigureSelectionListener;
+import org.jhotdraw.draw.event.FigureSelectionEvent;
+import org.jhotdraw.draw.event.FigureSelectionListener;
 import javax.swing.*;
 import java.beans.*;
 import java.io.Serializable;
@@ -43,7 +43,7 @@ import org.jhotdraw.beans.WeakPropertyChangeListener;
  * become garbage collected if it is not referenced by any other object.
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractSelectedAction.java 534 2009-06-13 14:54:19Z rawcoder $
+ * @version $Id: AbstractSelectedAction.java 582 2009-10-24 08:00:49Z rawcoder $
  */
 public abstract class AbstractSelectedAction
         extends AbstractAction implements Disposable {

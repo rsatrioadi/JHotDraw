@@ -1,7 +1,7 @@
 /**
  * @(#)EditCanvasPanel.java
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -13,7 +13,6 @@
  */
 package org.jhotdraw.draw.action;
 
-import ch.randelshofer.quaqua.QuaquaLookAndFeel;
 import java.awt.Color;
 import javax.swing.*;
 import javax.swing.text.*;
@@ -30,7 +29,7 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * @see org.jhotdraw.draw.Drawing
  *
  * @author Werner Randelshofer
- * @version $Id: EditCanvasPanel.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: EditCanvasPanel.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 @SuppressWarnings("unchecked")
 public class EditCanvasPanel extends javax.swing.JPanel {
@@ -110,8 +109,8 @@ public class EditCanvasPanel extends javax.swing.JPanel {
 
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel(new QuaquaLookAndFeel());
-        } catch (UnsupportedLookAndFeelException ex) {
+            UIManager.setLookAndFeel("ch.randelshofer.quaqua.QuaquaLookAndFeel");
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         JFrame f = new JFrame("Drawing Settings2");

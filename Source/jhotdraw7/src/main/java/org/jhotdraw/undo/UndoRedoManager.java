@@ -1,7 +1,7 @@
 /*
  * @(#)UndoRedoManager.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -26,7 +26,7 @@ import org.jhotdraw.util.*;
  * redo operations.
  *
  * @author  Werner Randelshofer
- * @version $Id: UndoRedoManager.java 534 2009-06-13 14:54:19Z rawcoder $
+ * @version $Id: UndoRedoManager.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class UndoRedoManager extends UndoManager {//javax.swing.undo.UndoManager {
     protected PropertyChangeSupport propertySupport = new PropertyChangeSupport(this);

@@ -1,7 +1,7 @@
 /*
  * @(#)AbstractCompositeFigure.java
  *
- * Copyright (c) 2007-2009 by the original authors of JHotDraw
+ * Copyright (c) 2007-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -13,6 +13,12 @@
  */
 package org.jhotdraw.draw;
 
+import org.jhotdraw.draw.layouter.Layouter;
+import org.jhotdraw.draw.event.FigureAdapter;
+import org.jhotdraw.draw.event.FigureEvent;
+import org.jhotdraw.draw.event.CompositeFigureEvent;
+import org.jhotdraw.draw.event.CompositeFigureListener;
+import org.jhotdraw.draw.*;
 import java.io.IOException;
 import org.jhotdraw.util.*;
 import java.awt.*;
@@ -20,6 +26,9 @@ import java.awt.geom.*;
 import java.io.Serializable;
 import java.util.*;
 import javax.swing.event.*;
+import org.jhotdraw.draw.handle.BoundsOutlineHandle;
+import org.jhotdraw.draw.handle.Handle;
+import org.jhotdraw.draw.handle.TransformHandleKit;
 import org.jhotdraw.geom.*;
 import org.jhotdraw.xml.DOMInput;
 import org.jhotdraw.xml.DOMOutput;
@@ -30,7 +39,7 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * AbstractCompositeFigure.
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractCompositeFigure.java 575 2009-10-18 11:26:50Z rawcoder $
+ * @version $Id: AbstractCompositeFigure.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public abstract class AbstractCompositeFigure
         extends AbstractFigure

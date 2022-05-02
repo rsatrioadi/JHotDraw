@@ -20,7 +20,7 @@ import org.jhotdraw.app.*;
  * Main.
  *
  * @author Werner Randelshofer
- * @version $Id: Main.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: Main.java 595 2009-12-22 18:06:07Z rawcoder $
  */
 public class Main {
     
@@ -32,7 +32,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Application app = new DefaultOSXApplication();
+        Application app = new OSXApplication();
         ApplicationModel appModel = new ODGApplicationModel();
         app.setModel(appModel);
         app.launch(args);

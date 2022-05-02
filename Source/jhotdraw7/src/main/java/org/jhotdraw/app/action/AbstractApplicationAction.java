@@ -1,7 +1,7 @@
 /*
  * @(#)AbstractApplicationAction.java
  *
- * Copyright (c) 1996-2009 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -21,7 +21,7 @@ import org.jhotdraw.beans.WeakPropertyChangeListener;
 
 /**
  * This abstract class can be extended to implement an {@code Action} that acts
- * on behalf of an {@link Application}.
+ * on an {@link Application}.
  * <p>
  * If the {@code Application} object is disabled, the
  * {@code AbstractApplicationAction} is disabled as well.
@@ -38,7 +38,7 @@ import org.jhotdraw.beans.WeakPropertyChangeListener;
  *
  *
  * @author Werner Randelshofer.
- * @version $Id: AbstractApplicationAction.java 557 2009-09-06 16:12:08Z rawcoder $
+ * @version $Id: AbstractApplicationAction.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public abstract class AbstractApplicationAction extends AbstractAction implements Disposable {
 

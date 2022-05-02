@@ -13,6 +13,8 @@
  */
 package org.jhotdraw.samples.svg.figures;
 
+import org.jhotdraw.draw.handle.HandleAttributeKeys;
+import org.jhotdraw.draw.handle.AbstractHandle;
 import org.jhotdraw.draw.*;
 import java.awt.*;
 import org.jhotdraw.geom.ConvexHull;
@@ -22,7 +24,7 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * Draws the outline of the Figure bounds to make adjustment easier.
  *
  * @author Werner Randelshofer
- * @version $Id: ConvexHullOutlineHandle.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: ConvexHullOutlineHandle.java 582 2009-10-24 08:00:49Z rawcoder $
  */
 public class ConvexHullOutlineHandle extends AbstractHandle {
     private Shape outline;

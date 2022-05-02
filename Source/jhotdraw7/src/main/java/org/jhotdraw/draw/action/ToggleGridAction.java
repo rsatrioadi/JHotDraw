@@ -1,7 +1,7 @@
 /*
  * @(#)ToggleGridAction.java
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -22,7 +22,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * Toggles the grid of the current view.
  *
  * @author  Werner Randelshofer
- * @version $Id: ToggleGridAction.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: ToggleGridAction.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class ToggleGridAction extends AbstractDrawingViewAction {
     public final static String ID = "view.toggleGrid";
@@ -47,6 +47,6 @@ public class ToggleGridAction extends AbstractDrawingViewAction {
     @Override
     protected void updateViewState() {
         DrawingView view = getView();
-        putValue(Actions.SELECTED_KEY, view != null && view.isConstrainerVisible());
+        putValue(ActionUtil.SELECTED_KEY, view != null && view.isConstrainerVisible());
     }
 }

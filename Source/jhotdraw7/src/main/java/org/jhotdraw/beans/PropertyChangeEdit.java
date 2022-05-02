@@ -1,7 +1,7 @@
 /*
  * @(#)PropertyChangeEdit.java
  * 
- * Copyright (c) 2009 by the original authors of JHotDraw
+ * Copyright (c) 2009-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  * 
@@ -22,7 +22,7 @@ import javax.swing.undo.UndoableEdit;
  * An {@code UndoableEdit} event which can undo a change of a JavaBeans property.
  *
  * @author Werner Randelshofer
- * @version $Id: PropertyChangeEdit.java 536 2009-06-14 12:10:57Z rawcoder $
+ * @version $Id: PropertyChangeEdit.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class PropertyChangeEdit extends AbstractUndoableEdit {
 

@@ -1,7 +1,7 @@
 /*
  * @(#)ConvexHull.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -27,7 +27,7 @@ import java.util.List;
  * Provides utility methods for computing the convex hull from a set of points.
  *
  * @author Werner Randelshofer
- * @version $Id: ConvexHull.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: ConvexHull.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class ConvexHull {
 

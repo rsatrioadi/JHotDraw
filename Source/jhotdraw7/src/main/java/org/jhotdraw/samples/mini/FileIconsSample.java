@@ -13,6 +13,11 @@
  */
 package org.jhotdraw.samples.mini;
 
+import org.jhotdraw.draw.tool.DelegationSelectionTool;
+import org.jhotdraw.draw.layouter.VerticalLayouter;
+import org.jhotdraw.draw.TextAreaFigure;
+import org.jhotdraw.draw.ImageFigure;
+import org.jhotdraw.draw.GraphicalCompositeFigure;
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.image.*;
@@ -27,7 +32,7 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * Example showing how to lay out composite figures.
  *
  * @author Werner Randelshofer
- * @version $Id: FileIconsSample.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: FileIconsSample.java 582 2009-10-24 08:00:49Z rawcoder $
  */
 public class FileIconsSample {
 

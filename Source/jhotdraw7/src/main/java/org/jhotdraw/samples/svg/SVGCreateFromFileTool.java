@@ -1,7 +1,7 @@
 /*
  * @(#)ImageTool.java
  *
- * Copyright (c) 1996-2008 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -13,6 +13,10 @@
  */
 package org.jhotdraw.samples.svg;
 
+import org.jhotdraw.draw.tool.CreationTool;
+import org.jhotdraw.draw.io.InputFormat;
+import org.jhotdraw.draw.ImageHolderFigure;
+import org.jhotdraw.draw.CompositeFigure;
 import org.jhotdraw.draw.*;
 import java.io.*;
 import javax.swing.*;
@@ -36,7 +40,7 @@ import org.jhotdraw.samples.svg.io.SVGZInputFormat;
  * </ol>
  *
  * @author Werner Randelshofer
- * @version $Id: SVGCreateFromFileTool.java 551 2009-09-03 05:50:46Z rawcoder $
+ * @version $Id: SVGCreateFromFileTool.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class SVGCreateFromFileTool extends CreationTool {
 

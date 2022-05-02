@@ -1,7 +1,7 @@
 /*
  * @(#)ColorFormatter.java
  * 
- * Copyright (c) 2009 by the original authors of JHotDraw
+ * Copyright (c) 2009-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  * 
@@ -54,7 +54,7 @@ import org.jhotdraw.util.prefs.PreferencesUtil;
  * <p>
  *
  * @author Werner Randelshofer
- * @version $Id: ColorFormatter.java 529 2009-06-08 21:12:23Z rawcoder $
+ * @version $Id: ColorFormatter.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class ColorFormatter extends DefaultFormatter {
 

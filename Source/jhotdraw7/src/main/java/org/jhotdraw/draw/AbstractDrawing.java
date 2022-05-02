@@ -1,7 +1,7 @@
 /*
  * @(#)AbstractDrawing.java
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -13,6 +13,8 @@
  */
 package org.jhotdraw.draw;
 
+import org.jhotdraw.draw.io.InputFormat;
+import org.jhotdraw.draw.io.OutputFormat;
 import org.jhotdraw.xml.*;
 import java.awt.font.*;
 import javax.swing.*;
@@ -25,7 +27,7 @@ import java.io.*;
  * This abstract class can be extended to implement a {@link Drawing}.
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractDrawing.java 550 2009-09-02 18:57:29Z rawcoder $
+ * @version $Id: AbstractDrawing.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public abstract class AbstractDrawing extends AbstractAttributedCompositeFigure implements Drawing {
     private final static Object lock = new JPanel().getTreeLock();

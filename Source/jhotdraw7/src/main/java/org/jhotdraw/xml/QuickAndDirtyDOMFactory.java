@@ -1,7 +1,7 @@
 /*
  * @(#)QuickAndDirtyDOMFactory.java
  * 
- * Copyright (c) 2009 by the original authors of JHotDraw
+ * Copyright (c) 2009-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  * 
@@ -29,7 +29,7 @@ import java.util.regex.Matcher;
  * object, if the class name of a DOMStorable object has changed.
  *
  * @author Werner Randelshofer
- * @version $Id: QuickAndDirtyDOMFactory.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: QuickAndDirtyDOMFactory.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class QuickAndDirtyDOMFactory implements DOMFactory {
 

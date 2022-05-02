@@ -1,7 +1,7 @@
 /**
  * @(#)PaletteFontChooserSelectionPanel.java
  *
- * Copyright (c) 1996-2009 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -22,7 +22,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * PaletteFontChooserSelectionPanel.
  *
  * @author Werner Randelshofer
- * @version $Id: PaletteFontChooserSelectionPanel.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: PaletteFontChooserSelectionPanel.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class PaletteFontChooserSelectionPanel extends javax.swing.JPanel {
 private ResourceBundleUtil labels;

@@ -1,7 +1,7 @@
 /*
  * XMLTransferable.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -21,7 +21,7 @@ import java.io.*;
  * drag and drop. 
  *
  * @author  Werner Randelshofer
- * @version $Id: XMLTransferable.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: XMLTransferable.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class XMLTransferable implements java.awt.datatransfer.Transferable, java.awt.datatransfer.ClipboardOwner {
     private byte[] data;

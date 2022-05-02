@@ -1,7 +1,7 @@
 /*
  * @(#)JavaNumberFormatter.java
  * 
- * Copyright (c) 2009 by the original authors of JHotDraw
+ * Copyright (c) 2009-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  * 
@@ -23,7 +23,7 @@ import javax.swing.text.DefaultFormatterFactory;
  * Java programming syntax.
  *
  * @author Werner Randelshofer
- * @version $Id: JavaNumberFormatter.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: JavaNumberFormatter.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class JavaNumberFormatter extends DefaultFormatter {
 

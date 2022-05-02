@@ -1,7 +1,7 @@
 /*
  * @(#)Worker.java
  *
- * Copyright (c) 1996-2009 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -22,7 +22,7 @@ import javax.swing.SwingUtilities;
  * This class is similar to SwingWorker but less complex.
  *
  * @author Werner Randelshofer
- * @version $Id: Worker.java 557 2009-09-06 16:12:08Z rawcoder $
+ * @version $Id: Worker.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public abstract class Worker<T> implements Runnable {
 

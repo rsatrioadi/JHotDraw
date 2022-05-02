@@ -1,7 +1,7 @@
 /**
  * @(#)DrawingComponentRepainter.java
  *
- * Copyright (c) 2008-2009 by the original authors of JHotDraw
+ * Copyright (c) 2008-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -13,6 +13,8 @@
  */
 package org.jhotdraw.gui.event;
 
+import org.jhotdraw.draw.event.FigureAdapter;
+import org.jhotdraw.draw.event.FigureEvent;
 import org.jhotdraw.draw.action.*;
 import java.beans.*;
 import javax.swing.*;
@@ -24,7 +26,7 @@ import org.jhotdraw.draw.*;
  * on the current view of the editor.
  *
  * @author Werner Randelshofer
- * @version $Id: DrawingComponentRepainter.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: DrawingComponentRepainter.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class DrawingComponentRepainter extends FigureAdapter
         implements PropertyChangeListener, Disposable {

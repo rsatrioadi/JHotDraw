@@ -13,16 +13,18 @@
  */
 package org.jhotdraw.samples.svg.figures;
 
+import org.jhotdraw.draw.handle.HandleAttributeKeys;
+import org.jhotdraw.draw.handle.AbstractHandle;
 import org.jhotdraw.draw.*;
 import java.awt.*;
 import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
 
 /**
- * A non-interactive {@link Handle} which draws the outline of a 
- * {@link SVGPathFigure} to make adjustments easier.
+ * A non-interactive {@link org.jhotdraw.draw.handle.Handle} which draws the
+ * outline of a {@link SVGPathFigure} to make editing easier.
  *
  * @author Werner Randelshofer
- * @version $Id: SVGPathOutlineHandle.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: SVGPathOutlineHandle.java 582 2009-10-24 08:00:49Z rawcoder $
  */
 public class SVGPathOutlineHandle extends AbstractHandle {
 

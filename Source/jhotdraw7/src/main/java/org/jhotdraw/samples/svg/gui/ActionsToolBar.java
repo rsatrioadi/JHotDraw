@@ -13,6 +13,13 @@
  */
 package org.jhotdraw.samples.svg.gui;
 
+import org.jhotdraw.app.action.edit.PasteAction;
+import org.jhotdraw.app.action.edit.CutAction;
+import org.jhotdraw.app.action.edit.DeleteAction;
+import org.jhotdraw.app.action.edit.DuplicateAction;
+import org.jhotdraw.app.action.edit.CopyAction;
+import org.jhotdraw.app.action.edit.ClearSelectionAction;
+import org.jhotdraw.app.action.edit.SelectAllAction;
 import java.util.prefs.*;
 import javax.swing.border.*;
 import org.jhotdraw.gui.*;
@@ -32,7 +39,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * ActionsToolBar.
  *
  * @author Werner Randelshofer
- * @version $Id: ActionsToolBar.java 549 2009-08-12 07:46:31Z rawcoder $
+ * @version $Id: ActionsToolBar.java 592 2009-12-21 13:30:39Z rawcoder $
  */
 public class ActionsToolBar extends AbstractToolBar {
 

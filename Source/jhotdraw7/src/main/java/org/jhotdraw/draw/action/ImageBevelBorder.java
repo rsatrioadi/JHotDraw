@@ -1,7 +1,7 @@
 /*
  * @(#)ImageBevelBorder.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -34,7 +34,7 @@ import java.awt.image.*;
  * The inner area of the image is used to fill the inner area.
  *
  * @author  Werner Randelshofer
- * @version $Id: ImageBevelBorder.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: ImageBevelBorder.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class ImageBevelBorder implements Border {
     private final static boolean VERBOSE = false;

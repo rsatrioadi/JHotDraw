@@ -19,12 +19,13 @@ import org.jhotdraw.app.action.*;
 import org.jhotdraw.samples.teddy.*;
 import org.jhotdraw.util.*;
 import java.awt.event.*;
+import javax.swing.Action;
 
 /**
  * ToggleLineWrapAction.
  *
  * @author  Werner Randelshofer
- * @version $Id: ToggleLineWrapAction.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: ToggleLineWrapAction.java 606 2010-01-10 18:36:36Z rawcoder $
  */
 public class ToggleLineWrapAction extends AbstractViewAction {
     public final static String ID = "view.toggleLineWrap";
@@ -33,23 +34,26 @@ public class ToggleLineWrapAction extends AbstractViewAction {
     /**
      * Creates a new instance.
      */
-    public ToggleLineWrapAction(Application app) {
-        super(app);
+    public ToggleLineWrapAction(Application app, View view) {
+        super(app, view);
         labels.configureAction(this, ID);
         setPropertyName("lineWrap");
     }
     
+    @Override
     public void actionPerformed(ActionEvent e) {
         getActiveView().setLineWrap(! getActiveView().isLineWrap());
     }
     
+    @Override
     public TeddyView getActiveView() {
         return (TeddyView) super.getActiveView();
     }
     
+    @Override
     protected void updateView() {
         putValue(
-                Actions.SELECTED_KEY,
+                Action.SELECTED_KEY,
                 getActiveView() != null && getActiveView().isLineWrap()
                 );
     }

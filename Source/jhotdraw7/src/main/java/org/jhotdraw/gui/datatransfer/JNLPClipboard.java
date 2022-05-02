@@ -1,7 +1,7 @@
 /*
  * @(#)JNLPClipboard.java
  * 
- * Copyright (c) 2009 by the original authors of JHotDraw
+ * Copyright (c) 2009-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  * 
@@ -32,7 +32,7 @@ import java.awt.datatransfer.Transferable;
  * </hr>
  *
  * @author Werner Randelshofer
- * @version $Id$
+ * @version $Id: JNLPClipboard.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class JNLPClipboard extends AbstractClipboard {
 

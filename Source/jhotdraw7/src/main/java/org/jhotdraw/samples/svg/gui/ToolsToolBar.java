@@ -13,6 +13,10 @@
  */
 package org.jhotdraw.samples.svg.gui;
 
+import org.jhotdraw.app.action.edit.DuplicateAction;
+import org.jhotdraw.draw.tool.CreationTool;
+import org.jhotdraw.draw.tool.TextCreationTool;
+import org.jhotdraw.draw.tool.TextAreaCreationTool;
 import java.awt.event.MouseEvent;
 import javax.swing.border.*;
 import org.jhotdraw.gui.plaf.palette.*;
@@ -33,7 +37,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * DrawToolsPane.
  *
  * @author Werner Randelshofer
- * @version $Id: ToolsToolBar.java 575 2009-10-18 11:26:50Z rawcoder $
+ * @version $Id: ToolsToolBar.java 592 2009-12-21 13:30:39Z rawcoder $
  */
 public class ToolsToolBar extends AbstractToolBar {
 

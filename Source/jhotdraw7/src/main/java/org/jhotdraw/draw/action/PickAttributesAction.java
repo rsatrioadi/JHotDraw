@@ -1,7 +1,7 @@
 /*
  * @(#)PickAttributesAction.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -14,6 +14,7 @@
 
 package org.jhotdraw.draw.action;
 
+import org.jhotdraw.draw.event.FigureSelectionEvent;
 import org.jhotdraw.util.*;
 import java.util.*;
 import org.jhotdraw.draw.*;
@@ -22,7 +23,7 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * PickAttributesAction.
  *
  * @author Werner Randelshofer
- * @version $Id: PickAttributesAction.java 534 2009-06-13 14:54:19Z rawcoder $
+ * @version $Id: PickAttributesAction.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class PickAttributesAction extends AbstractSelectedAction {
     private ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");

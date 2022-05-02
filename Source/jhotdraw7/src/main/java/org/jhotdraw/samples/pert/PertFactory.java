@@ -1,7 +1,7 @@
 /*
  * @(#)PertFactory.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -14,6 +14,14 @@
 
 package org.jhotdraw.samples.pert;
 
+import org.jhotdraw.draw.locator.RelativeLocator;
+import org.jhotdraw.draw.ListFigure;
+import org.jhotdraw.draw.TextFigure;
+import org.jhotdraw.draw.TextAreaFigure;
+import org.jhotdraw.draw.connector.LocatorConnector;
+import org.jhotdraw.draw.GroupFigure;
+import org.jhotdraw.draw.connector.ChopRectangleConnector;
+import org.jhotdraw.draw.decoration.ArrowTip;
 import org.jhotdraw.samples.pert.figures.*;
 import java.util.*;
 import org.jhotdraw.draw.*;
@@ -22,7 +30,7 @@ import org.jhotdraw.xml.*;
  * PertFactory.
  * 
  * @author Werner Randelshofer
- * @version $Id: PertFactory.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: PertFactory.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class PertFactory extends DefaultDOMFactory {
     private final static Object[][] classTagArray = {

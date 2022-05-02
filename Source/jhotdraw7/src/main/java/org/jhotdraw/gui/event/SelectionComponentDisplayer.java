@@ -13,6 +13,9 @@
  */
 package org.jhotdraw.gui.event;
 
+import org.jhotdraw.draw.tool.SelectionTool;
+import org.jhotdraw.draw.event.FigureSelectionEvent;
+import org.jhotdraw.draw.event.FigureSelectionListener;
 import java.awt.Dimension;
 import java.beans.*;
 import java.lang.ref.WeakReference;
@@ -27,7 +30,7 @@ import org.jhotdraw.draw.*;
  * itself if the component no longer exists.
  *
  * @author Werner Randelshofer
- * @version $Id: SelectionComponentDisplayer.java 575 2009-10-18 11:26:50Z rawcoder $
+ * @version $Id: SelectionComponentDisplayer.java 582 2009-10-24 08:00:49Z rawcoder $
  */
 public class SelectionComponentDisplayer
         implements PropertyChangeListener, FigureSelectionListener {

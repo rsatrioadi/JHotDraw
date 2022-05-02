@@ -1,7 +1,7 @@
 /*
  * @(#)PathTool.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -13,6 +13,8 @@
  */
 package org.jhotdraw.samples.svg;
 
+import org.jhotdraw.draw.BezierFigure;
+import org.jhotdraw.draw.tool.BezierTool;
 import javax.swing.undo.*;
 import org.jhotdraw.samples.svg.figures.*;
 import org.jhotdraw.draw.*;
@@ -28,7 +30,7 @@ import org.jhotdraw.geom.*;
  * Tool to scribble a SVGPath
  *
  * @author  Werner Randelshofer
- * @version $Id: PathTool.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: PathTool.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class PathTool extends BezierTool {
 

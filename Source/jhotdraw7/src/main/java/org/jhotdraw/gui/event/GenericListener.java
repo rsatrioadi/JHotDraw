@@ -1,7 +1,7 @@
 /*
  * @(#)GenericListener.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -63,7 +63,7 @@ import java.lang.reflect.*;
  * </pre>
  *
  * @author Werner Randelshofer
- * @version $Id: GenericListener.java 535 2009-06-14 08:03:23Z rawcoder $
+ * @version $Id: GenericListener.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public abstract class GenericListener {
     /**

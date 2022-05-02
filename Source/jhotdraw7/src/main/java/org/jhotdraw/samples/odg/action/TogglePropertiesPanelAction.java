@@ -25,13 +25,13 @@ import org.jhotdraw.util.*;
  * TogglePropertiesPanelAction.
  * 
  * @author Werner Randelshofer
- * @version $Id: TogglePropertiesPanelAction.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: TogglePropertiesPanelAction.java 596 2009-12-24 14:58:45Z rawcoder $
  */
 public class TogglePropertiesPanelAction extends AbstractViewAction {
     
     /** Creates a new instance. */
-    public TogglePropertiesPanelAction(Application app) {
-        super(app);
+    public TogglePropertiesPanelAction(Application app, View view) {
+        super(app, view);
         setPropertyName("propertiesPanelVisible");
         ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.samples.odg.Labels");
         putValue(AbstractAction.NAME, labels.getString("propertiesPanel"));
@@ -42,7 +42,7 @@ public class TogglePropertiesPanelAction extends AbstractViewAction {
      * the view changed.
      */
     protected void updateView() {
-        putValue(Actions.SELECTED_KEY,
+        putValue(ActionUtil.SELECTED_KEY,
                 getActiveView() != null &&
                 ! getActiveView().isPropertiesPanelVisible()
                 );

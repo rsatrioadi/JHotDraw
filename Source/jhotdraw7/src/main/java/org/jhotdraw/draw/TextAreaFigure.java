@@ -1,7 +1,7 @@
 /*
  * @(#)TextAreaFigure.java
  *
- * Copyright (c) 1996-2009 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -13,6 +13,11 @@
  */
 package org.jhotdraw.draw;
 
+import org.jhotdraw.draw.tool.TextAreaEditingTool;
+import org.jhotdraw.draw.tool.Tool;
+import org.jhotdraw.draw.handle.Handle;
+import org.jhotdraw.draw.handle.TextOverflowHandle;
+import org.jhotdraw.draw.handle.FontSizeHandle;
 import org.jhotdraw.util.*;
 import java.awt.*;
 import java.awt.font.*;
@@ -53,7 +58,7 @@ import org.jhotdraw.xml.DOMOutput;
  *
  * @author    Eduardo Francos - InContext (original version),
  *            Werner Randelshofer (this derived version)
- * @version $Id: TextAreaFigure.java 573 2009-10-13 05:59:20Z rawcoder $
+ * @version $Id: TextAreaFigure.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class TextAreaFigure extends AbstractAttributedDecoratedFigure implements TextHolderFigure {
 

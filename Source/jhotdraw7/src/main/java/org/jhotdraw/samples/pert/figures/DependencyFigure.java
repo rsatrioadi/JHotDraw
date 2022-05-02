@@ -1,7 +1,7 @@
 /*
  * @(#)DependencyFigure.java
  *
- * Copyright (c) 1996-2006 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -14,6 +14,9 @@
 
 package org.jhotdraw.samples.pert.figures;
 
+import org.jhotdraw.draw.LineConnectionFigure;
+import org.jhotdraw.draw.connector.Connector;
+import org.jhotdraw.draw.decoration.ArrowTip;
 import java.awt.*;
 import static org.jhotdraw.draw.AttributeKeys.*;
 import org.jhotdraw.draw.*;
@@ -22,7 +25,7 @@ import org.jhotdraw.draw.*;
  * DependencyFigure.
  *
  * @author Werner Randelshofer.
- * @version $Id: DependencyFigure.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: DependencyFigure.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class DependencyFigure extends LineConnectionFigure {
     /** Creates a new instance. */

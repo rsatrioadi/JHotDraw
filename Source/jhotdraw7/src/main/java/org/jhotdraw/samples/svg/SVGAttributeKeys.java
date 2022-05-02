@@ -1,7 +1,7 @@
 /*
  * @(#)SVGAttributeKeys.java
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -22,7 +22,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * SVGAttributeKeys.
  *
  * @author Werner Randelshofer
- * @version $Id: SVGAttributeKeys.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: SVGAttributeKeys.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class SVGAttributeKeys extends AttributeKeys {
      private final static ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.samples.svg.Labels");

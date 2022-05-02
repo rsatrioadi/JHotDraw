@@ -1,7 +1,7 @@
 /*
  * @(#)SVGFigureFactory.java
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -14,6 +14,7 @@
 
 package org.jhotdraw.samples.svg.io;
 
+import org.jhotdraw.draw.CompositeFigure;
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.image.*;
@@ -32,7 +33,7 @@ import org.jhotdraw.samples.svg.*;
  * Partners: {@link SVGInputFormat} as Client. 
  *
  * @author Werner Randelshofer
- * @version $Id: SVGFigureFactory.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: SVGFigureFactory.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public interface SVGFigureFactory {
     public Figure createRect(

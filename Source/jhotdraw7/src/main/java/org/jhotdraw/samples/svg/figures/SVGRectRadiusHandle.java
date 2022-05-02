@@ -13,6 +13,9 @@
  */
 package org.jhotdraw.samples.svg.figures;
 
+import org.jhotdraw.draw.handle.HandleAttributeKeys;
+import org.jhotdraw.draw.handle.AbstractHandle;
+import org.jhotdraw.draw.event.CompositeFigureEdit;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.geom.*;
 import org.jhotdraw.util.*;
@@ -27,7 +30,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * A Handle to manipulate the radius of a round lead rectangle.
  *
  * @author  Werner Randelshofer
- * @version $Id: SVGRectRadiusHandle.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: SVGRectRadiusHandle.java 582 2009-10-24 08:00:49Z rawcoder $
  */
 public class SVGRectRadiusHandle extends AbstractHandle {
 

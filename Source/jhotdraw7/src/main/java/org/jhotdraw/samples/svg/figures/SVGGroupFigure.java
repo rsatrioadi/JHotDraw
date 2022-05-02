@@ -1,7 +1,7 @@
 /*
  * @(#)SVGGroupFigure.java
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -13,6 +13,9 @@
  */
 package org.jhotdraw.samples.svg.figures;
 
+import org.jhotdraw.draw.handle.TransformHandleKit;
+import org.jhotdraw.draw.handle.Handle;
+import org.jhotdraw.draw.GroupFigure;
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
@@ -27,7 +30,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * SVGGroupFigure.
  *
  * @author Werner Randelshofer
- * @version $Id: SVGGroupFigure.java 575 2009-10-18 11:26:50Z rawcoder $
+ * @version $Id: SVGGroupFigure.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class SVGGroupFigure extends GroupFigure implements SVGFigure {
 

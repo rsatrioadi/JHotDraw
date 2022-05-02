@@ -1,7 +1,7 @@
 /*
  * @(#)SVGConstants.java
  *
- * Copyright (c) 1996-2007 by the original authors of JHotDraw
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw
  * and all its contributors.
  * All rights reserved.
  *
@@ -24,7 +24,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * SVGConstants.
  *
  * @author Werner Randelshofer
- * @version $Id: SVGConstants.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: SVGConstants.java 604 2010-01-09 12:00:29Z rawcoder $
  */
 public class SVGConstants {
     public final static String SVG_NAMESPACE = "http://www.w3.org/2000/svg";
