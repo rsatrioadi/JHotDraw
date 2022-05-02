@@ -1,18 +1,16 @@
 /*
  * @(#)BoundsOutlineHandle.java
  *
- * Copyright (c) 2007-2008 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 2007-2008 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.samples.svg.figures;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.jhotdraw.draw.handle.HandleAttributeKeys;
 import org.jhotdraw.draw.handle.AbstractHandle;
 import org.jhotdraw.draw.*;
@@ -24,10 +22,10 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * Draws the outline of the Figure bounds to make adjustment easier.
  *
  * @author Werner Randelshofer
- * @version $Id: ConvexHullOutlineHandle.java 647 2010-01-24 22:52:59Z rawcoder $
+ * @version $Id: ConvexHullOutlineHandle.java 718 2010-11-21 17:49:53Z rawcoder $
  */
 public class ConvexHullOutlineHandle extends AbstractHandle {
-    private Shape outline;
+    @Nullable private Shape outline;
 
     private AttributeKey<Stroke> stroke1Enabled;
     private AttributeKey<Stroke> stroke2Enabled;

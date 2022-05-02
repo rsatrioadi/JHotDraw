@@ -1,18 +1,16 @@
 /*
  * @(#)SelectionOpacityIcon.java
  *
- * Copyright (c) 2008 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 2008 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.samples.svg.gui;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.awt.*;
 import java.net.*;
 import org.jhotdraw.draw.*;
@@ -22,13 +20,15 @@ import org.jhotdraw.draw.*;
  * {@code Figure}(s) in the active {@code DrawingView} of a {@code DrawingEditor}.
  * 
  * @author Werner Randelshofer
- * @version $Id: SelectionOpacityIcon.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: SelectionOpacityIcon.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public class SelectionOpacityIcon extends javax.swing.ImageIcon {
 
+    @Nullable
     private DrawingEditor editor;
     private AttributeKey<Double> opacityKey;
     private AttributeKey<Color> fillColorKey;
+    @Nullable
     private AttributeKey<Color> strokeColorKey;
     private Shape fillShape;
     private Shape strokeShape;
@@ -44,7 +44,7 @@ public class SelectionOpacityIcon extends javax.swing.ImageIcon {
             DrawingEditor editor,
             AttributeKey<Double> opacityKey,
             AttributeKey<Color> fillColorKey,
-            AttributeKey<Color> strokeColorKey,
+            @Nullable AttributeKey<Color> strokeColorKey,
             URL imageLocation,
             Shape fillShape,
             Shape strokeShape) {
@@ -61,7 +61,7 @@ public class SelectionOpacityIcon extends javax.swing.ImageIcon {
             DrawingEditor editor,
             AttributeKey<Double> opacityKey,
             AttributeKey<Color> fillColorKey,
-            AttributeKey<Color> strokeColorKey,
+            @Nullable AttributeKey<Color> strokeColorKey,
             Image image,
             Shape fillShape,
             Shape strokeShape) {

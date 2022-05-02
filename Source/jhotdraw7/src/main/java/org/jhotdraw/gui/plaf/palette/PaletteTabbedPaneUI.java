@@ -1,15 +1,12 @@
 /*
  * @(#)PaletteTabbedPaneUI.java
  * 
- * Copyright (c) 2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  * 
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.gui.plaf.palette;
 
@@ -38,7 +35,7 @@ import javax.swing.text.View;
  * PaletteTabbedPaneUI.
  *
  * @author Werner Randelshofer
- * @version $Id: PaletteTabbedPaneUI.java 660 2010-07-08 20:52:06Z rawcoder $
+ * @version $Id: PaletteTabbedPaneUI.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public class PaletteTabbedPaneUI extends BasicTabbedPaneUI {
 

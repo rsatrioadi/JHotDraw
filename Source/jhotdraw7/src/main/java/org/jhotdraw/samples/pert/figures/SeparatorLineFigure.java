@@ -1,15 +1,12 @@
 /*
  * @(#)SeparatorLineFigure.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 
 package org.jhotdraw.samples.pert.figures;
@@ -24,7 +21,7 @@ import org.jhotdraw.geom.*;
  * A horizontal line with a preferred size of 1,1.
  *
  * @author  Werner Randelshofer
- * @version $Id: SeparatorLineFigure.java 648 2010-03-21 12:55:45Z rawcoder $
+ * @version $Id: SeparatorLineFigure.java 718 2010-11-21 17:49:53Z rawcoder $
  */
 public class SeparatorLineFigure 
 extends RectangleFigure {

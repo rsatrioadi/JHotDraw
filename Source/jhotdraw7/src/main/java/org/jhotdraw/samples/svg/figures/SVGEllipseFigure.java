@@ -1,18 +1,16 @@
 /*
  * @(#)SVGEllipse.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.samples.svg.figures;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.jhotdraw.draw.handle.TransformHandleKit;
 import org.jhotdraw.draw.handle.ResizeHandleKit;
 import org.jhotdraw.draw.handle.Handle;
@@ -29,7 +27,7 @@ import org.jhotdraw.samples.svg.*;
  * SVGEllipse represents a SVG ellipse and a SVG circle element.
  *
  * @author Werner Randelshofer
- * @version $Id: SVGEllipseFigure.java 647 2010-01-24 22:52:59Z rawcoder $
+ * @version $Id: SVGEllipseFigure.java 718 2010-11-21 17:49:53Z rawcoder $
  */
 public class SVGEllipseFigure extends SVGAttributedFigure implements SVGFigure {
 
@@ -37,11 +35,11 @@ public class SVGEllipseFigure extends SVGAttributedFigure implements SVGFigure {
     /**
      * This is used to perform faster drawing and hit testing.
      */
-    private transient Shape cachedTransformedShape;
+    @Nullable private transient Shape cachedTransformedShape;
     /**
      * This is used to perform faster hit testing.
      */
-    private transient Shape cachedHitShape;
+    @Nullable private transient Shape cachedHitShape;
 
     /** Creates a new instance. */
     public SVGEllipseFigure() {

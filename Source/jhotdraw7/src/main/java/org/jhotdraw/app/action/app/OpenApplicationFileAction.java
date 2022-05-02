@@ -1,15 +1,12 @@
 /*
  * @(#)OpenApplicationFileAction.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.app.action.app;
 
@@ -42,7 +39,7 @@ import org.jhotdraw.net.URIUtil;
  * {@link org.jhotdraw.app.ApplicationModel#initApplication}.
  *
  * @author  Werner Randelshofer
- * @version $Id: OpenApplicationFileAction.java 612 2010-01-11 21:50:07Z rawcoder $
+ * @version $Id: OpenApplicationFileAction.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public class OpenApplicationFileAction extends AbstractApplicationAction {
 
@@ -143,14 +140,8 @@ public class OpenApplicationFileAction extends AbstractApplicationAction {
             @Override
             protected void failed(Throwable value) {
                 value.printStackTrace();
-                String message = null;
-                if (value instanceof Throwable) {
-                    ((Throwable) value).printStackTrace();
-                    message = ((Throwable) value).getMessage();
-                    if (message == null) {
-                        message = value.toString();
-                    }
-                }
+                String message = value.getMessage() != null ? value.getMessage() : value.toString();
+
                 ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
                 JSheet.showMessageSheet(view.getComponent(),
                         "<html>" + UIManager.getString("OptionPane.css")

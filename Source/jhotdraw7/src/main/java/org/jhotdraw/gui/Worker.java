@@ -1,18 +1,16 @@
 /*
  * @(#)Worker.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.gui;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import javax.swing.SwingUtilities;
 
 /**
@@ -22,7 +20,7 @@ import javax.swing.SwingUtilities;
  * This class is similar to SwingWorker but less complex.
  *
  * @author Werner Randelshofer
- * @version $Id: Worker.java 654 2010-06-25 13:27:08Z rawcoder $
+ * @version $Id: Worker.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public abstract class Worker<T> implements Runnable {
 
@@ -62,7 +60,7 @@ public abstract class Worker<T> implements Runnable {
     /**
      * Compute the value to be returned by the <code>get</code> method.
      */
-    protected abstract T construct() throws Exception;
+    @Nullable protected abstract T construct() throws Exception;
 
     /**
      * Called on the event dispatching thread (not on the worker thread)
@@ -74,7 +72,7 @@ public abstract class Worker<T> implements Runnable {
      *
      * @param value The return value of the construct method.
      */
-    protected void done(T value) {
+    protected void done(@Nullable T value) {
     }
 
     /**

@@ -1,18 +1,16 @@
 /*
  * @(#)AbstractFigure.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.draw;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.jhotdraw.draw.tool.Tool;
 import org.jhotdraw.draw.connector.Connector;
 import org.jhotdraw.draw.connector.ChopRectangleConnector;
@@ -38,14 +36,14 @@ import org.jhotdraw.geom.*;
  *
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractFigure.java 648 2010-03-21 12:55:45Z rawcoder $
+ * @version $Id: AbstractFigure.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public abstract class AbstractFigure
         extends AbstractBean
         implements Figure {
 
     protected EventListenerList listenerList = new EventListenerList();
-    private Drawing drawing;
+    @Nullable private Drawing drawing;
     private boolean isSelectable = true;
     private boolean isRemovable = true;
     private boolean isVisible = true;
@@ -339,11 +337,6 @@ public abstract class AbstractFigure
         return that;
     }
 
-    public final AbstractFigure basicClone(HashMap<Figure, Figure> oldToNew) {
-        // XXX - Delete me
-        return null;
-    }
-
     @Override
     public void remap(Map<Figure, Figure> oldToNew, boolean disconnectIfNotInMap) {
     }
@@ -450,7 +443,7 @@ public abstract class AbstractFigure
     }
 
     @Override
-    public Figure findFigureInside(Point2D.Double p) {
+    @Nullable public Figure findFigureInside(Point2D.Double p) {
         return (contains(p)) ? this : null;
     }
 

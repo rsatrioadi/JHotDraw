@@ -1,15 +1,12 @@
 /*
  * @(#)LinearGradient.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 
 package org.jhotdraw.samples.svg;
@@ -24,7 +21,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * Represents an SVG LinearGradient.
  *
  * @author Werner Randelshofer
- * @version $Id: LinearGradient.java 647 2010-01-24 22:52:59Z rawcoder $
+ * @version $Id: LinearGradient.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public class LinearGradient implements Gradient {
     private double x1;
@@ -50,9 +47,9 @@ public class LinearGradient implements Gradient {
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
-        this.stopOffsets = stopOffsets;
-        this.stopColors = stopColors;
-        this.stopOpacities = stopOpacities;
+        this.stopOffsets = stopOffsets.clone();
+        this.stopColors = stopColors.clone();
+        this.stopOpacities = stopOpacities.clone();
         this.isRelativeToFigureBounds = isRelativeToFigureBounds;
         this.transform = tx;
     }
@@ -63,9 +60,9 @@ public class LinearGradient implements Gradient {
         this.y2 = y2;
     }
     public void setStops(double[] offsets, Color[] colors, double[] stopOpacities) {
-        this.stopOffsets = offsets;
-        this.stopColors = colors;
-        this.stopOpacities = stopOpacities;
+        this.stopOffsets = offsets.clone();
+        this.stopColors = colors.clone();
+        this.stopOpacities = stopOpacities.clone();
     }
     public void setRelativeToFigureBounds(boolean b) {
         isRelativeToFigureBounds = b;

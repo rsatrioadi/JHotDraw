@@ -1,15 +1,12 @@
 /*
  * @(#)DrawingOpacityIcon.java
  *
- * Copyright (c) 2008 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 2008 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and
- * contributors of the JHotDraw project ("the copyright holders").
- * You may not use, copy or modify this software, except in
- * accordance with the license agreement you entered into with
- * the copyright holders. For details see accompanying license terms.
+ * You may not use, copy or modify this file, except in compliance with the
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.samples.svg.gui;
 
@@ -23,7 +20,7 @@ import org.jhotdraw.draw.*;
  * {@code DrawingEditor}.
  * 
  * @author Werner Randelshofer
- * @version $Id: DrawingOpacityIcon.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: DrawingOpacityIcon.java 723 2010-12-28 14:31:24Z rawcoder $
  */
 public class DrawingOpacityIcon extends javax.swing.ImageIcon {
 

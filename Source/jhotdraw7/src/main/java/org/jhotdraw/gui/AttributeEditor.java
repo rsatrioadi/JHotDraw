@@ -1,22 +1,18 @@
 /*
  * @(#)AttributeEditor.java
  *
- * Copyright (c) 2007-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 2007-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 
 package org.jhotdraw.gui;
 
 import java.beans.PropertyChangeListener;
 import javax.swing.*;
-import org.jhotdraw.annotations.NotNull;
 
 /**
  * Interface for a field or any other kind of editor which can be used to edit
@@ -27,9 +23,8 @@ import org.jhotdraw.annotations.NotNull;
  * {@code AttributeFieldHandler}.
  *
  * @author Werner Randelshofer
- * @version $Id: AttributeEditor.java 654 2010-06-25 13:27:08Z rawcoder $
+ * @version $Id: AttributeEditor.java 717 2010-11-21 12:30:57Z rawcoder $
  */
-@NotNull
 public interface AttributeEditor<T> {
     public final static String ATTRIBUTE_VALUE_PROPERTY = "attributeValue";
     public final static String MULTIPLE_VALUES_PROPERTY = "multipleValues";

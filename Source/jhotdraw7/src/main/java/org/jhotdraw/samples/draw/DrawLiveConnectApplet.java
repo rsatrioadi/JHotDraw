@@ -1,15 +1,12 @@
 /*
  * @(#)DrawLiveConnectApplet.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.samples.draw;
 
@@ -30,7 +27,7 @@ import org.jhotdraw.xml.*;
  * DrawLiveConnectApplet. Supports loading and saving of images to JavaScript.
  *
  * @author  wrandels
- * @version $Id: DrawLiveConnectApplet.java 647 2010-01-24 22:52:59Z rawcoder $
+ * @version $Id: DrawLiveConnectApplet.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public class DrawLiveConnectApplet extends JApplet {
 
@@ -255,7 +252,7 @@ public class DrawLiveConnectApplet extends JApplet {
                 methodName = methodName.substring(0, methodName.indexOf('(') - 1);
             }
             JSObject win = JSObject.getWindow(this);
-            Object result = win.call(methodName, new Object[]{getData()});
+            win.call(methodName, new Object[]{getData()});
         } catch (Throwable t) {
             TextFigure tf = new TextFigure("Fehler: " + t);
             AffineTransform tx = new AffineTransform();

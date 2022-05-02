@@ -1,15 +1,12 @@
 /*
  * @(#)JEditorArea.java
  *
- * Copyright (c) 2006 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 2006 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and
- * contributors of the JHotDraw project ("the copyright holders").
- * You may not use, copy or modify this software, except in
- * accordance with the license agreement you entered into with
- * the copyright holders. For details see accompanying license terms.
+ * You may not use, copy or modify this file, except in compliance with the
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 
 package org.jhotdraw.samples.teddy;
@@ -20,7 +17,7 @@ import javax.swing.text.*;
  * A happy marriage between JTextArea and JEditorPane.
  *
  * @author Werner Randelshofer
- * @version $Id: JEditorArea.java 647 2010-01-24 22:52:59Z rawcoder $
+ * @version $Id: JEditorArea.java 723 2010-12-28 14:31:24Z rawcoder $
  */
 public class JEditorArea extends JEditorPane {
     private boolean wrap;

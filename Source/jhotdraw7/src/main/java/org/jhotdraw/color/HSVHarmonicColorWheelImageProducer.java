@@ -1,15 +1,12 @@
 /**
  * @(#)HarmonicColorWheelImageProducer.java
  *
- * Copyright (c) 2008 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 2008 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.color;
 
@@ -20,7 +17,7 @@ import java.awt.Point;
  * HarmonicColorWheelImageProducer.
  *
  * @author Werner Randelshofer
- * @version $Id: HSVHarmonicColorWheelImageProducer.java 648 2010-03-21 12:55:45Z rawcoder $
+ * @version $Id: HSVHarmonicColorWheelImageProducer.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public class HSVHarmonicColorWheelImageProducer extends PolarColorWheelImageProducer {
 
@@ -128,7 +125,6 @@ public class HSVHarmonicColorWheelImageProducer extends PolarColorWheelImageProd
 
     @Override
     public void generateColorWheel() {
-        float radius = (float) Math.min(w, h);
         for (int index = 0; index < pixels.length; index++) {
             if (alphas[index] != 0) {
                 pixels[index] = alphas[index] | 0xffffff & ColorUtil.toRGB(colorSpace,angulars[index], radials[index], brights[index]);

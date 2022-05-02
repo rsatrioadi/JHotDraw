@@ -1,15 +1,12 @@
 /*
  * @(#)ChopRoundRectangleConnector.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 
 package org.jhotdraw.draw.connector;
@@ -25,7 +22,7 @@ import org.jhotdraw.geom.*;
  * <p>
  *
  * @author  Werner Randelshofer
- * @version $Id: ChopRoundRectangleConnector.java 647 2010-01-24 22:52:59Z rawcoder $
+ * @version $Id: ChopRoundRectangleConnector.java 718 2010-11-21 17:49:53Z rawcoder $
  */
 public class ChopRoundRectangleConnector extends ChopRectangleConnector {
     
@@ -70,7 +67,6 @@ public class ChopRoundRectangleConnector extends ChopRectangleConnector {
         inner.width += gw * 2;
         inner.height += gh * 2;
         
-        double angle = Geom.pointToAngle(outer, from);
         Point2D.Double p = Geom.angleToPoint(outer, Geom.pointToAngle(outer, from));
         
         if (p.x == outer.x

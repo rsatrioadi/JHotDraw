@@ -1,15 +1,12 @@
 /*
  * @(#)SVGRectRadiusHandle.java
  *
- * Copyright (c) 2006-2008 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 2006-2008 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.samples.svg.figures;
 
@@ -29,7 +26,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * A Handle to manipulate the radius of a round lead rectangle.
  *
  * @author  Werner Randelshofer
- * @version $Id: SVGRectRadiusHandle.java 647 2010-01-24 22:52:59Z rawcoder $
+ * @version $Id: SVGRectRadiusHandle.java 718 2010-11-21 17:49:53Z rawcoder $
  */
 public class SVGRectRadiusHandle extends AbstractHandle {
 
@@ -85,8 +82,6 @@ public class SVGRectRadiusHandle extends AbstractHandle {
 
     @Override
     public void trackStep(Point anchor, Point lead, int modifiersEx) {
-        int dx = lead.x - anchor.x;
-        int dy = lead.y - anchor.y;
         SVGRectFigure owner = (SVGRectFigure) getOwner();
         owner.willChange();
         Point2D.Double p = view.viewToDrawing(lead);

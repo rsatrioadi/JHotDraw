@@ -1,19 +1,17 @@
 /*
  * @(#)PaletteColorChooserUI.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and
- * contributors of the JHotDraw project ("the copyright holders").
- * You may not use, copy or modify this software, except in
- * accordance with the license agreement you entered into with
- * the copyright holders. For details see accompanying license terms.
+ * You may not use, copy or modify this file, except in compliance with the
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 
 package org.jhotdraw.gui.plaf.palette;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.jhotdraw.gui.plaf.palette.colorchooser.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -24,19 +22,20 @@ import javax.swing.event.*;
 import javax.swing.plaf.*;
 import java.security.*;
 import java.util.*;
+
 /**
  * PaletteColorChooserUI.
  *
  * @author  Werner Randelshofer
- * @version $Id: PaletteColorChooserUI.java 660 2010-07-08 20:52:06Z rawcoder $
+ * @version $Id: PaletteColorChooserUI.java 723 2010-12-28 14:31:24Z rawcoder $
  */
 public class PaletteColorChooserUI extends ColorChooserUI {
-    protected PaletteColorChooserMainPanel mainPanel;
-    protected JColorChooser chooser;
+    @Nullable protected PaletteColorChooserMainPanel mainPanel;
+    @Nullable protected JColorChooser chooser;
     protected ChangeListener previewListener;
     protected PropertyChangeListener propertyChangeListener;
-    protected AbstractColorChooserPanel[] defaultChoosers;
-    protected JComponent previewPanel;
+    @Nullable protected AbstractColorChooserPanel[] defaultChoosers;
+    @Nullable protected JComponent previewPanel;
     private static TransferHandler defaultTransferHandler = new ColorTransferHandler();
     private MouseListener previewMouseListener;
     
@@ -172,7 +171,8 @@ public class PaletteColorChooserUI extends ColorChooserUI {
         }
         
         previewPanel = chooser.getPreviewPanel();
-        if ((previewPanel != null) && (mainPanel != null) && (chooser != null) && (previewPanel.getSize().getHeight()+previewPanel.getSize().getWidth() == 0)) {
+        if ((previewPanel != null) && (mainPanel != null) //
+                && (previewPanel.getSize().getHeight()+previewPanel.getSize().getWidth() == 0)) {
             mainPanel.setPreviewPanel(null);
             return;
         }

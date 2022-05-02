@@ -1,18 +1,16 @@
 /*
  * @(#)Drawing.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.draw;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.awt.Graphics2D;
 import org.jhotdraw.draw.io.InputFormat;
 import org.jhotdraw.draw.io.OutputFormat;
@@ -24,8 +22,6 @@ import java.util.*;
 import javax.swing.undo.*;
 import javax.swing.event.*;
 import java.io.*;
-import org.jhotdraw.annotations.NotNull;
-import org.jhotdraw.annotations.Nullable;
 
 /**
  * A <em>drawing</em> is a container for {@link Figure}s. A drawing can hold
@@ -84,9 +80,8 @@ import org.jhotdraw.annotations.Nullable;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: Drawing.java 674 2010-07-29 11:11:42Z rawcoder $
+ * @version $Id: Drawing.java 717 2010-11-21 12:30:57Z rawcoder $
  */
-@NotNull
 public interface Drawing extends CompositeFigure, Serializable, DOMStorable {
 
     /** Draws on the <em>canvas area</em>. The canvas is the background area
@@ -241,29 +236,29 @@ public interface Drawing extends CompositeFigure, Serializable, DOMStorable {
      * Use {@link #findFigureInside} If you need to descend into children of
      * composite figures.
      */
-    Figure findFigure(Point2D.Double p);
+    @Nullable Figure findFigure(Point2D.Double p);
 
     /**
      * Finds a top level Figure. Use this call for hit detection that
      * should not descend into the figure's children.
      */
-    Figure findFigureExcept(Point2D.Double p, Figure ignore);
+    @Nullable Figure findFigureExcept(Point2D.Double p, Figure ignore);
 
     /**
      * Finds a top level Figure. Use this call for hit detection that
      * should not descend into the figure's children.
      */
-    Figure findFigureExcept(Point2D.Double p, Collection<? extends Figure> ignore);
+    @Nullable Figure findFigureExcept(Point2D.Double p, Collection<? extends Figure> ignore);
 
     /**
      * Finds a top level Figure which is behind the specified Figure.
      */
-    Figure findFigureBehind(Point2D.Double p, Figure figure);
+    @Nullable Figure findFigureBehind(Point2D.Double p, Figure figure);
 
     /**
      * Finds a top level Figure which is behind the specified Figures.
      */
-    Figure findFigureBehind(Point2D.Double p, Collection<? extends Figure> figures);
+    @Nullable Figure findFigureBehind(Point2D.Double p, Collection<? extends Figure> figures);
 
     /**
      * Returns a list of the figures in Z-Order from front to back.

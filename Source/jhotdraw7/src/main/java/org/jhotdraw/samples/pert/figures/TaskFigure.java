@@ -1,15 +1,12 @@
 /*
  * @(#)TaskFigure.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.samples.pert.figures;
 
@@ -35,7 +32,7 @@ import org.jhotdraw.xml.*;
  * TaskFigure.
  *
  * @author Werner Randelshofer.
- * @version $Id: TaskFigure.java 647 2010-01-24 22:52:59Z rawcoder $
+ * @version $Id: TaskFigure.java 727 2011-01-09 13:23:59Z rawcoder $
  */
 public class TaskFigure extends GraphicalCompositeFigure {
 
@@ -95,8 +92,6 @@ public class TaskFigure extends GraphicalCompositeFigure {
         ListFigure attributeCompartment = new ListFigure();
         SeparatorLineFigure separator1 = new SeparatorLineFigure();
 
-        applyAttributes(getPresentationFigure());
-
         add(nameCompartment);
         add(separator1);
         add(attributeCompartment);
@@ -122,7 +117,6 @@ public class TaskFigure extends GraphicalCompositeFigure {
         startTimeFigure.setText("0");
         startTimeFigure.setAttributeEnabled(FONT_BOLD, false);
 
-        applyAttributes(this);
         setAttributeEnabled(STROKE_DASHES, false);
 
         ResourceBundleUtil labels =
@@ -226,15 +220,6 @@ public class TaskFigure extends GraphicalCompositeFigure {
 
     private TextFigure getStartTimeFigure() {
         return (TextFigure) ((ListFigure) getChild(2)).getChild(1);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void applyAttributes(Figure f) {
-        Map<AttributeKey, Object> attr = ((AbstractAttributedFigure) getPresentationFigure()).getAttributes();
-        for (Map.Entry<AttributeKey, Object> entry : attr.entrySet()) {
-            f.set(entry.getKey(), entry.getValue());
-        }
-
     }
 
     @Override

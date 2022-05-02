@@ -1,15 +1,12 @@
 /*
  * @(#)RoundRectangleFigure.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.draw;
 
@@ -35,7 +32,7 @@ import org.jhotdraw.xml.DOMOutput;
  * to interactively change the corner radius.
  *
  * @author Werner Randelshofer
- * @version $Id: RoundRectangleFigure.java 647 2010-01-24 22:52:59Z rawcoder $
+ * @version $Id: RoundRectangleFigure.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public class RoundRectangleFigure extends AbstractAttributedFigure {
     /** Identifies the {@code arcWidth} JavaBeans property. */

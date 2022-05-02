@@ -1,22 +1,18 @@
 /*
  * @(#)Constrainer.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.draw;
 
 import java.awt.*;
 import java.awt.geom.*;
 import javax.swing.event.ChangeListener;
-import org.jhotdraw.annotations.NotNull;
 
 /**
  * A <em>constrainer</em> constrains editing operations performed by
@@ -38,9 +34,8 @@ import org.jhotdraw.annotations.NotNull;
  * <hr>
  *
  * @author  Werner Randelshofer
- * @version $Id: Constrainer.java 654 2010-06-25 13:27:08Z rawcoder $
+ * @version $Id: Constrainer.java 717 2010-11-21 12:30:57Z rawcoder $
  */
-@NotNull
 public interface Constrainer {
 
     /**

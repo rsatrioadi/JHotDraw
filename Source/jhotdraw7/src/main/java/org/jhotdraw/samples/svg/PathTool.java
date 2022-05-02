@@ -1,18 +1,16 @@
 /*
  * @(#)PathTool.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.samples.svg;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.jhotdraw.draw.tool.BezierTool;
 import org.jhotdraw.samples.svg.figures.*;
 import org.jhotdraw.draw.*;
@@ -22,7 +20,7 @@ import java.util.*;
  * Tool to scribble a SVGPath
  *
  * @author  Werner Randelshofer
- * @version $Id: PathTool.java 647 2010-01-24 22:52:59Z rawcoder $
+ * @version $Id: PathTool.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public class PathTool extends BezierTool {
 
@@ -41,7 +39,7 @@ public class PathTool extends BezierTool {
     }
 
     /** Creates a new instance. */
-    public PathTool(SVGPathFigure pathPrototype, SVGBezierFigure bezierPrototype, Map<AttributeKey,Object> attributes) {
+    public PathTool(SVGPathFigure pathPrototype, SVGBezierFigure bezierPrototype, @Nullable Map<AttributeKey,Object> attributes) {
         super(bezierPrototype, attributes);
         this.pathPrototype = pathPrototype;
     }

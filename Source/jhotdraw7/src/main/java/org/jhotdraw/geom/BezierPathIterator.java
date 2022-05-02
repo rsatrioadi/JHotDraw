@@ -1,19 +1,17 @@
 /*
  * @(#)BezierPathIterator.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 
 package org.jhotdraw.geom;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.awt.geom.*;
 
 /**
@@ -26,7 +24,7 @@ import java.awt.geom.*;
  * Subsequent iterations require a new iterator.
  *
  * @author Werner Randelshofer
- * @version $Id: BezierPathIterator.java 647 2010-01-24 22:52:59Z rawcoder $
+ * @version $Id: BezierPathIterator.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public class BezierPathIterator implements PathIterator {
     /**
@@ -40,7 +38,7 @@ public class BezierPathIterator implements PathIterator {
     /**
      * The transformation.
      */
-    private AffineTransform affine;
+    @Nullable private AffineTransform affine;
     
     /** ?? */
     private static final int curvesize[] = {2, 2, 4, 6, 0};
@@ -58,7 +56,7 @@ public class BezierPathIterator implements PathIterator {
      * AffineTransform.
      * @see BezierPath#getPathIterator
      */
-    public BezierPathIterator(BezierPath path, AffineTransform at) {
+    public BezierPathIterator(BezierPath path, @Nullable AffineTransform at) {
         this.path = path;
         this.affine = at;
     }

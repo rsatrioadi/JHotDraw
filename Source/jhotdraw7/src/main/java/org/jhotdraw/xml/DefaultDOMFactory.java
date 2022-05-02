@@ -1,15 +1,12 @@
 /*
  * @(#)DefaultDOMFactory.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 
 package org.jhotdraw.xml;
@@ -21,7 +18,7 @@ import java.util.*;
  * names.
  *
  * @author Werner Randelshofer.
- * @version $Id: DefaultDOMFactory.java 648 2010-03-21 12:55:45Z rawcoder $
+ * @version $Id: DefaultDOMFactory.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public class DefaultDOMFactory extends JavaPrimitivesDOMFactory {
     private final static HashMap<Class,String> classToNameMap = new HashMap<Class,String>();
@@ -103,7 +100,7 @@ public class DefaultDOMFactory extends JavaPrimitivesDOMFactory {
     
     @Override
     public String getName(Object o) {
-        String name = classToNameMap.get(o.getClass());
+        String name = (o==null) ? null : classToNameMap.get(o.getClass());
         if (name == null) {
             name=super.getName(o);
         }

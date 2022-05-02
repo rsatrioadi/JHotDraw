@@ -1,34 +1,29 @@
 /*
  * @(#)URIChooser.java
  * 
- * Copyright (c) 2009-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 2009-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  * 
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.gui;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.awt.Component;
 import java.awt.HeadlessException;
 import java.awt.event.ActionListener;
 import java.net.URI;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import org.jhotdraw.annotations.NotNull;
-import org.jhotdraw.annotations.Nullable;
 
 /**
  *{@code URIChooser} provides a mechanism for the user to choose a URI.
  *
  * @author Werner Randelshofer
- * @version $Id: URIChooser.java 666 2010-07-28 19:11:46Z rawcoder $
+ * @version $Id: URIChooser.java 717 2010-11-21 12:30:57Z rawcoder $
  */
-@NotNull
 public interface URIChooser {
     // ************************
     // ***** Dialog Types *****
@@ -89,14 +84,14 @@ public interface URIChooser {
      * @see #setSelectedURI
      * @return the selected uri
      */
-    public URI getSelectedURI();
+    @Nullable public URI getSelectedURI();
 
     /**
      * Sets the selected URI.
      *
      * @param uri the selected uri
      */
-    public void setSelectedURI(URI uri);
+    public void setSelectedURI(@Nullable URI uri);
 
     /**
      * Returns the type of this dialog.  The default is

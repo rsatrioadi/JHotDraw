@@ -1,15 +1,12 @@
 /**
  * @(#)JHarmonicColorWheel.java
  *
- * Copyright (c) 2008 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 2008 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and
- * contributors of the JHotDraw project ("the copyright holders").
- * You may not use, copy or modify this software, except in
- * accordance with the license agreement you entered into with
- * the copyright holders. For details see accompanying license terms.
+ * You may not use, copy or modify this file, except in compliance with the
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.color;
 
@@ -26,7 +23,7 @@ import javax.swing.event.*;
  * FIXME - This is an experimental class. Do not use it.
  *
  * @author Werner Randelshofer
- * @version $Id: JHarmonicColorWheel.java 648 2010-03-21 12:55:45Z rawcoder $
+ * @version $Id: JHarmonicColorWheel.java 723 2010-12-28 14:31:24Z rawcoder $
  */
 public class JHarmonicColorWheel extends JColorWheel {
 
@@ -226,7 +223,6 @@ public class JHarmonicColorWheel extends JColorWheel {
             Ellipse2D.Float oval = new Ellipse2D.Float(0, 0, 0, 0);
 
             float[] comp = null;
-            float wheelBrightness = model.getBoundedRangeModel(2).getValue() / 100f;
             for (int i = harmonicModel.size() - 1; i >= 0; i--) {
                 if (harmonicModel.get(i) != null) {
                     Point p = getColorLocation(harmonicModel.get(i));

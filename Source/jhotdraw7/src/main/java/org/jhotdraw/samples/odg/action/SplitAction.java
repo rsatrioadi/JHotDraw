@@ -1,15 +1,12 @@
 /*
  * @(#)SplitPathsAction.java
  *
- * Copyright (c) 2007 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 2007 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.samples.odg.action;
 
@@ -23,17 +20,18 @@ import java.util.*;
  * SplitPathsAction.
  *
  * @author  Werner Randelshofer
- * @version $Id: SplitAction.java 647 2010-01-24 22:52:59Z rawcoder $
+ * @version $Id: SplitAction.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public class SplitAction extends UngroupAction {
 
     public final static String ID = "edit.splitPath";
+    private ResourceBundleUtil labels =
+            ResourceBundleUtil.getBundle("org.jhotdraw.samples.odg.Labels");
 
     /** Creates a new instance. */
     public SplitAction(DrawingEditor editor) {
         super(editor, new ODGPathFigure());
 
-        labels = ResourceBundleUtil.getBundle("org.jhotdraw.samples.odg.Labels");
         labels.configureAction(this, ID);
     }
 

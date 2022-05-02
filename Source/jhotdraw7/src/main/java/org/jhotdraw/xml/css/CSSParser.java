@@ -1,15 +1,12 @@
 /*
  * @(#)CSSLoader.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  *
  * Original code taken from article "Swing and CSS" by Joshua Marinacci 10/14/2003
  * http://today.java.net/pub/a/today/2003/10/14/swingcss.html
@@ -66,7 +63,7 @@ import java.util.*;
  * </pre>
  *
  * @author Werner Randelshofer
- * @version $Id: CSSParser.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: CSSParser.java 718 2010-11-21 17:49:53Z rawcoder $
  */
 public class CSSParser {
     public void parse(String css, StyleManager rm) throws IOException {

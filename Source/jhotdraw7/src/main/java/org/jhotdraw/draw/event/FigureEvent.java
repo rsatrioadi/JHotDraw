@@ -1,24 +1,21 @@
 /*
  * @(#)FigureChangeEvent.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 
 package org.jhotdraw.draw.event;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.jhotdraw.draw.*;
 import java.awt.geom.*;
 import java.util.*;
-import org.jhotdraw.annotations.NotNull;
-import org.jhotdraw.annotations.Nullable;
+
 /**
  * An {@code EventObject} sent to {@link FigureListener}s.
  *
@@ -36,14 +33,13 @@ import org.jhotdraw.annotations.Nullable;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: FigureEvent.java 661 2010-07-13 07:06:50Z rawcoder $
+ * @version $Id: FigureEvent.java 717 2010-11-21 12:30:57Z rawcoder $
  */
-@NotNull
 public class FigureEvent extends EventObject {
     private Rectangle2D.Double invalidatedArea;
     private AttributeKey attribute;
-    private Object oldValue;
-    private Object newValue;
+    @Nullable private Object oldValue;
+    @Nullable private Object newValue;
     
     /**
      * Constructs an event for the given source Figure.

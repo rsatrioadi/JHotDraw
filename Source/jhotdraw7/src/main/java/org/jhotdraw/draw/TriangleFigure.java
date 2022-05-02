@@ -1,15 +1,12 @@
 /*
  * @(#)TriangleFigure.java
  *
- * Copyright (c) 1996-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 1996-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 
 
@@ -35,7 +32,7 @@ import org.jhotdraw.geom.*;
  * to interactively change the orientation of the triangle.
  *
  * @author Werner Randelshofer
- * @version $Id: TriangleFigure.java 647 2010-01-24 22:52:59Z rawcoder $
+ * @version $Id: TriangleFigure.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public class TriangleFigure extends AbstractAttributedFigure {
     
@@ -92,8 +89,6 @@ public class TriangleFigure extends AbstractAttributedFigure {
     
     @Override
     protected void drawFill(Graphics2D g) {
-        Rectangle2D.Double r = (Rectangle2D.Double) rectangle.clone();
-        
         Shape triangle = getBezierPath();
         double grow = AttributeKeys.getPerpendicularFillGrowth(this);
         if (grow != 0d) {

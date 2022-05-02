@@ -1,18 +1,16 @@
 /*
  * @(#)ColorFormatter.java
  * 
- * Copyright (c) 2009-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 2009-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  * 
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.text;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.awt.Color;
 import java.awt.color.ColorSpace;
 import java.text.DecimalFormat;
@@ -85,7 +83,7 @@ import org.jhotdraw.util.prefs.PreferencesUtil;
  * individual classes for each of the supported formats.
  *
  * @author Werner Randelshofer
- * @version $Id: ColorFormatter.java 660 2010-07-08 20:52:06Z rawcoder $
+ * @version $Id: ColorFormatter.java 717 2010-11-21 12:30:57Z rawcoder $
  */
 public class ColorFormatter extends DefaultFormatter {
 
@@ -109,7 +107,7 @@ public class ColorFormatter extends DefaultFormatter {
     /**
      * Specifies the last used input format.
      */
-    protected Format lastUsedInputFormat = null;
+    @Nullable protected Format lastUsedInputFormat = null;
     /**
      * This regular expression is used for parsing the RGB_HEX format.
      */

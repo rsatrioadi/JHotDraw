@@ -1,18 +1,16 @@
 /*
  * @(#)TextEditingTool.java
  *
- * Copyright (c) 2009-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 2009-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * You may not use, copy or modify this file, except in compliance with the 
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 package org.jhotdraw.draw.tool;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.jhotdraw.draw.text.*;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.text.FloatingTextField;
@@ -46,12 +44,12 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: TextEditingTool.java 647 2010-01-24 22:52:59Z rawcoder $
+ * @version $Id: TextEditingTool.java 718 2010-11-21 17:49:53Z rawcoder $
  */
 public class TextEditingTool extends AbstractTool implements ActionListener {
 
-    private FloatingTextField textField;
-    private TextHolderFigure typingTarget;
+    @Nullable private FloatingTextField textField;
+    @Nullable private TextHolderFigure typingTarget;
 
     /** Creates a new instance. */
     public TextEditingTool(TextHolderFigure typingTarget) {

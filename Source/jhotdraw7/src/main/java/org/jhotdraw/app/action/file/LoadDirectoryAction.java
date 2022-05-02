@@ -1,19 +1,17 @@
 /*
  * @(#)LoadDirectoryAction.java
  * 
- * Copyright (c) 2009-2010 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
+ * Copyright (c) 2009-2010 by the original authors of JHotDraw and all its
+ * contributors. All rights reserved.
  *
- * The copyright of this software is owned by the authors and
- * contributors of the JHotDraw project ("the copyright holders").
- * You may not use, copy or modify this software, except in
- * accordance with the license agreement you entered into with
- * the copyright holders. For details see accompanying license terms.
+ * You may not use, copy or modify this file, except in compliance with the
+ * license agreement you entered into with the copyright holders. For details
+ * see accompanying license terms.
  */
 
 package org.jhotdraw.app.action.file;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.jhotdraw.app.*;
 import org.jhotdraw.gui.URIChooser;
 import org.jhotdraw.util.ResourceBundleUtil;
@@ -32,13 +30,13 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * This action should not be used together with {@code OpenDirectoryAction}.
  *
  * @author Werner Randelshofer, Hausmatt 10, CH-6405 Immensee
- * @version $Id: LoadDirectoryAction.java 648 2010-03-21 12:55:45Z rawcoder $
+ * @version $Id: LoadDirectoryAction.java 723 2010-12-28 14:31:24Z rawcoder $
  */
 public class LoadDirectoryAction extends LoadFileAction {
     public final static String ID = "file.loadDirectory";
 
     /** Creates a new instance. */
-    public LoadDirectoryAction(Application app, View view) {
+    public LoadDirectoryAction(Application app, @Nullable View view) {
         super(app, view);
         ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
         labels.configureAction(this, ID);
