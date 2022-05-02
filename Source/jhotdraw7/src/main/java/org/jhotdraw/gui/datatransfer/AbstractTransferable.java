@@ -1,5 +1,5 @@
 /*
- * @(#)AbstractTransferable.java  1.0  22. August 2007
+ * @(#)AbstractTransferable.java
  *
  * Copyright (c) 2007 by the original authors of JHotDraw
  * and all its contributors.
@@ -20,7 +20,7 @@ import java.awt.datatransfer.*;
  * Base class for transferable objects.
  *
  * @author Werner Randelshofer
- * @version 1.0 22. August 2007 Created.
+ * @version $Id: AbstractTransferable.java 527 2009-06-07 14:28:19Z rawcoder $
  */
 public abstract class AbstractTransferable implements Transferable {
     private DataFlavor[] flavors;

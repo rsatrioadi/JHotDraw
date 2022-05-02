@@ -1,5 +1,5 @@
 /*
- * @(#)Main.java  1.0  January 15, 2007
+ * @(#)Main.java
  *
  * Copyright (c) 2007 by the original authors of JHotDraw
  * and all its contributors.
@@ -20,7 +20,7 @@ import org.jhotdraw.app.*;
  * Main.
  *
  * @author Werner Randelshofer
- * @version 1.0 January 15, 2007 Created.
+ * @version $Id: Main.java 527 2009-06-07 14:28:19Z rawcoder $
  */
 public class Main {
     

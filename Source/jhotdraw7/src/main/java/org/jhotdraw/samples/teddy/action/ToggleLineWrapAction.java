@@ -1,5 +1,5 @@
 /*
- * @(#)ToggleLineWrapAction.java  1.0  October 1, 2005
+ * @(#)ToggleLineWrapAction.java
  *
  * Copyright (c) 2005 by the original authors of JHotDraw
  * and all its contributors.
@@ -24,7 +24,7 @@ import java.awt.event.*;
  * ToggleLineWrapAction.
  *
  * @author  Werner Randelshofer
- * @version 1.0 October 1, 2005 Created.
+ * @version $Id: ToggleLineWrapAction.java 527 2009-06-07 14:28:19Z rawcoder $
  */
 public class ToggleLineWrapAction extends AbstractViewAction {
     public final static String ID = "view.toggleLineWrap";

@@ -1,5 +1,5 @@
 /*
- * @(#)Methods.java  1.0.1 2006-06-25
+ * @(#)Methods.java
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
  * and all its contributors.
@@ -15,13 +15,13 @@
 package org.jhotdraw.util;
 
 import java.lang.reflect.*;
+
 /**
  * Methods contains convenience methods for method invocations using
  * java.lang.reflect.
  *
  * @author  Werner Randelshofer
- * @version 1.0.1 2006-06-25 Fixed comments.
- * <br>1.0 September 24, 2005 Created.
+ * @version $Id: Methods.java 527 2009-06-07 14:28:19Z rawcoder $
  */
 @SuppressWarnings("unchecked")
 public class Methods {

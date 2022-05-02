@@ -1,5 +1,5 @@
 /*
- * @(#)FillToolBarBeanInfo.java  1.0  11. November 2003
+ * @(#)FillToolBarBeanInfo.java
  *
  * Copyright (c) 1996-2008 by the original authors of JHotDraw
  * and all its contributors.
@@ -20,7 +20,7 @@ import java.beans.*;
  * BeanInfo for PaintToolPane.
  *
  * @author  Werner Randelshofer
- * @version 1.0 2003-11-11 Created.
+ * @version $Id: FillToolBarBeanInfo.java 527 2009-06-07 14:28:19Z rawcoder $
  */
 public class FillToolBarBeanInfo extends SimpleBeanInfo {
     

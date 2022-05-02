@@ -1,5 +1,5 @@
 /*
- * @(#)SelectSameAction.java  1.1  2006-06-05
+ * @(#)SelectSameAction.java
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
  * and all its contributors.
@@ -15,14 +15,12 @@
 package org.jhotdraw.draw.action;
 
 import org.jhotdraw.draw.*;
-import java.util.*;
-import javax.swing.*;
+
 /**
  * SelectSameAction.
  *
  * @author  Werner Randelshofer
- * @version 1.1 2006-06-05 Optimized performance.
- * <br>1.0 25. November 2003  Created.
+ * @version $Id: IncreaseHandleDetailLevelAction.java 527 2009-06-07 14:28:19Z rawcoder $
  */
 public class IncreaseHandleDetailLevelAction extends AbstractSelectedAction {
     public final static String ID = "view.increaseHandleDetailLevel";

@@ -1,5 +1,5 @@
 /*
- * @(#)Main.java  1.0  2005-10-04
+ * @(#)Main.java
  *
  * Copyright (c) 1996-2007 by the original authors of JHotDraw
  * and all its contributors.
@@ -20,7 +20,7 @@ import org.jhotdraw.app.*;
  * Main class.
  *
  * @author Werner Randelshofer.
- * @version 1.0 2005-10-04 Created.
+ * @version $Id: Main.java 557 2009-09-06 16:12:08Z rawcoder $
  */
 public class Main {
     public final static String NAME = "JHotDraw Teddy";

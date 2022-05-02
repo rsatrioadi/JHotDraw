@@ -1,5 +1,5 @@
 /**
- * @(#)HarmonicColorWheelImageProducer.java  1.0  Apr 19, 2008
+ * @(#)HarmonicColorWheelImageProducer.java
  *
  * Copyright (c) 2008 by the original authors of JHotDraw
  * and all its contributors.
@@ -20,7 +20,7 @@ import java.awt.Point;
  * HarmonicColorWheelImageProducer.
  *
  * @author Werner Randelshofer
- * @version 1.0 Apr 19, 2008 Created.
+ * @version $Id: HSVHarmonicColorWheelImageProducer.java 527 2009-06-07 14:28:19Z rawcoder $
  */
 public class HSVHarmonicColorWheelImageProducer extends ColorWheelImageProducer {
 

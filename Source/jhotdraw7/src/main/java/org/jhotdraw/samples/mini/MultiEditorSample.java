@@ -1,5 +1,5 @@
 /*
- * @(#)MultiEditorSample.java   1.0  November 9, 2006
+ * @(#)MultiEditorSample.java
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
  * and all its contributors.
@@ -24,7 +24,7 @@ import org.jhotdraw.util.*;
  * views.
  *
  * @author Werner Randelshofer
- * @version 1.0 November 9, 2006 Created.
+ * @version $Id: MultiEditorSample.java 527 2009-06-07 14:28:19Z rawcoder $
  */
 public class MultiEditorSample {
 

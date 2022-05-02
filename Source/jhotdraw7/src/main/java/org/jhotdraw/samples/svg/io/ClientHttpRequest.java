@@ -8,7 +8,7 @@
  * following may not be restricted.</p>
  *
  * @author Vlad Patryshev, Alexei Trebounskikh
- * @version 1.4
+ * @version $Id: ClientHttpRequest.java 527 2009-06-07 14:28:19Z rawcoder $
  */
 package org.jhotdraw.samples.svg.io;
 

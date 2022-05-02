@@ -1,5 +1,5 @@
 /*
- * @(#)MDIDesktopPane.java  1.0  2006-06-17
+ * @(#)MDIDesktopPane.java
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
  * and all its contributors.
@@ -32,7 +32,7 @@ import java.beans.*;
  * Original version by 
  * Wolfram Kaiser (adapted from an article in JavaWorld), 
  * C.L.Gilbert <dnoyeb@users.sourceforge.net>
- * @version 1.0 2006-06-17
+ * @version $Id: MDIDesktopPane.java 527 2009-06-07 14:28:19Z rawcoder $
  */
 public class MDIDesktopPane extends JDesktopPane implements Arrangeable {
     private static int FRAME_OFFSET=20;

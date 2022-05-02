@@ -1,5 +1,5 @@
 /**
- * @(#)DisclosureIcon.java  1.0  Apr 12, 2008
+ * @(#)DisclosureIcon.java
  *
  * Copyright (c) 2008 by the original authors of JHotDraw
  * and all its contributors.
@@ -21,7 +21,7 @@ import javax.swing.*;
  * DisclosureIcon.
  *
  * @author Werner Randelshofer
- * @version 1.0 Apr 12, 2008 Created.
+ * @version $Id: DisclosureIcon.java 527 2009-06-07 14:28:19Z rawcoder $
  */
 public class DisclosureIcon implements Icon {
     /**

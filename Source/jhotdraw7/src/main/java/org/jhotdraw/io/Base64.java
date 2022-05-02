@@ -44,7 +44,7 @@ package org.jhotdraw.io;
  *
  * @author Robert Harder
  * @author rob@iharder.net
- * @version 2.1
+ * @version $Id: Base64.java 527 2009-06-07 14:28:19Z rawcoder $
  */
 public class Base64
 {

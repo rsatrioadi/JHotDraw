@@ -1,5 +1,5 @@
 /*
- * @(#)FigureLayerComparator.java  1.0  1. April 2004
+ * @(#)FigureLayerComparator.java
  *
  * Copyright (c) 1996-2006 by the original authors of JHotDraw
  * and all its contributors.
@@ -16,10 +16,10 @@ package org.jhotdraw.draw;
 
 import java.util.*;
 /**
- * FigureLayerComparator.
+ * A {@code Comparator} used to sort figures by their layer property.
  *
  * @author  Werner Randelshofer
- * @version 1.0 1. April 2004  Created.
+ * @version $Id: FigureLayerComparator.java 536 2009-06-14 12:10:57Z rawcoder $
  */
 public class FigureLayerComparator implements Comparator<Figure> {
     public final static FigureLayerComparator INSTANCE = new FigureLayerComparator();

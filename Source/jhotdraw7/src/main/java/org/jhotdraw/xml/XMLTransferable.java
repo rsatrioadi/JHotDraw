@@ -21,7 +21,7 @@ import java.io.*;
  * drag and drop. 
  *
  * @author  Werner Randelshofer
- * @version 1.0 2001 Created.
+ * @version $Id: XMLTransferable.java 527 2009-06-07 14:28:19Z rawcoder $
  */
 public class XMLTransferable implements java.awt.datatransfer.Transferable, java.awt.datatransfer.ClipboardOwner {
     private byte[] data;
