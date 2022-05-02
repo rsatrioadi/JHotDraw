@@ -24,7 +24,7 @@ import java.awt.geom.*;
  * shape, but one that can be used for filling. 
  * 
  * @author Werner Randelshofer.
- * @version $Id: GrowStroke.java 613 2010-01-12 10:23:31Z rawcoder $
+ * @version $Id: GrowStroke.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class GrowStroke extends DoubleStroke {
 
@@ -35,6 +35,7 @@ public class GrowStroke extends DoubleStroke {
         this.grow = grow;
     }
 
+    @Override
     public Shape createStrokedShape(Shape s) {
 
         BezierPath bp = new BezierPath();

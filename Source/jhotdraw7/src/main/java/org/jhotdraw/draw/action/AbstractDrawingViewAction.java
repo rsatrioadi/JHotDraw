@@ -19,7 +19,7 @@ import org.jhotdraw.draw.DrawingView;
 import java.beans.*;
 import javax.swing.*;
 import javax.swing.undo.*;
-import org.jhotdraw.beans.Disposable;
+import org.jhotdraw.app.Disposable;
 import org.jhotdraw.beans.WeakPropertyChangeListener;
 
 /**
@@ -40,7 +40,7 @@ import org.jhotdraw.beans.WeakPropertyChangeListener;
  *
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractDrawingViewAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: AbstractDrawingViewAction.java 673 2010-07-29 10:02:46Z rawcoder $
  */
 public abstract class AbstractDrawingViewAction extends AbstractAction implements Disposable {
 
@@ -50,6 +50,7 @@ public abstract class AbstractDrawingViewAction extends AbstractAction implement
 
     private class EventHandler implements PropertyChangeListener {
 
+        @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if (evt.getPropertyName().equals("enabled")) {
                 updateEnabledState();
@@ -67,6 +68,7 @@ public abstract class AbstractDrawingViewAction extends AbstractAction implement
             }
         }
 
+        @Override
         public String toString() {
             return AbstractDrawingViewAction.this+"^$EventHandler";
         }
@@ -104,7 +106,7 @@ public abstract class AbstractDrawingViewAction extends AbstractAction implement
     }
 
     protected DrawingView getView() {
-        return (specificView != null) ? specificView : editor.getActiveView();
+        return (specificView != null || editor==null) ? specificView : editor.getActiveView();
     }
 
     protected Drawing getDrawing() {
@@ -119,7 +121,7 @@ public abstract class AbstractDrawingViewAction extends AbstractAction implement
      * of the active {@code DrawingView}. If no drawing view is active, this
      * action is disabled.
      */
-    public void updateEnabledState() {
+    protected void updateEnabledState() {
         if (getView() != null) {
             setEnabled(getView().isEnabled());
         } else {
@@ -136,6 +138,7 @@ public abstract class AbstractDrawingViewAction extends AbstractAction implement
     /** Frees all resources held by this object, so that it can be garbage
      * collected.
      */
+    @Override
     public void dispose() {
         setEditor(null);
     }

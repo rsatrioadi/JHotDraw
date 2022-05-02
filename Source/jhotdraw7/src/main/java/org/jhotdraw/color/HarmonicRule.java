@@ -13,11 +13,13 @@
  */
 package org.jhotdraw.color;
 
+import java.awt.Color;
+
 /**
  * HarmonicRule.
  *
  * @author Werner Randelshofer
- * @version $Id: HarmonicRule.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: HarmonicRule.java 633 2010-01-22 12:07:20Z rawcoder $
  */
 public interface HarmonicRule {
     
@@ -31,5 +33,5 @@ public interface HarmonicRule {
     
     public void apply(HarmonicColorModel model);
     
-    public void colorChanged(HarmonicColorModel model, int index, CompositeColor oldValue, CompositeColor newValue);
+    public void colorChanged(HarmonicColorModel model, int index, Color oldValue, Color newValue);
 }

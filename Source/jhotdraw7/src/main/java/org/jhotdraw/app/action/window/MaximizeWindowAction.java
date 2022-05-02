@@ -26,7 +26,7 @@ import org.jhotdraw.app.action.AbstractViewAction;
  * Maximizes the window of the active view.
  * 
  * @author Werner Randelshofer
- * @version $Id: MaximizeWindowAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: MaximizeWindowAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class MaximizeWindowAction extends AbstractViewAction {
     public final static String ID = "window.maximize";
@@ -44,6 +44,7 @@ public class MaximizeWindowAction extends AbstractViewAction {
                 );
     }
     
+    @Override
     public void actionPerformed(ActionEvent evt) {
         JFrame frame = getFrame();
         if (frame != null) {

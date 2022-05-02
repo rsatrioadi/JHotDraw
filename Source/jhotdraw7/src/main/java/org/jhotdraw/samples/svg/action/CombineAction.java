@@ -13,7 +13,6 @@
  */
 package org.jhotdraw.samples.svg.action;
 
-import org.jhotdraw.draw.CompositeFigure;
 import java.awt.geom.AffineTransform;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.action.*;
@@ -29,7 +28,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * FIXME - Transforms are lost during Undo/Redo.
  *
  * @author  Werner Randelshofer
- * @version $Id: CombineAction.java 582 2009-10-24 08:00:49Z rawcoder $
+ * @version $Id: CombineAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class CombineAction extends AbstractSelectedAction {
 
@@ -89,6 +88,7 @@ public class CombineAction extends AbstractSelectedAction {
                 ((CompositeFigure) getView().getSelectedFigures().iterator().next()).getChildCount() > 1;
     }
 
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {
         if (isCombineAction) {
             combineActionPerformed(e);

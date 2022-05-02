@@ -29,7 +29,7 @@ import javax.swing.plaf.UIResource;
  * PaletteButtonBorder.
  *
  * @author Werner Randelshofer
- * @version $Id: PaletteButtonBorder.java 591 2009-12-18 22:54:10Z rawcoder $
+ * @version $Id: PaletteButtonBorder.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class PaletteButtonBorder implements Border, UIResource {
 
@@ -38,6 +38,7 @@ public class PaletteButtonBorder implements Border, UIResource {
     private final static float[] selectedStops = new float[]{0f, 0.1f, 0.9f, 1f};
     private final static Color[] selectedStopColors = new Color[]{new Color(0x666666), new Color(0xcccccc), new Color(0x999999), new Color(0xb1b1b1)};
 
+    @Override
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
         if (c instanceof AbstractButton) {
             paintBorder((AbstractButton) c, g, x, y, width, height);
@@ -88,6 +89,7 @@ public class PaletteButtonBorder implements Border, UIResource {
         return (segmentPosition == null) ? "only" : segmentPosition;
     }
 
+    @Override
     public Insets getBorderInsets(Component c) {
         Insets insets;
         String segmentPosition = getSegmentPosition(c);
@@ -101,6 +103,7 @@ public class PaletteButtonBorder implements Border, UIResource {
     }
 
 
+    @Override
     public boolean isBorderOpaque() {
         return true;
     }

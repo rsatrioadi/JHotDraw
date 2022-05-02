@@ -11,7 +11,6 @@
  * accordance with the license agreement you entered into with
  * the copyright holders. For details see accompanying license terms.
  */
-
 package org.jhotdraw.samples.font;
 
 import javax.swing.*;
@@ -21,7 +20,7 @@ import org.jhotdraw.gui.JFontChooser;
  * FontChooserMain.
  *
  * @author  Werner Randelshofer
- * @version $Id: FontChooserMain.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: FontChooserMain.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class FontChooserMain extends javax.swing.JPanel {
 
@@ -30,15 +29,16 @@ public class FontChooserMain extends javax.swing.JPanel {
         initComponents();
         add(new JFontChooser());
     }
-   public static void main(String[] args) {
+
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
 
+            @Override
             public void run() {
-try {
-    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-} catch (Throwable t) {
-    
-}                
+                try {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (Throwable t) {
+                }
                 JFrame f = new JFrame("FontChooser");
                 f.add(new FontChooserMain());
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -59,9 +59,6 @@ try {
 
         setLayout(new java.awt.BorderLayout());
     }// </editor-fold>//GEN-END:initComponents
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-
 }

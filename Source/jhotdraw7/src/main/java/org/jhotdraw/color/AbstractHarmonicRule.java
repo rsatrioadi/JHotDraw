@@ -18,25 +18,29 @@ package org.jhotdraw.color;
  * AbstractHarmonicRule.
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractHarmonicRule.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: AbstractHarmonicRule.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public abstract class AbstractHarmonicRule implements HarmonicRule {
     protected int baseIndex;
     protected int[] derivedIndices;
     
     
+    @Override
     public void setBaseIndex() {
-        this.baseIndex = baseIndex;
+       // this.baseIndex = baseIndex;
     }
 
+    @Override
     public int getBaseIndex() {
         return baseIndex;
     }
 
+    @Override
     public void setDerivedIndices(int... indices) {
         this.derivedIndices = indices;
     }
 
+    @Override
     public int[] getDerivedIndices() {
         return derivedIndices;
     }

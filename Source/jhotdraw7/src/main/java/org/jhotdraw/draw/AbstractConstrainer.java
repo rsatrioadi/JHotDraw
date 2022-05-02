@@ -21,7 +21,7 @@ import org.jhotdraw.beans.*;
  * This abstract class can be extended to implement a {@link Constrainer}.
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractConstrainer.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: AbstractConstrainer.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public abstract class AbstractConstrainer extends AbstractBean implements Constrainer {
     /** The listeners waiting for model changes. */
@@ -41,6 +41,7 @@ public abstract class AbstractConstrainer extends AbstractBean implements Constr
     /**
      * Adds a <code>ChangeListener</code>.
      */
+    @Override
     public void addChangeListener(ChangeListener l) {
         listenerList.add(ChangeListener.class, l);
     }
@@ -48,6 +49,7 @@ public abstract class AbstractConstrainer extends AbstractBean implements Constr
     /**
      * Removes a <code>ChangeListener</code>.
      */
+    @Override
     public void removeChangeListener(ChangeListener l) {
         listenerList.remove(ChangeListener.class, l);
     }
@@ -69,6 +71,7 @@ public abstract class AbstractConstrainer extends AbstractBean implements Constr
         }
     }
     
+    @Override
     public AbstractConstrainer clone() {
         AbstractConstrainer that = (AbstractConstrainer) super.clone();
         that.listenerList = new EventListenerList();

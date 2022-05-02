@@ -26,7 +26,7 @@ import org.jhotdraw.draw.*;
  * {@link EditorColorIcon }.
  *
  * @author Werner Randelshofer
- * @version $Id: EditorColorChooserAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: EditorColorChooserAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class EditorColorChooserAction extends AttributeAction {
     protected AttributeKey<Color> key;
@@ -68,7 +68,7 @@ public class EditorColorChooserAction extends AttributeAction {
         }
         Color initialColor = getInitialColor();
         // FIXME - Reuse colorChooser object instead of calling static method here.
-        Color chosenColor = colorChooser.showDialog((Component) e.getSource(), labels.getString("attribute.color.text"), initialColor);
+        Color chosenColor = JColorChooser.showDialog((Component) e.getSource(), labels.getString("attribute.color.text"), initialColor);
         if (chosenColor != null) {
             HashMap<AttributeKey, Object> attr = new HashMap<AttributeKey, Object>(attributes);
             attr.put(key, chosenColor);

@@ -21,7 +21,7 @@ import javax.swing.*;
  * DisclosureIcon.
  *
  * @author Werner Randelshofer
- * @version $Id: DisclosureIcon.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: DisclosureIcon.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class DisclosureIcon implements Icon {
     /**
@@ -35,6 +35,7 @@ public class DisclosureIcon implements Icon {
      */
     public final static String CURRENT_STATE_PROPERTY = "DisclosureIcon.currentState";
 
+    @Override
     public void paintIcon(Component component, Graphics g, int x, int y) {
         JComponent c = (JComponent) component;
         
@@ -53,10 +54,12 @@ public class DisclosureIcon implements Icon {
                 );
     }
 
+    @Override
     public int getIconWidth() {
         return 10;
     }
 
+    @Override
     public int getIconHeight() {
        return 8;
     }

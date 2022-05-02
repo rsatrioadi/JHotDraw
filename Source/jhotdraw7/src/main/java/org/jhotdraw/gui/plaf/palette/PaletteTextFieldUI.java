@@ -24,7 +24,7 @@ import javax.swing.text.*;
  * PaletteTextFieldUI.
  *
  * @author Werner Randelshofer
- * @version $Id: PaletteTextFieldUI.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: PaletteTextFieldUI.java 651 2010-05-26 21:11:39Z rawcoder $
  */
 public class PaletteTextFieldUI extends BasicTextFieldUI {
 
@@ -108,7 +108,7 @@ public class PaletteTextFieldUI extends BasicTextFieldUI {
         Graphics2D g = (Graphics2D) gr;
 
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         super.paintSafely(g);

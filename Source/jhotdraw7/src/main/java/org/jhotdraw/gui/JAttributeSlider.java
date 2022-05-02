@@ -19,7 +19,7 @@ import javax.swing.*;
  * A JSlider that can be used to edit a double attribute of a Figure.
  *
  * @author Werner Randelshofer
- * @version $Id: JAttributeSlider.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: JAttributeSlider.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class JAttributeSlider extends JSlider implements AttributeEditor<Double> {
     private boolean isMultipleValues;
@@ -35,15 +35,18 @@ public class JAttributeSlider extends JSlider implements AttributeEditor<Double>
         super(orientation, min, max, value);
     }
 
+    @Override
     public JComponent getComponent() {
         return this;
     }
 
+    @Override
     public void setAttributeValue(Double newValue) {
         attributeValue = newValue;
         setValue((int) (newValue * scaleFactor));
     }
 
+    @Override
     public Double getAttributeValue() {
         return attributeValue;
     }
@@ -55,12 +58,14 @@ public class JAttributeSlider extends JSlider implements AttributeEditor<Double>
         return scaleFactor;
     }
 
+    @Override
     public void setMultipleValues(boolean newValue) {
         boolean oldValue = isMultipleValues;
         isMultipleValues = newValue;
         firePropertyChange(MULTIPLE_VALUES_PROPERTY, oldValue, newValue);
     }
 
+    @Override
     public boolean isMultipleValues() {
         throw new UnsupportedOperationException("Not supported yet.");
     }

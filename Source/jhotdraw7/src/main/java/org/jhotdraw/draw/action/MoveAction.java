@@ -24,7 +24,7 @@ import java.awt.geom.*;
  * Moves the selected figures by one unit.
  *
  * @author  Werner Randelshofer
- * @version $Id: MoveAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: MoveAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public abstract class MoveAction extends AbstractSelectedAction {
     private int dx, dy;
@@ -36,6 +36,7 @@ public abstract class MoveAction extends AbstractSelectedAction {
         this.dy = dy;
     }
     
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {
         CompositeEdit edit;
         AffineTransform tx = new AffineTransform();

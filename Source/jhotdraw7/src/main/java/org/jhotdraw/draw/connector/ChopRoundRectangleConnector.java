@@ -14,9 +14,7 @@
 
 package org.jhotdraw.draw.connector;
 
-import org.jhotdraw.draw.RoundRectangleFigure;
 import org.jhotdraw.draw.*;
-import org.jhotdraw.draw.connector.ChopRectangleConnector;
 import java.awt.geom.*;
 import static org.jhotdraw.draw.AttributeKeys.*;
 import org.jhotdraw.geom.*;
@@ -27,7 +25,7 @@ import org.jhotdraw.geom.*;
  * <p>
  *
  * @author  Werner Randelshofer
- * @version $Id: ChopRoundRectangleConnector.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ChopRoundRectangleConnector.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ChopRoundRectangleConnector extends ChopRectangleConnector {
     
@@ -41,6 +39,7 @@ public class ChopRoundRectangleConnector extends ChopRectangleConnector {
         super(owner);
     }
        
+    @Override
     protected Point2D.Double chop(Figure target, Point2D.Double from) {
         target =  getConnectorTarget(target);
         RoundRectangleFigure rrf = (RoundRectangleFigure) target;

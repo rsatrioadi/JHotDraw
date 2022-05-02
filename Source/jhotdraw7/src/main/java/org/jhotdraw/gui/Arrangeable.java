@@ -15,13 +15,15 @@
 package org.jhotdraw.gui;
 
 import java.beans.*;
+import org.jhotdraw.annotations.NotNull;
 /**
  * Arrangeable.
  * 
  * 
  * @author Werner Randelshofer
- * @version $Id: Arrangeable.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: Arrangeable.java 654 2010-06-25 13:27:08Z rawcoder $
  */
+@NotNull
 public interface Arrangeable {
     enum Arrangement { VERTICAL, HORIZONTAL, CASCADE };
     

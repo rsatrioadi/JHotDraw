@@ -24,7 +24,7 @@ import org.jhotdraw.app.action.ActionUtil;
  * Is selected, when the Component is visible.
  *
  * @author Werner Randelshofer.
- * @version $Id: ToggleVisibleAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ToggleVisibleAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ToggleVisibleAction extends AbstractAction {
     private Component component;
@@ -35,16 +35,19 @@ public class ToggleVisibleAction extends AbstractAction {
         putValue(Action.NAME, name);
         putValue(ActionUtil.SELECTED_KEY, c.isVisible());
         c.addComponentListener(new ComponentAdapter() {
+            @Override
             public void componentShown(ComponentEvent e) {
                 putValue(ActionUtil.SELECTED_KEY, component.isVisible());
             }
             
+            @Override
             public void componentHidden(ComponentEvent e) {
                 putValue(ActionUtil.SELECTED_KEY, component.isVisible());
             }
         });
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         component.setVisible(! component.isVisible());
     }

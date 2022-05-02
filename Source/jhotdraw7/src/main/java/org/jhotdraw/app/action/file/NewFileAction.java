@@ -36,7 +36,7 @@ import org.jhotdraw.app.action.AbstractApplicationAction;
  * not be used together with {@link NewWindowAction}.
  *
  * @author Werner Randelshofer
- * @version $Id: NewFileAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: NewFileAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class NewFileAction extends AbstractApplicationAction {
     public final static String ID = "file.new";
@@ -51,6 +51,7 @@ public class NewFileAction extends AbstractApplicationAction {
         labels.configureAction(this, id);
     }
     
+    @Override
     public void actionPerformed(ActionEvent evt) {
         Application app = getApplication();
         final View newP = app.createView();
@@ -63,6 +64,7 @@ public class NewFileAction extends AbstractApplicationAction {
         newP.setMultipleOpenId(multiOpenId);
         app.add(newP);
         newP.execute(new Runnable() {
+            @Override
             public void run() {
                 newP.clear();
             }

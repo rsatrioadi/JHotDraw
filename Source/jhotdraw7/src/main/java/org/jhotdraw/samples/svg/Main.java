@@ -20,7 +20,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * Main.
  *
  * @author Werner Randelshofer.
- * @version $Id: Main.java 615 2010-01-16 17:23:12Z rawcoder $
+ * @version $Id: Main.java 652 2010-05-27 13:19:16Z rawcoder $
  */
 public class Main {
     
@@ -34,7 +34,7 @@ public class Main {
         if (os.startsWith("mac")) {
             app = new OSXApplication();
         } else if (os.startsWith("win")) {
-          //  app = new DefaultMDIApplication();
+          //  app = new MDIApplication();
             app = new SDIApplication();
         } else {
             app = new SDIApplication();

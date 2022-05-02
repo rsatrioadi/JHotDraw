@@ -27,7 +27,7 @@ import org.jhotdraw.geom.*;
  * drawing its path.
  *
  * @author  Werner Randelshofer
- * @version $Id: BezierTool.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: BezierTool.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class BezierTool extends AbstractTool {
 
@@ -220,15 +220,18 @@ public class BezierTool extends AbstractTool {
         final DrawingView addedView = creationView;
         getDrawing().fireUndoableEditHappened(new AbstractUndoableEdit() {
 
+            @Override
             public String getPresentationName() {
                 return presentationName;
             }
 
+            @Override
             public void undo() throws CannotUndoException {
                 super.undo();
                 addedDrawing.remove(addedFigure);
             }
 
+            @Override
             public void redo() throws CannotRedoException {
                 super.redo();
                 addedView.clearSelection();
@@ -238,6 +241,7 @@ public class BezierTool extends AbstractTool {
         });
     }
 
+    @Override
     public void mouseReleased(MouseEvent evt) {
         if (DEBUG) {
             System.out.println("BezierTool.mouseReleased " + evt);
@@ -292,6 +296,7 @@ public class BezierTool extends AbstractTool {
         }
     }
 
+    @Override
     public void mouseDragged(MouseEvent evt) {
         if (finishWhenMouseReleased == null) {
             finishWhenMouseReleased = Boolean.TRUE;

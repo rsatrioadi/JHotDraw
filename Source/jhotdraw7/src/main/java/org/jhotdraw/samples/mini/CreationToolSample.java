@@ -14,7 +14,6 @@
 package org.jhotdraw.samples.mini;
 
 import org.jhotdraw.draw.tool.CreationTool;
-import org.jhotdraw.draw.RectangleFigure;
 import org.jhotdraw.draw.io.SerializationInputOutputFormat;
 import java.awt.*;
 import java.util.HashMap;
@@ -30,13 +29,14 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * green rectangles.
  *
  * @author Werner Randelshofer
- * @version $Id: CreationToolSample.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: CreationToolSample.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class CreationToolSample {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
 
+            @Override
             public void run() {
                 ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
 

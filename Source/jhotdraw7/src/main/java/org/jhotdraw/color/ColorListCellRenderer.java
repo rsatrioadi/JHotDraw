@@ -20,7 +20,7 @@ import javax.swing.*;
  * ColorListCellRenderer.
  *
  * @author Werner Randelshofer
- * @version $Id: ColorListCellRenderer.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: ColorListCellRenderer.java 648 2010-03-21 12:55:45Z rawcoder $
  */
 public class ColorListCellRenderer extends DefaultListCellRenderer {
 
@@ -33,6 +33,7 @@ public class ColorListCellRenderer extends DefaultListCellRenderer {
             color = newValue;
         }
 
+        @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
             if (color != null) {
             g.setColor(new Color(0x333333));
@@ -44,10 +45,12 @@ public class ColorListCellRenderer extends DefaultListCellRenderer {
             }
         }
 
+        @Override
         public int getIconWidth() {
             return 24;
         }
 
+        @Override
         public int getIconHeight() {
             return 18;
         }
@@ -68,16 +71,10 @@ public class ColorListCellRenderer extends DefaultListCellRenderer {
             boolean isSelected,
             boolean cellHasFocus) {
         super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        if (value instanceof CompositeColor) {
-            value = ((CompositeColor) value).getColor();
-        }
         if (value instanceof Color) {
             Color c = (Color) value;
             icon.setColor(c);
-            String text = "000000"+Integer.toHexString(c.getRGB());
-            text = '#'+text.substring(text.length() - 6);
-            //setText(text);
-            setToolTipText(text);
+            setToolTipText(ColorUtil.toToolTipText(c));
             setText("");
         } else {
             icon.setColor(null);

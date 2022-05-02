@@ -20,7 +20,7 @@ import java.awt.*;
  * StrokeIcon.
  *
  * @author  Werner Randelshofer
- * @version $Id: StrokeIcon.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: StrokeIcon.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class StrokeIcon implements javax.swing.Icon {
     private Stroke stroke;
@@ -30,14 +30,17 @@ public class StrokeIcon implements javax.swing.Icon {
         this.stroke = stroke;
     }
     
+    @Override
     public int getIconHeight() {
         return 12;
     }
     
+    @Override
     public int getIconWidth() {
         return 40;
     }
     
+    @Override
     public void paintIcon(java.awt.Component c, java.awt.Graphics gr, int x, int y) {
         Graphics2D g = (Graphics2D) gr;
         g.setStroke(stroke);

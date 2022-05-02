@@ -14,7 +14,8 @@
 
 package org.jhotdraw.draw;
 
-import org.jhotdraw.draw.*;
+import org.jhotdraw.annotations.NotNull;
+import org.jhotdraw.annotations.Nullable;
 
 /**
  * A <em>decorated figure</em> can be decorated with another {@link Figure},
@@ -35,8 +36,9 @@ import org.jhotdraw.draw.*;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: DecoratedFigure.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: DecoratedFigure.java 654 2010-06-25 13:27:08Z rawcoder $
  */
+@NotNull
 public interface DecoratedFigure extends Figure {
     /**
      * Sets a decorator Figure, for example a visual adornment to this Figure.
@@ -45,9 +47,9 @@ public interface DecoratedFigure extends Figure {
      * AttributeKeys.DECORATOR_INSETS. The decorator does not handle events.
      * The decorator is drawn when the figure is drawn.
      */
-    public void setDecorator(Figure newValue);
+    public void setDecorator(@Nullable Figure newValue);
     /**
      * Gets the decorator for this figure.
      */
-    public Figure getDecorator();    
+    @Nullable public Figure getDecorator();
 }

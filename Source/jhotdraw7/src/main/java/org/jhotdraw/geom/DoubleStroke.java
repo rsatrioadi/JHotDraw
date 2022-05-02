@@ -23,7 +23,7 @@ import java.awt.geom.*;
  * thickness of the outline.
  *
  * @author Werner Randelshofer
- * @version $Id: DoubleStroke.java 613 2010-01-12 10:23:31Z rawcoder $
+ * @version $Id: DoubleStroke.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class DoubleStroke implements Stroke {
 
@@ -46,6 +46,7 @@ public class DoubleStroke implements Stroke {
         outlineStroke = new BasicStroke((float) outlineWidth, cap, BasicStroke.JOIN_BEVEL, (float) miterLimit, dashes, dashPhase);
     }
 
+    @Override
     public Shape createStrokedShape(Shape s) {
         BezierPath bp = new BezierPath();
         Path2D.Double left = new Path2D.Double();

@@ -37,7 +37,7 @@ import java.util.*;
  * </pre>
  *
  * @author  Werner Randelshofer
- * @version $Id: CompositeEdit.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: CompositeEdit.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class CompositeEdit extends CompoundEdit {
     private String presentationName;
@@ -97,6 +97,7 @@ public class CompositeEdit extends CompoundEdit {
      * is returned.
      * @see javax.swing.undo.CompoundEdit#getPresentationName()
      */
+    @Override
     public String getPresentationName() {
         return (presentationName != null) ? presentationName : super.getPresentationName();
     }
@@ -106,6 +107,7 @@ public class CompositeEdit extends CompoundEdit {
      * is returned.
      * @see javax.swing.undo.CompoundEdit#getUndoPresentationName()
      */
+    @Override
     public String getUndoPresentationName() {
         return ((presentationName != null) ? UndoRedoManager.getLabels().getString("edit.undo.text")+" "+presentationName : super.getUndoPresentationName());
     }
@@ -115,6 +117,7 @@ public class CompositeEdit extends CompoundEdit {
      * is returned.
      * @see javax.swing.undo.CompoundEdit#getRedoPresentationName()
      */
+    @Override
     public String getRedoPresentationName() {
         return ((presentationName != null) ? UndoRedoManager.getLabels().getString("edit.redo.text")+" "+presentationName : super.getRedoPresentationName());
     }
@@ -131,6 +134,7 @@ public class CompositeEdit extends CompoundEdit {
      * <p>If the CompositeEdit is added to itself, then method end()
      * is called, and true is returned.</p>
      */
+    @Override
     public boolean addEdit(UndoableEdit anEdit) {
         if (anEdit == this) {
                 end();
@@ -147,6 +151,7 @@ public class CompositeEdit extends CompoundEdit {
      * that maintains the user's selection, but does not change
      * any model state.
      */
+    @Override
     public boolean isSignificant() {
         return (isSignificant) ? super.isSignificant() : false;
         //return isSignificant;

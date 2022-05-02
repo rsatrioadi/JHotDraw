@@ -22,7 +22,7 @@ import org.jhotdraw.draw.*;
  * ToFrontAction.
  *
  * @author  Werner Randelshofer
- * @version $Id: BringToFrontAction.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: BringToFrontAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class BringToFrontAction extends AbstractSelectedAction {
     
@@ -34,6 +34,7 @@ public class BringToFrontAction extends AbstractSelectedAction {
         labels.configureAction(this, ID);
     }
     
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {
         final DrawingView view = getView();
         final LinkedList<Figure> figures = new LinkedList<Figure>(view.getSelectedFigures());

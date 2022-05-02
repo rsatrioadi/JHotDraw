@@ -22,7 +22,7 @@ import org.jhotdraw.gui.plaf.palette.*;
  * A ToolBar with disclosure functionality.
  *
  * @author Werner Randelshofer
- * @version $Id: JDisclosureToolBar.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: JDisclosureToolBar.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class JDisclosureToolBar extends JToolBar {
 
@@ -54,6 +54,7 @@ public class JDisclosureToolBar extends JToolBar {
             disclosureButton.putClientProperty(DisclosureIcon.STATE_COUNT_PROPERTY, 2);
             disclosureButton.addActionListener(new ActionListener() {
 
+    @Override
                 public void actionPerformed(ActionEvent e) {
                     int newState = ((Integer) disclosureButton.getClientProperty(DisclosureIcon.CURRENT_STATE_PROPERTY) + 1) %
                             (Integer) disclosureButton.getClientProperty(DisclosureIcon.STATE_COUNT_PROPERTY);

@@ -26,7 +26,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.util.*;
 import javax.swing.*;
-import org.jhotdraw.app.action.*;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.action.*;
 import org.jhotdraw.samples.svg.action.*;
@@ -37,7 +36,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * DrawToolsPane.
  *
  * @author Werner Randelshofer
- * @version $Id: ToolsToolBar.java 592 2009-12-21 13:30:39Z rawcoder $
+ * @version $Id: ToolsToolBar.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ToolsToolBar extends AbstractToolBar {
 
@@ -208,6 +207,7 @@ public class ToolsToolBar extends AbstractToolBar {
         return "tools";
     }
 
+    @Override
     protected int getDefaultDisclosureState() {
         return 1;
     }

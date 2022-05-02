@@ -24,7 +24,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * outline of a {@link SVGPathFigure} to make editing easier.
  *
  * @author Werner Randelshofer
- * @version $Id: SVGPathOutlineHandle.java 582 2009-10-24 08:00:49Z rawcoder $
+ * @version $Id: SVGPathOutlineHandle.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class SVGPathOutlineHandle extends AbstractHandle {
 
@@ -45,10 +45,12 @@ public class SVGPathOutlineHandle extends AbstractHandle {
         this.isHoverHandle = isHoverHandle;
     }
 
+    @Override
     public SVGPathFigure getOwner() {
         return (SVGPathFigure) super.getOwner();
     }
 
+    @Override
     protected Rectangle basicGetBounds() {
         return view.drawingToView(getOwner().getDrawingArea());
     }
@@ -58,12 +60,15 @@ public class SVGPathOutlineHandle extends AbstractHandle {
         return false;
     }
 
+    @Override
     public void trackStart(Point anchor, int modifiersEx) {
     }
 
+    @Override
     public void trackStep(Point anchor, Point lead, int modifiersEx) {
     }
 
+    @Override
     public void trackEnd(Point anchor, Point lead, int modifiersEx) {
     }
 

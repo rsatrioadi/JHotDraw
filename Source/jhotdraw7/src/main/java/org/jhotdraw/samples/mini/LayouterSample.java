@@ -14,10 +14,7 @@
 package org.jhotdraw.samples.mini;
 
 import org.jhotdraw.draw.tool.DelegationSelectionTool;
-import org.jhotdraw.draw.LineFigure;
 import org.jhotdraw.draw.layouter.VerticalLayouter;
-import org.jhotdraw.draw.TextFigure;
-import org.jhotdraw.draw.GraphicalCompositeFigure;
 import javax.swing.*;
 import org.jhotdraw.draw.*;
 
@@ -26,13 +23,16 @@ import org.jhotdraw.draw.*;
  * within a graphical composite figure.
  *
  * @author Werner Randelshofer
- * @version $Id: LayouterSample.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: LayouterSample.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class LayouterSample {
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
             public void run() {
-                
+
                 // Create a graphical composite figure.
                 GraphicalCompositeFigure composite = new GraphicalCompositeFigure();
 
@@ -44,15 +44,15 @@ public class LayouterSample {
                 // Set a layouter and perform the layout
                 composite.setLayouter(new VerticalLayouter());
                 composite.layout();
-                
+
                 // Add the composite figure to a drawing
                 Drawing drawing = new DefaultDrawing();
                 drawing.add(composite);
-                
+
                 // Create a frame with a drawing view and a drawing editor
                 JFrame f = new JFrame("My Drawing");
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                f.setSize(400,300);
+                f.setSize(400, 300);
                 DrawingView view = new DefaultDrawingView();
                 view.setDrawing(drawing);
                 f.getContentPane().add(view.getComponent());

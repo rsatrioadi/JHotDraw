@@ -26,7 +26,7 @@ import java.awt.geom.*;
  * 
  * 
  * @author Werner Randelshofer
- * @version $Id: LocatorLayouter.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: LocatorLayouter.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class LocatorLayouter implements Layouter {
     /**
@@ -39,6 +39,7 @@ public class LocatorLayouter implements Layouter {
     public LocatorLayouter() {
     }
     
+    @Override
     public Rectangle2D.Double calculateLayout(CompositeFigure compositeFigure, Point2D.Double anchor, Point2D.Double lead) {
         Rectangle2D.Double bounds = null;
         
@@ -64,6 +65,7 @@ public class LocatorLayouter implements Layouter {
         return (bounds == null) ? new Rectangle2D.Double() : bounds;
     }
     
+    @Override
     public Rectangle2D.Double layout(CompositeFigure compositeFigure, Point2D.Double anchor, Point2D.Double lead) {
         Rectangle2D.Double bounds = null;
         

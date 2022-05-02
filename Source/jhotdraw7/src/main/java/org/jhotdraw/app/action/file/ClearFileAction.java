@@ -37,7 +37,7 @@ import org.jhotdraw.app.action.AbstractSaveUnsavedChangesAction;
  * This action should not be used together with {@code NewFileAction}.
  *
  * @author Werner Randelshofer
- * @version $Id: ClearFileAction.java 609 2010-01-11 19:06:35Z rawcoder $
+ * @version $Id: ClearFileAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ClearFileAction extends AbstractSaveUnsavedChangesAction {
     public final static String ID = "file.clear";
@@ -52,10 +52,12 @@ public class ClearFileAction extends AbstractSaveUnsavedChangesAction {
     @Override public void doIt(final View view) {
         view.setEnabled(false);
         view.execute(new Worker() {
+            @Override
             public Object construct() {
                 view.clear();
                 return null;
             }
+            @Override
             public void finished() {
                 view.setEnabled(true);
             }

@@ -20,7 +20,6 @@ import java.beans.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.io.*;
 import java.net.URI;
 import org.jhotdraw.app.View;
 import org.jhotdraw.net.URIUtil;
@@ -29,7 +28,7 @@ import org.jhotdraw.net.URIUtil;
  * Requests focus for a Frame.
  *
  * @author  Werner Randelshofer
- * @version $Id: FocusWindowAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: FocusWindowAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class FocusWindowAction extends AbstractAction {
     public final static String ID = "window.focus";
@@ -45,6 +44,7 @@ public class FocusWindowAction extends AbstractAction {
         setEnabled(view != null);
         
         view.addPropertyChangeListener(ppc = new PropertyChangeListener() {
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.app.Labels");
                 String name = evt.getPropertyName();
@@ -71,6 +71,7 @@ public class FocusWindowAction extends AbstractAction {
         }
     }
 
+    @Override
     public Object getValue(String key) {
         if (key == Action.NAME && view != null) {
             return getTitle();
@@ -108,6 +109,7 @@ public class FocusWindowAction extends AbstractAction {
                 ).getParent();
     }
     
+    @Override
     public void actionPerformed(ActionEvent evt) {
         /*
         JFrame frame = getFrame();

@@ -23,7 +23,7 @@ import javax.swing.tree.TreeNode;
  * as child nodes.
  *
  * @author Werner Randelshofer
- * @version $Id: FontFamilyNode.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: FontFamilyNode.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class FontFamilyNode implements MutableTreeNode, Comparable<FontFamilyNode>, Cloneable {
     private FontCollectionNode parent;
@@ -34,6 +34,7 @@ public class FontFamilyNode implements MutableTreeNode, Comparable<FontFamilyNod
         this.name = name;
     }
 
+    @Override
     public int compareTo(FontFamilyNode that) {
         return Collator.getInstance().compare(this.name, that.name);
     }
@@ -60,6 +61,7 @@ public class FontFamilyNode implements MutableTreeNode, Comparable<FontFamilyNod
         return name;
     }
     
+    @Override
     public String toString() {
         return name;
     }
@@ -68,6 +70,7 @@ public class FontFamilyNode implements MutableTreeNode, Comparable<FontFamilyNod
         insert(newChild, getChildCount());
     }
     
+    @Override
     public void insert(MutableTreeNode newChild, int index) {
         FontFamilyNode oldParent = (FontFamilyNode) newChild.getParent();
         if (oldParent != null) {
@@ -77,12 +80,14 @@ public class FontFamilyNode implements MutableTreeNode, Comparable<FontFamilyNod
         children.add(index, (FontFaceNode) newChild);
     }
 
+    @Override
     public void remove(int childIndex) {
 	MutableTreeNode child = (MutableTreeNode)getChildAt(childIndex);
 	children.remove(childIndex);
 	child.setParent(null);
     }
 
+    @Override
     public void remove(MutableTreeNode aChild) {
 	if (aChild == null) {
 	    throw new IllegalArgumentException("argument is null");
@@ -94,44 +99,54 @@ public class FontFamilyNode implements MutableTreeNode, Comparable<FontFamilyNod
 	remove(getIndex(aChild));	// linear search
     }
 
+    @Override
     public void setUserObject(Object object) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    @Override
     public void removeFromParent() {
 	if (parent != null) {
 	    parent.remove(this);
 	}
     }
 
+    @Override
     public void setParent(MutableTreeNode newParent) {
         this.parent = (FontCollectionNode) newParent;
     }
 
+    @Override
     public FontFaceNode getChildAt(int childIndex) {
         return children.get(childIndex);
     }
 
+    @Override
     public int getChildCount() {
         return children.size();
     }
 
+    @Override
     public TreeNode getParent() {
         return parent;
     }
 
+    @Override
     public int getIndex(TreeNode node) {
         return children.indexOf(node);
     }
 
+    @Override
     public boolean getAllowsChildren() {
         return true;
     }
 
+    @Override
     public boolean isLeaf() {
         return children.isEmpty();
     }
 
+    @Override
     public Enumeration children() {
         return Collections.enumeration(children);
     }

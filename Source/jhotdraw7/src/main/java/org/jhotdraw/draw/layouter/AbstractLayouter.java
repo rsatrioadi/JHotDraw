@@ -14,7 +14,6 @@
 
 package org.jhotdraw.draw.layouter;
 
-import org.jhotdraw.draw.CompositeFigure;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.geom.*;
 
@@ -23,7 +22,7 @@ import org.jhotdraw.geom.*;
  * which has its own attribute set.
  *
  * @author  Werner Randelshofer
- * @version $Id: AbstractLayouter.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: AbstractLayouter.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public abstract class AbstractLayouter implements Layouter {
     

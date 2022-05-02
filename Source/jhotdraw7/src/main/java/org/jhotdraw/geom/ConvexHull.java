@@ -27,7 +27,7 @@ import java.util.List;
  * Provides utility methods for computing the convex hull from a set of points.
  *
  * @author Werner Randelshofer
- * @version $Id: ConvexHull.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ConvexHull.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ConvexHull {
 
@@ -131,6 +131,7 @@ public class ConvexHull {
         Point[] sorted = points.clone();
         Arrays.sort(sorted, new Comparator<Point>() {
 
+    @Override
             public int compare(Point o1, Point o2) {
                 int v = o1.x - o2.x;
                 return (v == 0) ? o1.y - o2.y : v;
@@ -201,6 +202,7 @@ public class ConvexHull {
         // Sort points from left to right O(n log n)
         Point2D.Double[] sorted = points.clone();
         Arrays.sort(sorted, new Comparator<Point2D.Double>() {
+    @Override
             public int compare(Point2D.Double o1, Point2D.Double o2) {
                 double v = o1.x - o2.x;
                 if (v == 0) {

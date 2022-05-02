@@ -16,6 +16,7 @@ package org.jhotdraw.gui.fontchooser;
 
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeModel;
+import org.jhotdraw.annotations.NotNull;
 
 /**
  * This interface defines the methods components like JFontChooser
@@ -31,8 +32,9 @@ import javax.swing.tree.TreeModel;
  * </ul>
  *
  * @author Werner Randelshofer
- * @version $Id: FontChooserModel.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: FontChooserModel.java 654 2010-06-25 13:27:08Z rawcoder $
  */
+@NotNull
 public interface FontChooserModel extends TreeModel {
     /**
      * Returns <code>true</code> if <code>node</code> is editable by the user.

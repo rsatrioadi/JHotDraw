@@ -13,21 +13,17 @@
  */
 package org.jhotdraw.samples.odg.action;
 
-import org.jhotdraw.draw.CompositeFigure;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.action.*;
 import org.jhotdraw.samples.odg.figures.*;
-import org.jhotdraw.undo.*;
 import org.jhotdraw.util.*;
 import java.util.*;
-import javax.swing.*;
-import javax.swing.undo.*;
 
 /**
  * SplitPathsAction.
  *
  * @author  Werner Randelshofer
- * @version $Id: SplitAction.java 582 2009-10-24 08:00:49Z rawcoder $
+ * @version $Id: SplitAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class SplitAction extends UngroupAction {
 
@@ -41,6 +37,7 @@ public class SplitAction extends UngroupAction {
         labels.configureAction(this, ID);
     }
 
+    @Override
     protected boolean canUngroup() {
         if (super.canUngroup()) {
             return ((CompositeFigure) getView().getSelectedFigures().iterator().next()).getChildCount() > 1;

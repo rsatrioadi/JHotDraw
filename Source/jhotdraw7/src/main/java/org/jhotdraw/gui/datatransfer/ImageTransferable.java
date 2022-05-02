@@ -24,7 +24,7 @@ import javax.imageio.ImageIO;
  * A Transferable with an Image as its transfer class.
  *
  * @author Werner Randelshofer
- * @version $Id: ImageTransferable.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ImageTransferable.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ImageTransferable implements Transferable {
     private Image image;
@@ -45,11 +45,13 @@ public class ImageTransferable implements Transferable {
         this.image = image;
     }
 
+    @Override
     public boolean isDataFlavorSupported(DataFlavor flavor) {
         return flavor.equals(DataFlavor.imageFlavor) ||
                 flavor.equals(IMAGE_PNG_FLAVOR);
     }
 
+    @Override
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
         /*if (! isDataFlavorSupported(flavor)) {
             throw new UnsupportedFlavorException(flavor);
@@ -66,6 +68,7 @@ public class ImageTransferable implements Transferable {
         }
     }
 
+    @Override
     public DataFlavor[] getTransferDataFlavors() {
         return new DataFlavor[] { DataFlavor.imageFlavor, IMAGE_PNG_FLAVOR };
     }

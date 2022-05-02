@@ -19,19 +19,23 @@ package org.jhotdraw.draw.event;
  * exists as a convenience for creating {@link ToolListener} objects.
  *
  * @author Werner Randelshofer
- * @version $Id: ToolAdapter.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ToolAdapter.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ToolAdapter implements ToolListener {
 
+    @Override
     public void toolStarted(ToolEvent event) {
     }
 
+    @Override
     public void toolDone(ToolEvent event) {
     }
 
+    @Override
     public void areaInvalidated(ToolEvent e) {
     }
 
+    @Override
     public void boundsInvalidated(ToolEvent e) {
     }
 

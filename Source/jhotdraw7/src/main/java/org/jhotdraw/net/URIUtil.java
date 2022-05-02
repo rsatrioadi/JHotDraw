@@ -20,7 +20,7 @@ import java.net.URI;
  * URIUtil.
  *
  * @author Werner Randelshofer
- * @version 1.0 2009-12-16 Created.
+ * @version $Id: URIUtil.java 666 2010-07-28 19:11:46Z rawcoder $
  */
 public class URIUtil {
 

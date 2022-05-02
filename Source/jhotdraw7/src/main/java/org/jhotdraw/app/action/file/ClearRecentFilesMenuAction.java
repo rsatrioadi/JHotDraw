@@ -31,7 +31,7 @@ import org.jhotdraw.app.action.AbstractApplicationAction;
  *
  *
  * @author Werner Randelshofer.
- * @version $Id: ClearRecentFilesMenuAction.java 609 2010-01-11 19:06:35Z rawcoder $
+ * @version $Id: ClearRecentFilesMenuAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ClearRecentFilesMenuAction extends AbstractApplicationAction {
     public final static String ID = "file.clearRecentFiles";
@@ -58,6 +58,7 @@ public class ClearRecentFilesMenuAction extends AbstractApplicationAction {
     }
     private PropertyChangeListener createApplicationListener() {
         return new PropertyChangeListener() {
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName() == "recentFiles") { // Strings get interned
                     updateEnabled();
@@ -73,6 +74,7 @@ public class ClearRecentFilesMenuAction extends AbstractApplicationAction {
         app.removePropertyChangeListener(applicationListener);
     }
     
+    @Override
     public void actionPerformed(ActionEvent e) {
         getApplication().clearRecentURIs();
     }

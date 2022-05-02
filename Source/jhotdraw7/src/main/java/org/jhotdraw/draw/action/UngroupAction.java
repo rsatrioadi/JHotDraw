@@ -14,15 +14,13 @@
 
 package org.jhotdraw.draw.action;
 
-import org.jhotdraw.draw.GroupFigure;
-import org.jhotdraw.draw.CompositeFigure;
 import org.jhotdraw.draw.*;
 
 /**
  * UngroupAction.
  *
  * @author  Werner Randelshofer
- * @version $Id: UngroupAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: UngroupAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class UngroupAction extends GroupAction {
     public final static String ID = "edit.ungroupSelection";

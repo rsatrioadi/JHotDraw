@@ -16,7 +16,7 @@ package org.jhotdraw.app.action;
 import java.beans.*;
 import javax.swing.*;
 import org.jhotdraw.app.Application;
-import org.jhotdraw.beans.Disposable;
+import org.jhotdraw.app.Disposable;
 import org.jhotdraw.beans.WeakPropertyChangeListener;
 
 /**
@@ -38,7 +38,7 @@ import org.jhotdraw.beans.WeakPropertyChangeListener;
  *
  *
  * @author Werner Randelshofer.
- * @version $Id: AbstractApplicationAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: AbstractApplicationAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public abstract class AbstractApplicationAction extends AbstractAction implements Disposable {
 
@@ -72,6 +72,7 @@ public abstract class AbstractApplicationAction extends AbstractAction implement
     private PropertyChangeListener createApplicationListener() {
         return new PropertyChangeListener() {
 
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName() == "enabled") { // Strings get interned
                     updateApplicationEnabled();
@@ -126,6 +127,7 @@ public abstract class AbstractApplicationAction extends AbstractAction implement
                 Boolean.valueOf(newValue && app.isEnabled()));
     }
 
+    @Override
     public final void dispose() {
         if (app != null) {
             uninstallApplicationListeners(app);

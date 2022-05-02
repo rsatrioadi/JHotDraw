@@ -15,7 +15,6 @@ package org.jhotdraw.draw.action;
 
 import org.jhotdraw.draw.event.FigureSelectionEvent;
 import org.jhotdraw.undo.*;
-import org.jhotdraw.util.*;
 import java.util.*;
 import org.jhotdraw.draw.*;
 import static org.jhotdraw.draw.AttributeKeys.*;
@@ -24,11 +23,10 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * ApplyAttributesAction.
  *
  * @author Werner Randelshofer
- * @version $Id: ApplyAttributesAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ApplyAttributesAction.java 658 2010-06-26 11:31:53Z rawcoder $
  */
 public class ApplyAttributesAction extends AbstractSelectedAction {
 
-    private ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
     private Set<AttributeKey> excludedAttributes = new HashSet<AttributeKey>(
             Arrays.asList(new AttributeKey[]{TRANSFORM, TEXT}));
 
@@ -46,6 +44,7 @@ public class ApplyAttributesAction extends AbstractSelectedAction {
         this.excludedAttributes = a;
     }
 
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {
         applyAttributes();
     }
@@ -54,7 +53,7 @@ public class ApplyAttributesAction extends AbstractSelectedAction {
     public void applyAttributes() {
         DrawingEditor editor = getEditor();
 
-        CompositeEdit edit = new CompositeEdit(labels.getString("edit.applyAttrbutes.text"));
+        CompositeEdit edit = new CompositeEdit(labels.getString("edit.applyAttributes.text"));
         DrawingView view = getView();
         view.getDrawing().fireUndoableEditHappened(edit);
 

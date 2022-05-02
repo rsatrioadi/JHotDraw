@@ -24,7 +24,7 @@ import javax.swing.text.*;
  * the field.
  * 
  * @author Werner Randelshofer
- * @version $Id: JLifeFormattedTextField.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: JLifeFormattedTextField.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class JLifeFormattedTextField extends JFormattedTextField {
 
@@ -38,14 +38,17 @@ public class JLifeFormattedTextField extends JFormattedTextField {
      */
     private class DocumentHandler implements DocumentListener {
 
+    @Override
         public void insertUpdate(DocumentEvent e) {
             updateValue();
         }
 
+    @Override
         public void removeUpdate(DocumentEvent e) {
             updateValue();
         }
 
+    @Override
         public void changedUpdate(DocumentEvent e) {
             updateValue();
         }

@@ -33,7 +33,7 @@ import org.jhotdraw.app.action.AbstractApplicationAction;
  * called.
  *
  * @author  Werner Randelshofer
- * @version $Id: AboutAction.java 608 2010-01-11 18:46:00Z rawcoder $
+ * @version $Id: AboutAction.java 654 2010-06-25 13:27:08Z rawcoder $
  */
 public class AboutAction extends AbstractApplicationAction {
 
@@ -46,6 +46,7 @@ public class AboutAction extends AbstractApplicationAction {
         labels.configureAction(this, ID);
     }
 
+    @Override
     public void actionPerformed(ActionEvent evt) {
         Application app = getApplication();
 

@@ -22,7 +22,7 @@ import org.jhotdraw.draw.*;
  * ZoomAction.
  *
  * @author  Werner Randelshofer
- * @version $Id: ZoomAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ZoomAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ZoomAction extends AbstractDrawingViewAction {
     private double scaleFactor;
@@ -47,6 +47,7 @@ public class ZoomAction extends AbstractDrawingViewAction {
         putValue(Action.NAME, label);
     }
     
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {
         if (button != null) {
             button.setText(label);
@@ -55,6 +56,7 @@ public class ZoomAction extends AbstractDrawingViewAction {
         final double oldFactor = getView().getScaleFactor();
         getView().setScaleFactor(scaleFactor);
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 if (vRect != null) {
                     vRect.x = (int) (vRect.x / oldFactor * scaleFactor);

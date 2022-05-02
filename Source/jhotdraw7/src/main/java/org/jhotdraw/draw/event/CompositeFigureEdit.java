@@ -23,7 +23,7 @@ import org.jhotdraw.undo.CompositeEdit;
  * and {@code figure.changed} when undoing or redoing a change.
  *
  * @author Werner Randelshofer
- * @version 1.0 2009-06-13 Created.
+ * @version $Id: CompositeFigureEdit.java 666 2010-07-28 19:11:46Z rawcoder $
  */
 public class CompositeFigureEdit extends CompositeEdit {
 

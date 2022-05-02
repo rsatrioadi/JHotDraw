@@ -14,7 +14,7 @@
 
 package org.jhotdraw.samples.odg;
 
-import org.jhotdraw.gui.event.FigureAttributeEditorHandler;
+import org.jhotdraw.draw.event.FigureAttributeEditorHandler;
 import org.jhotdraw.text.JavaNumberFormatter;
 import java.awt.*;
 import javax.swing.*;
@@ -28,7 +28,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * of a ODGFigure.
  * 
  * @author Werner Randelshofer
- * @version $Id: ODGPropertiesPanel.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: ODGPropertiesPanel.java 621 2010-01-17 13:43:26Z rawcoder $
  */
 public class ODGPropertiesPanel extends javax.swing.JPanel {
     private ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.samples.odg.Labels");

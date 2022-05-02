@@ -23,7 +23,7 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * make adjustments easier.
  *
  * @author Werner Randelshofer
- * @version $Id: BoundsOutlineHandle.java 582 2009-10-24 08:00:49Z rawcoder $
+ * @version $Id: BoundsOutlineHandle.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class BoundsOutlineHandle extends AbstractHandle {
 
@@ -126,12 +126,15 @@ public class BoundsOutlineHandle extends AbstractHandle {
         return false;
     }
 
+    @Override
     public void trackStart(Point anchor, int modifiersEx) {
     }
 
+    @Override
     public void trackStep(Point anchor, Point lead, int modifiersEx) {
     }
 
+    @Override
     public void trackEnd(Point anchor, Point lead, int modifiersEx) {
     }
 

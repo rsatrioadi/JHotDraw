@@ -33,7 +33,7 @@ import java.util.*;
  *
  *
  * @author Werner Randelshofer
- * @version $Id: TransformEdit.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: TransformEdit.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class TransformEdit extends AbstractUndoableEdit {
     private Collection<Figure> figures;
@@ -49,11 +49,13 @@ public class TransformEdit extends AbstractUndoableEdit {
         this.figures = figures;
         this.tx = (AffineTransform) tx.clone();
     }
+    @Override
     public String getPresentationName() {
         ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
         return labels.getString("edit.transform.text");
     }
     
+    @Override
     public boolean addEdit(UndoableEdit anEdit) {
         if (anEdit instanceof TransformEdit) {
             TransformEdit that = (TransformEdit) anEdit;
@@ -65,6 +67,7 @@ public class TransformEdit extends AbstractUndoableEdit {
         }
         return false;
     }
+    @Override
     public boolean replaceEdit(UndoableEdit anEdit) {
         if (anEdit instanceof TransformEdit) {
             TransformEdit that = (TransformEdit) anEdit;
@@ -77,6 +80,7 @@ public class TransformEdit extends AbstractUndoableEdit {
         return false;
     }
     
+    @Override
     public void redo() throws CannotRedoException {
         super.redo();
         for (Figure f : figures) {
@@ -86,6 +90,7 @@ public class TransformEdit extends AbstractUndoableEdit {
             
         }
     }
+    @Override
     public void undo() throws CannotUndoException {
         super.undo();
         try {
@@ -99,6 +104,7 @@ public class TransformEdit extends AbstractUndoableEdit {
             e.printStackTrace();
         }
     }
+    @Override
     public String toString() {
         return getClass().getName()+'@'+hashCode()+" tx:"+tx;
     }

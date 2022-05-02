@@ -32,7 +32,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * it will apply the text action to the JTextComponent.
  *
  * @author  Werner Randelshofer
- * @version $Id: AttributeToggler.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: AttributeToggler.java 660 2010-07-08 20:52:06Z rawcoder $
  */
 public class AttributeToggler<T> extends AbstractAction {
     private DrawingEditor editor;
@@ -60,6 +60,7 @@ public class AttributeToggler<T> extends AbstractAction {
         return editor;
     }
     
+    @Override
     public void actionPerformed(ActionEvent evt) {
         if (compatibleTextAction != null) {
             Component focusOwner = KeyboardFocusManager.
@@ -120,7 +121,7 @@ public class AttributeToggler<T> extends AbstractAction {
             public void redo() {
                 super.redo();
                 for (Figure figure : selectedFigures) {
-                    restoreData.add(figure.getAttributesRestoreData());
+                    //restoreData.add(figure.getAttributesRestoreData());
                     figure.willChange();
                     figure.set(key, newValue);
                     figure.changed();

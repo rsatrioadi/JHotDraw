@@ -15,7 +15,6 @@ package org.jhotdraw.samples.svg.figures;
 
 import org.jhotdraw.draw.handle.TransformHandleKit;
 import org.jhotdraw.draw.handle.Handle;
-import org.jhotdraw.draw.BezierFigure;
 import org.jhotdraw.draw.handle.BezierNodeHandle;
 import java.awt.BasicStroke;
 import java.awt.event.*;
@@ -32,7 +31,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * represent a single BezierPath segment within an SVG path.
  *
  * @author Werner Randelshofer
- * @version $Id: SVGBezierFigure.java 582 2009-10-24 08:00:49Z rawcoder $
+ * @version $Id: SVGBezierFigure.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class SVGBezierFigure extends BezierFigure {
 
@@ -113,6 +112,7 @@ public class SVGBezierFigure extends BezierFigure {
         return false;
     }
 
+    @Override
     public void transform(AffineTransform tx) {
         if (get(TRANSFORM) != null ||
                 (tx.getType() & (AffineTransform.TYPE_TRANSLATION)) != tx.getType()) {
@@ -128,6 +128,7 @@ public class SVGBezierFigure extends BezierFigure {
         }
     }
 
+    @Override
     public Rectangle2D.Double getDrawingArea() {
         if (cachedDrawingArea == null) {
             if (get(TRANSFORM) == null) {
@@ -236,6 +237,7 @@ public class SVGBezierFigure extends BezierFigure {
         invalidate();
     }
 
+    @Override
     public void invalidate() {
         super.invalidate();
         cachedDrawingArea = null;

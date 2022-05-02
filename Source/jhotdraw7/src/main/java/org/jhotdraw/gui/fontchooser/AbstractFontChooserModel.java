@@ -22,7 +22,7 @@ import javax.swing.tree.*;
  * AbstractFontChooserModel.
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractFontChooserModel.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: AbstractFontChooserModel.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public abstract class AbstractFontChooserModel implements FontChooserModel {
     /** Listeners. */
@@ -38,6 +38,7 @@ public abstract class AbstractFontChooserModel implements FontChooserModel {
      * @see     #removeTreeModelListener
      * @param   l       the listener to add
      */
+    @Override
     public void addTreeModelListener(TreeModelListener l) {
         listenerList.add(TreeModelListener.class, l);
     }
@@ -48,6 +49,7 @@ public abstract class AbstractFontChooserModel implements FontChooserModel {
      * @see     #addTreeModelListener
      * @param   l       the listener to remove
      */  
+    @Override
     public void removeTreeModelListener(TreeModelListener l) {
         listenerList.remove(TreeModelListener.class, l);
     }

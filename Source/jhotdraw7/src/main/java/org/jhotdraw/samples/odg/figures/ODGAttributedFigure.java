@@ -22,17 +22,14 @@ import org.jhotdraw.draw.*;
 import java.awt.*;
 import java.awt.geom.*;
 import java.util.*;
-import java.io.*;
 import org.jhotdraw.samples.odg.*;
 import static org.jhotdraw.samples.odg.ODGAttributeKeys.*;
-import org.jhotdraw.geom.*;
 import org.jhotdraw.util.*;
-import org.jhotdraw.xml.*;
 /**
  * ODGAttributedFigure.
  *
  * @author Werner Randelshofer
- * @version $Id: ODGAttributedFigure.java 564 2009-10-10 10:21:01Z rawcoder $
+ * @version $Id: ODGAttributedFigure.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public abstract class ODGAttributedFigure extends AbstractAttributedFigure implements ODGFigure {
     
@@ -40,6 +37,7 @@ public abstract class ODGAttributedFigure extends AbstractAttributedFigure imple
     public ODGAttributedFigure() {
     }
     
+    @Override
     public void draw(Graphics2D g)  {
         double opacity = get(OPACITY);
         opacity = Math.min(Math.max(0d, opacity), 1d);
@@ -130,11 +128,5 @@ public abstract class ODGAttributedFigure extends AbstractAttributedFigure imple
             });
         }
         return actions;
-    }
-    @Override final public void write(DOMOutput out) throws IOException {
-        throw new UnsupportedOperationException("Use ODGStorableOutput to write this Figure.");
-    }
-    @Override final public void read(DOMInput in) throws IOException {
-        throw new UnsupportedOperationException("Use ODGStorableInput to read this Figure.");
     }
 }

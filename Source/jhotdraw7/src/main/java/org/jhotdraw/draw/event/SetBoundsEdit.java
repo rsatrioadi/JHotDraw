@@ -17,13 +17,12 @@ package org.jhotdraw.draw.event;
 
 import org.jhotdraw.draw.*;
 import javax.swing.undo.*;
-import java.awt.*;
 import java.awt.geom.*;
 /**
  * SetBoundsEdit.
  *
  * @author Werner Randelshofer
- * @version $Id: SetBoundsEdit.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: SetBoundsEdit.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class SetBoundsEdit extends AbstractUndoableEdit {
     private AbstractFigure owner;
@@ -38,10 +37,13 @@ public class SetBoundsEdit extends AbstractUndoableEdit {
         this.newAnchor = newAnchor;
         this.newLead = newLead;
     }
+    @Override
     public String getPresentationName() {
+        // XXX - Localize me
         return "Abmessungen \u00e4ndern";
     }
     
+    @Override
     public boolean addEdit(UndoableEdit anEdit) {
         if (anEdit instanceof SetBoundsEdit) {
             SetBoundsEdit that = (SetBoundsEdit) anEdit;
@@ -54,6 +56,7 @@ public class SetBoundsEdit extends AbstractUndoableEdit {
         }
         return false;
     }
+    @Override
     public boolean replaceEdit(UndoableEdit anEdit) {
         if (anEdit instanceof SetBoundsEdit) {
             SetBoundsEdit that = (SetBoundsEdit) anEdit;
@@ -67,12 +70,14 @@ public class SetBoundsEdit extends AbstractUndoableEdit {
         return false;
     }
     
+    @Override
     public void redo() throws CannotRedoException {
         super.redo();
         owner.willChange();
         owner.setBounds(newAnchor, newLead);
         owner.changed();
     }
+    @Override
     public void undo() throws CannotUndoException {
         super.undo();
         owner.willChange();

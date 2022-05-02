@@ -13,7 +13,6 @@
  */
 package org.jhotdraw.gui.plaf.palette;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 import javax.swing.*;
 import javax.swing.plaf.*;
@@ -23,7 +22,7 @@ import javax.swing.plaf.basic.*;
  * ButtonUI for palette components.
  *
  * @author Werner Randelshofer
- * @version $Id: PaletteButtonUI.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: PaletteButtonUI.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class PaletteButtonUI extends BasicButtonUI {
     // Shared UI object

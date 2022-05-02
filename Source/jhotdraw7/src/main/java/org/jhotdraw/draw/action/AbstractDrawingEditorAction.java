@@ -36,7 +36,7 @@ import org.jhotdraw.beans.WeakPropertyChangeListener;
  * become garbage collected if it is not referenced by any other object.
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractDrawingEditorAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: AbstractDrawingEditorAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public abstract class AbstractDrawingEditorAction extends AbstractAction {
 
@@ -44,6 +44,7 @@ public abstract class AbstractDrawingEditorAction extends AbstractAction {
 
     private class EventHandler implements PropertyChangeListener {
 
+        @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if (evt.getPropertyName().equals("enabled")) {
                 updateEnabledState();

@@ -22,7 +22,7 @@ import java.beans.*;
  * listeners.
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractBean.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: AbstractBean.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class AbstractBean extends Object implements java.io.Serializable, Cloneable {
 
@@ -108,6 +108,7 @@ public class AbstractBean extends Object implements java.io.Serializable, Clonea
         propertySupport.firePropertyChange(propertyName, oldValue, newValue);
     }
 
+    @Override
     public AbstractBean clone() {
         AbstractBean that;
         try {

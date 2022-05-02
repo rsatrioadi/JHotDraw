@@ -14,16 +14,16 @@
 
 package org.jhotdraw.samples.svg.io;
 
+import org.jhotdraw.gui.filechooser.ExtensionFileFilter;
 import java.io.*;
 import java.util.zip.GZIPInputStream;
 import org.jhotdraw.draw.*;
-import org.jhotdraw.io.*;
 
 /**
  * SVGZInputFormat supports reading of uncompressed and compressed SVG images.
  *
  * @author Werner Randelshofer
- * @version $Id: SVGZInputFormat.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: SVGZInputFormat.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class SVGZInputFormat extends SVGInputFormat {
     
@@ -31,6 +31,7 @@ public class SVGZInputFormat extends SVGInputFormat {
     public SVGZInputFormat() {
     }
     
+    @Override
     public javax.swing.filechooser.FileFilter getFileFilter() {
         return new ExtensionFileFilter("Scalable Vector Graphics (SVG, SVGZ)", new String[] {"svg", "svgz"});
     }

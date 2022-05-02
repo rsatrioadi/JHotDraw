@@ -22,7 +22,7 @@ import javax.swing.Icon;
  * EmptyIcon.
  *
  * @author Werner Randelshofer
- * @version $Id: EmptyIcon.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: EmptyIcon.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class EmptyIcon implements Icon {
     private int width;
@@ -33,13 +33,16 @@ public class EmptyIcon implements Icon {
         this.height = height;
     }
 
+    @Override
     public void paintIcon(Component c, Graphics g, int x, int y) {
     }
 
+    @Override
     public int getIconWidth() {
         return width;
     }
 
+    @Override
     public int getIconHeight() {
         return height;
     }

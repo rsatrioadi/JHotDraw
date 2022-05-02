@@ -55,7 +55,7 @@ import org.jhotdraw.util.*;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: CreationTool.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: CreationTool.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class CreationTool extends AbstractTool {
 
@@ -190,6 +190,7 @@ public class CreationTool extends AbstractTool {
         }
     }
 
+    @Override
     public void mousePressed(MouseEvent evt) {
         super.mousePressed(evt);
         getView().clearSelection();
@@ -201,6 +202,7 @@ public class CreationTool extends AbstractTool {
         getDrawing().add(createdFigure);
     }
 
+    @Override
     public void mouseDragged(MouseEvent evt) {
         if (createdFigure != null) {
             Point2D.Double p = constrainPoint(new Point(evt.getX(), evt.getY()));
@@ -212,6 +214,7 @@ public class CreationTool extends AbstractTool {
         }
     }
 
+    @Override
     public void mouseReleased(MouseEvent evt) {
         if (createdFigure != null) {
             Rectangle2D.Double bounds = createdFigure.getBounds();

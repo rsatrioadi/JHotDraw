@@ -23,7 +23,7 @@ import javax.swing.text.Document;
  * JLifeFormattedTextArea.
  *
  * @author Werner Randelshofer
- * @version $Id: JLifeFormattedTextArea.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: JLifeFormattedTextArea.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class JLifeFormattedTextArea extends JTextArea {
 
@@ -49,6 +49,7 @@ public class JLifeFormattedTextArea extends JTextArea {
             formattedTextFieldAdapter = new JLifeFormattedTextField();
             handler = new PropertyChangeListener() {
 
+    @Override
                 public void propertyChange(PropertyChangeEvent evt) {
                     if (evt.getSource() == formattedTextFieldAdapter &&//
                             evt.getPropertyName() == "value") {

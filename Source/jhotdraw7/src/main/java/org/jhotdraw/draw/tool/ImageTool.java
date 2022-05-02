@@ -44,7 +44,7 @@ import org.jhotdraw.gui.Worker;
  * <hr>
  * 
  * @author Werner Randelshofer
- * @version $Id: ImageTool.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ImageTool.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ImageTool extends CreationTool {
 
@@ -108,6 +108,7 @@ public class ImageTool extends CreationTool {
             final ImageHolderFigure loaderFigure = ((ImageHolderFigure) prototype.clone());
             Worker worker = new Worker() {
 
+                @Override
                 protected Object construct() throws IOException {
                     ((ImageHolderFigure) loaderFigure).loadImage(file);
                     return null;

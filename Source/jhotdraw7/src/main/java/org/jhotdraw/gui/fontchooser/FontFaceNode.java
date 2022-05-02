@@ -23,7 +23,7 @@ import javax.swing.tree.TreeNode;
  * A FontFaceNode is a MutableTreeNode which does not allow children.
  *
  * @author Werner Randelshofer
- * @version $Id: FontFaceNode.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: FontFaceNode.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class FontFaceNode implements MutableTreeNode, Comparable<FontFaceNode>, Cloneable {
 
@@ -119,61 +119,75 @@ public class FontFaceNode implements MutableTreeNode, Comparable<FontFaceNode>, 
         return name;
     }
 
+    @Override
     public void insert(MutableTreeNode child, int index) {
         throw new UnsupportedOperationException("Not allowed.");
     }
 
+    @Override
     public void remove(int index) {
         throw new UnsupportedOperationException("Not allowed.");
     }
 
+    @Override
     public void remove(MutableTreeNode node) {
         throw new UnsupportedOperationException("Not allowed.");
     }
 
+    @Override
     public void setUserObject(Object object) {
         throw new UnsupportedOperationException("Not allowed.");
     }
 
+    @Override
     public void removeFromParent() {
         if (parent != null) {
             parent.remove(this);
         }
     }
 
+    @Override
     public void setParent(MutableTreeNode newParent) {
         this.parent = (FontFamilyNode) newParent;
     }
 
+    @Override
     public TreeNode getChildAt(int childIndex) {
         throw new IndexOutOfBoundsException("" + childIndex);
     }
 
+    @Override
     public int getChildCount() {
         return 0;
     }
 
+    @Override
     public TreeNode getParent() {
         return parent;
     }
 
+    @Override
     public int getIndex(TreeNode node) {
         return -1;
     }
 
+    @Override
     public boolean getAllowsChildren() {
         return false;
     }
 
+    @Override
     public boolean isLeaf() {
         return true;
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public Enumeration children() {
         return Collections.enumeration(Collections.EMPTY_LIST);
     }
 
+    @Override
     public int compareTo(FontFaceNode that) {
         return this.name.compareTo(that.name);
     }

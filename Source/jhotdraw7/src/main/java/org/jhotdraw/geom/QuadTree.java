@@ -17,7 +17,6 @@ package org.jhotdraw.geom;
 
 import java.awt.geom.*;
 import java.util.*;
-import java.awt.*;
 /**
  * A QuadTree allows to quickly find an object on a two-dimensional space.
  * <p>
@@ -27,7 +26,7 @@ import java.awt.*;
  * lower left and lower right quadrant of the parent rectangle. 
  *
  * @author  Werner Randelshofer
- * @version $Id: QuadTree.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: QuadTree.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class QuadTree<T> {
     private HashMap<T,Rectangle2D.Double> outside = new HashMap<T,Rectangle2D.Double>();

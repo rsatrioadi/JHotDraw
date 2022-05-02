@@ -26,13 +26,9 @@ import org.jhotdraw.samples.svg.action.*;
 import org.jhotdraw.samples.svg.figures.*;
 import org.jhotdraw.undo.*;
 import org.jhotdraw.util.*;
-
 import java.awt.*;
-import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import org.jhotdraw.app.action.*;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.action.*;
 /**
@@ -40,7 +36,7 @@ import org.jhotdraw.draw.action.*;
  * 
  * 
  * @author Werner Randelshofer
- * @version $Id: ODGDrawingPanel.java 592 2009-12-21 13:30:39Z rawcoder $
+ * @version $Id: ODGDrawingPanel.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ODGDrawingPanel extends JPanel  {
     private UndoRedoManager undoManager;

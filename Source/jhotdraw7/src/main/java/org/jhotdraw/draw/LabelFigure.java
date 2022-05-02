@@ -17,9 +17,6 @@ package org.jhotdraw.draw;
 import org.jhotdraw.draw.tool.Tool;
 import org.jhotdraw.draw.event.FigureListener;
 import org.jhotdraw.draw.event.FigureEvent;
-import org.jhotdraw.draw.*;
-import org.jhotdraw.draw.TextFigure;
-import org.jhotdraw.draw.TextHolderFigure;
 import org.jhotdraw.draw.tool.TextEditingTool;
 import java.awt.geom.*;
 import java.util.*;
@@ -31,7 +28,7 @@ import java.util.*;
  * FIXME - Move FigureListener into inner class.
  *
  * @author  Werner Randelshofer
- * @version $Id: LabelFigure.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: LabelFigure.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class LabelFigure extends TextFigure implements FigureListener {
     private TextHolderFigure target;
@@ -54,6 +51,7 @@ public class LabelFigure extends TextFigure implements FigureListener {
             this.target.addFigureListener(this);
         }
     }
+    @Override
     public TextHolderFigure getLabelFor() {
         return (target == null) ? this : target;
     }
@@ -62,23 +60,29 @@ public class LabelFigure extends TextFigure implements FigureListener {
      * Returns a specialized tool for the given coordinate.
      * <p>Returns null, if no specialized tool is available.
      */
+    @Override
     public Tool getTool(Point2D.Double p) {
         return (target != null && contains(p)) ? new TextEditingTool(target) : null;
     }
     
     
+    @Override
     public void areaInvalidated(FigureEvent e) {
     }
     
+    @Override
     public void attributeChanged(FigureEvent e) {
     }
     
+    @Override
     public void figureAdded(FigureEvent e) {
     }
     
+    @Override
     public void figureChanged(FigureEvent e) {
     }
     
+    @Override
     public void figureRemoved(FigureEvent e) {
         if (e.getFigure() == target) {
             target.removeFigureListener(this);
@@ -86,6 +90,7 @@ public class LabelFigure extends TextFigure implements FigureListener {
         }
     }
     
+    @Override
     public void figureRequestRemove(FigureEvent e) {
     }
     
@@ -102,6 +107,7 @@ public class LabelFigure extends TextFigure implements FigureListener {
         }
     }
 
+    @Override
     public void figureHandlesChanged(FigureEvent e) {
     }
 }

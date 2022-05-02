@@ -25,7 +25,7 @@ import org.jhotdraw.geom.*;
  * <p>
  *
  * @author Werner Randelshofer
- * @version $Id: ChopEllipseConnector.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ChopEllipseConnector.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ChopEllipseConnector extends ChopRectangleConnector {
     /** 
@@ -46,6 +46,7 @@ public class ChopEllipseConnector extends ChopRectangleConnector {
         return (w == null) ? 1f : w.floatValue();
     }
 
+    @Override
     protected Point2D.Double chop(Figure target, Point2D.Double from) {
         target =  getConnectorTarget(target);
         Rectangle2D.Double r = target.getBounds();

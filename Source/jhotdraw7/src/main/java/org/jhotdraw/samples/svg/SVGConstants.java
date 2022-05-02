@@ -17,14 +17,13 @@ package org.jhotdraw.samples.svg;
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
-import org.jhotdraw.draw.*;
 import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
 
 /**
  * SVGConstants.
  *
  * @author Werner Randelshofer
- * @version $Id: SVGConstants.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: SVGConstants.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class SVGConstants {
     public final static String SVG_NAMESPACE = "http://www.w3.org/2000/svg";

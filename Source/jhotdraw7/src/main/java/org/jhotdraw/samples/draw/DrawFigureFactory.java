@@ -14,18 +14,6 @@
 
 package org.jhotdraw.samples.draw;
 
-import org.jhotdraw.draw.TriangleFigure;
-import org.jhotdraw.draw.RoundRectangleFigure;
-import org.jhotdraw.draw.RectangleFigure;
-import org.jhotdraw.draw.LineFigure;
-import org.jhotdraw.draw.EllipseFigure;
-import org.jhotdraw.draw.DiamondFigure;
-import org.jhotdraw.draw.BezierFigure;
-import org.jhotdraw.draw.TextFigure;
-import org.jhotdraw.draw.TextAreaFigure;
-import org.jhotdraw.draw.LineConnectionFigure;
-import org.jhotdraw.draw.ImageFigure;
-import org.jhotdraw.draw.GroupFigure;
 import org.jhotdraw.draw.liner.ElbowLiner;
 import org.jhotdraw.draw.liner.CurvedLiner;
 import org.jhotdraw.draw.connector.ChopTriangleConnector;
@@ -35,14 +23,13 @@ import org.jhotdraw.draw.connector.ChopEllipseConnector;
 import org.jhotdraw.draw.connector.ChopDiamondConnector;
 import org.jhotdraw.draw.connector.ChopBezierConnector;
 import org.jhotdraw.draw.decoration.ArrowTip;
-import java.util.*;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.xml.DefaultDOMFactory;
 /**
  * DrawFigureFactory.
  *
  * @author  Werner Randelshofer
- * @version $Id: DrawFigureFactory.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: DrawFigureFactory.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class DrawFigureFactory extends DefaultDOMFactory {
     private final static Object[][] classTagArray = {

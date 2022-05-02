@@ -46,7 +46,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: TextEditingTool.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: TextEditingTool.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class TextEditingTool extends AbstractTool implements ActionListener {
 
@@ -148,6 +148,7 @@ public class TextEditingTool extends AbstractTool implements ActionListener {
         }
     }
 
+    @Override
     public void actionPerformed(ActionEvent event) {
         endEdit();
         fireToolDone();
@@ -166,6 +167,7 @@ public class TextEditingTool extends AbstractTool implements ActionListener {
         }
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
         throw new UnsupportedOperationException("Not supported yet.");
     }

@@ -46,7 +46,7 @@ import org.jhotdraw.util.prefs.PreferencesUtil;
  * This action should not be used together with {@link LoadFileAction}.
  *
  * @author  Werner Randelshofer
- * @version $Id: OpenFileAction.java 611 2010-01-11 21:18:29Z rawcoder $
+ * @version $Id: OpenFileAction.java 649 2010-04-18 08:31:31Z rawcoder $
  */
 public class OpenFileAction extends AbstractApplicationAction {
 
@@ -226,7 +226,7 @@ public class OpenFileAction extends AbstractApplicationAction {
         }
 
         JDialog dialog;
-        Window window = (parent instanceof Window) ? (Window) parent : SwingUtilities.getWindowAncestor(parent);
+        Window window = (parent==null ||(parent instanceof Window)) ? (Window) parent : SwingUtilities.getWindowAncestor(parent);
         if (window instanceof Frame) {
             dialog = new JDialog((Frame) window, title, true);
         } else {

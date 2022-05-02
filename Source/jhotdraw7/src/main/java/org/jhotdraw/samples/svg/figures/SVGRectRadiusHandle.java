@@ -19,7 +19,6 @@ import org.jhotdraw.draw.event.CompositeFigureEdit;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.geom.*;
 import org.jhotdraw.util.*;
-import org.jhotdraw.undo.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.*;
@@ -30,7 +29,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * A Handle to manipulate the radius of a round lead rectangle.
  *
  * @author  Werner Randelshofer
- * @version $Id: SVGRectRadiusHandle.java 582 2009-10-24 08:00:49Z rawcoder $
+ * @version $Id: SVGRectRadiusHandle.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class SVGRectRadiusHandle extends AbstractHandle {
 
@@ -59,6 +58,7 @@ public class SVGRectRadiusHandle extends AbstractHandle {
         }
     }
 
+    @Override
     protected Rectangle basicGetBounds() {
         Rectangle r = new Rectangle(locate());
         r.grow(getHandlesize() / 2 + 1, getHandlesize() / 2 + 1);
@@ -77,11 +77,13 @@ public class SVGRectRadiusHandle extends AbstractHandle {
         return view.drawingToView(p);
     }
 
+    @Override
     public void trackStart(Point anchor, int modifiersEx) {
         SVGRectFigure svgRect = (SVGRectFigure) getOwner();
         originalArc2D = new Dimension2DDouble(svgRect.getArcWidth(), svgRect.getArcHeight());
     }
 
+    @Override
     public void trackStep(Point anchor, Point lead, int modifiersEx) {
         int dx = lead.x - anchor.x;
         int dy = lead.y - anchor.y;
@@ -104,6 +106,7 @@ public class SVGRectRadiusHandle extends AbstractHandle {
         owner.changed();
     }
 
+    @Override
     public void trackEnd(Point anchor, Point lead, int modifiersEx) {
         final SVGRectFigure svgRect = (SVGRectFigure) getOwner();
         final Dimension2DDouble oldValue = originalArc2D;

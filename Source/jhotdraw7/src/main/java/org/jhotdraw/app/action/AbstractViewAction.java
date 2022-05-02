@@ -30,7 +30,7 @@ import org.jhotdraw.app.View;
  * is invoked.
  * 
  * @author Werner Randelshofer
- * @version $Id: AbstractViewAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: AbstractViewAction.java 648 2010-03-21 12:55:45Z rawcoder $
  */
 public abstract class AbstractViewAction extends AbstractAction {
 
@@ -41,6 +41,7 @@ public abstract class AbstractViewAction extends AbstractAction {
     public final static String ENABLED_PROPERTY = "enabled";
     private PropertyChangeListener applicationListener = new PropertyChangeListener() {
 
+        @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if (evt.getPropertyName() == Application.ACTIVE_VIEW_PROPERTY) { // Strings get interned
                 updateView((View) evt.getOldValue(), (View) evt.getNewValue());
@@ -49,6 +50,7 @@ public abstract class AbstractViewAction extends AbstractAction {
     };
     private PropertyChangeListener viewListener = new PropertyChangeListener() {
 
+        @Override
         public void propertyChange(PropertyChangeEvent evt) {
             String name = evt.getPropertyName();
             if (name == "enabled") { // Strings get interned
@@ -69,7 +71,6 @@ public abstract class AbstractViewAction extends AbstractAction {
         } else {
             view.addPropertyChangeListener(viewListener);
         }
-        updateView(null, getActiveView());
     }
 
     /**

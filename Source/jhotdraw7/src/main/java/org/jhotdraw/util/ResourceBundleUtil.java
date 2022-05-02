@@ -58,8 +58,8 @@ import java.net.*;
  * </li>
  * </ul>
  *
- * @author  Werner Randelshofer, Staldenmattweg 2, CH-6405 Immensee, Switzerland
- * @version $Id: ResourceBundleUtil.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @author  Werner Randelshofer, Hausmatt 10, CH-6405 Immensee, Switzerland
+ * @version $Id: ResourceBundleUtil.java 648 2010-03-21 12:55:45Z rawcoder $
  */
 public class ResourceBundleUtil implements Serializable {
 

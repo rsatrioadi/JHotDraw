@@ -19,6 +19,8 @@ import org.jhotdraw.util.ResourceBundleUtil;
 import java.awt.*;
 import java.awt.geom.*;
 import java.util.*;
+import org.jhotdraw.annotations.NotNull;
+import org.jhotdraw.annotations.Nullable;
 import org.jhotdraw.geom.*;
 
 /**
@@ -29,8 +31,9 @@ import org.jhotdraw.geom.*;
  * class, and to define all needed AttributeKeys as static variables in there.
  *
  * @author Werner Randelshofer
- * @version $Id: AttributeKeys.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: AttributeKeys.java 656 2010-06-26 08:48:05Z rawcoder $
  */
+@NotNull
 public class AttributeKeys {
 
     private final static ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
@@ -124,8 +127,8 @@ public class AttributeKeys {
     /**
      * Factor for the stroke inner width. This is a double. The default value
      * is 2.
-     *
-     * @deprecated This is not flexible enough. Lets replace this with a 
+     * <p>
+     * FIXME - This is not flexible enough. Lets replace this with a
      * STROKE_STRIPES_ARRAY<Double[]> and a IS_STROKE_STRIPES_FACTOR.
      */
     public final static AttributeKey<Double> STROKE_INNER_WIDTH_FACTOR = new AttributeKey<Double>("innerStrokeWidthFactor", Double.class, 2d, false, labels);
@@ -175,8 +178,6 @@ public class AttributeKeys {
         /**
          * If STROKE_TYPE is put to this value, a DoubleStroke instance is used
          * for stroking.
-         * @deprecated This is not flexible enough. Lets replace this with
-         * STRIPED. for example to support for striped strokes.  
          */
         DOUBLE
     }
@@ -486,7 +487,7 @@ public class AttributeKeys {
         }
     }
 
-    public static Font getFont(Figure f) {
+    @Nullable public static Font getFont(Figure f) {
         Font prototype = f.get(FONT_FACE);
         if (prototype == null) {
             return null;

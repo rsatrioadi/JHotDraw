@@ -63,7 +63,7 @@ import java.lang.reflect.*;
  * </pre>
  *
  * @author Werner Randelshofer
- * @version $Id: GenericListener.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: GenericListener.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public abstract class GenericListener {
     /**
@@ -144,6 +144,7 @@ public abstract class GenericListener {
      */
     private static class DefaultInvoker implements InvocationHandler  {
         
+    @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             if (method.getDeclaringClass() == Object.class)  {
                 String methodName = method.getName();

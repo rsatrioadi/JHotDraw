@@ -27,7 +27,7 @@ import org.jhotdraw.draw.*;
  * {@link SelectionColorIcon }.
  * 
  * @author Werner Randelshofer
- * @version $Id: SelectionColorChooserAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: SelectionColorChooserAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class SelectionColorChooserAction extends EditorColorChooserAction {
     
@@ -51,6 +51,7 @@ public class SelectionColorChooserAction extends EditorColorChooserAction {
         super(editor, key, name, icon, fixedAttributes);
     }
     
+    @Override
     protected Color getInitialColor() {
         Color initialColor = null;
         
@@ -60,7 +61,7 @@ public class SelectionColorChooserAction extends EditorColorChooserAction {
             initialColor = f.get(key);
         }
         if (initialColor == null) {
-            initialColor = super.getInitialColor();;
+            initialColor = super.getInitialColor();
         }
         return initialColor;
     }

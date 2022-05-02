@@ -25,7 +25,7 @@ import org.jhotdraw.app.action.ActionUtil;
  * ViewPropertyAction.
  * 
  * @author Werner Randelshofer.
- * @version $Id: ViewPropertyAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ViewPropertyAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ViewPropertyAction extends AbstractViewAction {
     private String propertyName;
@@ -35,6 +35,7 @@ public class ViewPropertyAction extends AbstractViewAction {
     private String getterName;
     
     private PropertyChangeListener viewListener = new PropertyChangeListener() {
+        @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if (evt.getPropertyName() == propertyName) { // Strings get interned
                 updateSelectedState();
@@ -59,6 +60,7 @@ public class ViewPropertyAction extends AbstractViewAction {
         updateSelectedState();
     }
     
+    @Override
     public void actionPerformed(ActionEvent evt) {
         View p = getActiveView();
         try {

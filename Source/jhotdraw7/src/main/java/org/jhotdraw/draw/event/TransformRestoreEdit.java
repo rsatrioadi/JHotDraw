@@ -15,7 +15,6 @@
 package org.jhotdraw.draw.event;
 
 import org.jhotdraw.draw.*;
-import java.util.*;
 import javax.swing.undo.*;
 import org.jhotdraw.util.*;
 /**
@@ -29,7 +28,7 @@ import org.jhotdraw.util.*;
  * transforms, such as translations of a figure, should use {@link TransformEdit}.
  *
  * @author Werner Randelshofer
- * @version $Id: TransformRestoreEdit.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: TransformRestoreEdit.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class TransformRestoreEdit extends AbstractUndoableEdit {
     private Figure owner;
@@ -43,11 +42,13 @@ public class TransformRestoreEdit extends AbstractUndoableEdit {
         this.newTransformRestoreData = newTransformRestoreData;
     }
 
+    @Override
     public String getPresentationName() {
         ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
         return labels.getString("edit.transform.text");
     }
     
+    @Override
     public void undo() throws CannotUndoException {
         super.undo();
         owner.willChange();
@@ -55,6 +56,7 @@ public class TransformRestoreEdit extends AbstractUndoableEdit {
         owner.changed();
     }
 
+    @Override
     public void redo() throws CannotRedoException {
         super.redo();
         owner.willChange();

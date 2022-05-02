@@ -15,7 +15,6 @@
 package org.jhotdraw.draw.action;
 
 import org.jhotdraw.draw.event.FigureSelectionEvent;
-import org.jhotdraw.util.*;
 import java.util.*;
 import org.jhotdraw.draw.*;
 import static org.jhotdraw.draw.AttributeKeys.*;
@@ -23,10 +22,9 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * PickAttributesAction.
  *
  * @author Werner Randelshofer
- * @version $Id: PickAttributesAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: PickAttributesAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class PickAttributesAction extends AbstractSelectedAction {
-    private ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
     
     private Set<AttributeKey> excludedAttributes = new HashSet<AttributeKey>(
             Arrays.asList(new AttributeKey[] { TRANSFORM, TEXT }));
@@ -46,6 +44,7 @@ public class PickAttributesAction extends AbstractSelectedAction {
         this.excludedAttributes = a;
     }
     
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {
         pickAttributes();
     }

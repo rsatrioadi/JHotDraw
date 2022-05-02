@@ -17,16 +17,19 @@ package org.jhotdraw.draw.io;
 import org.jhotdraw.draw.*;
 import java.awt.datatransfer.*;
 import java.io.*;
+import java.net.URI;
 import java.util.*;
 import javax.swing.*;
+import org.jhotdraw.annotations.NotNull;
+import org.jhotdraw.annotations.Nullable;
 
 /**
  * An <em>output format</em> implements a strategy for writing a {@link Drawing}
- * using a specific encoding into an {@code OutputStream}, a {@code File} or a
+ * using a specific format into an {@code OutputStream}, an {@code URI} or a
  * {@code Transferable}.
  * <p>
- * Typically an encoding can be recognized by a Mime type or by a file extension.
- * To identify the encoding used by a file, an appropriate {@code FileFilter}
+ * Typically a format can be identified by a Mime type or by a file extension.
+ * To identify the format used by a file, an appropriate {@code FileFilter}
  * for a javax.swing.JFileChooser component can be requested from {@code OutputFormat}.
  * <p>
  * This interface intentionally contains many identical operations like
@@ -42,8 +45,9 @@ import javax.swing.*;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: OutputFormat.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: OutputFormat.java 654 2010-06-25 13:27:08Z rawcoder $
  */
+@NotNull
 public interface OutputFormat {
     /**
      * Return a FileFilter that can be used to identify files which can be stored 
@@ -68,15 +72,15 @@ public interface OutputFormat {
      * @return A JFileChooser accessory to be used with a javax.swing.JFileChooser
      * Returns null, if no accessory is provided for this format.
      */
-    public JComponent getOutputFormatAccessory();
+    @Nullable public JComponent getOutputFormatAccessory();
     
     /**
-     * Writes a Drawing into a file.
+     * Writes a Drawing into an URI.
      *
-     * @param file The file.
+     * @param uri The uri.
      * @param drawing The drawing.
      */
-    public void write(File file, Drawing drawing) throws IOException;
+    public void write(URI uri, Drawing drawing) throws IOException;
 
     /**
      * Writes a Drawing into an output stream.

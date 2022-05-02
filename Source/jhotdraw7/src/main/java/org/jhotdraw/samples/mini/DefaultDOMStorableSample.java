@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  * String.
  *
  * @author Werner Randelshofer
- * @version $Id: DefaultDOMStorableSample.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: DefaultDOMStorableSample.java 626 2010-01-20 08:56:21Z rawcoder $
  */
 public class DefaultDOMStorableSample {
 
@@ -50,10 +50,12 @@ public class DefaultDOMStorableSample {
             this.name = name;
         }
 
+        @Override
         public void write(DOMOutput out) throws IOException {
             out.addAttribute("name", name);
         }
 
+        @Override
         public void read(DOMInput in) throws IOException {
             name = in.getAttribute("name", null);
         }

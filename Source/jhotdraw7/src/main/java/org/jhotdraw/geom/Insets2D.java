@@ -20,7 +20,7 @@ import java.io.Serializable;
  * Insets2D.
  *
  * @author Werner Randelshofer
- * @version $Id: Insets2D.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: Insets2D.java 647 2010-01-24 22:52:59Z rawcoder $
  * expectations of people used to the java.awt.geom.xxx2D.Double/xxx2D.Float
  * idioms.
  */
@@ -169,6 +169,7 @@ public abstract class Insets2D implements Cloneable, Serializable {
      *                          otherwise <code>false</code>.
      * @since       JDK1.1
      */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Insets2D) {
             Insets2D that = (Insets2D)obj;
@@ -185,6 +186,7 @@ public abstract class Insets2D implements Cloneable, Serializable {
      *
      * @return    a hash code for this Insets2DDouble.
      */
+    @Override
     public int hashCode() {
         double sum1 = getLeft() + getBottom();
         double sum2 = getRight() + getTop();
@@ -196,6 +198,7 @@ public abstract class Insets2D implements Cloneable, Serializable {
     /**
      * Creates a new object of the same class as this object.
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -237,22 +240,27 @@ public abstract class Insets2D implements Cloneable, Serializable {
             this.right = right;
         }
         
+    @Override
         public double getTop() {
             return top;
         }
         
+    @Override
         public double getLeft() {
             return left;
         }
         
+    @Override
         public double getBottom() {
             return bottom;
         }
         
+    @Override
         public double getRight() {
             return right;
         }
         
+    @Override
         public void set(double top, double left, double bottom, double right) {
             this.top = (float) top;
             this.left = (float) left;
@@ -300,22 +308,27 @@ public abstract class Insets2D implements Cloneable, Serializable {
             this.right = right;
         }
         
+    @Override
         public double getTop() {
             return top;
         }
         
+    @Override
         public double getLeft() {
             return left;
         }
         
+    @Override
         public double getBottom() {
             return bottom;
         }
         
+    @Override
         public double getRight() {
             return right;
         }
         
+    @Override
         public void set(double top, double left, double bottom, double right) {
             this.top = top;
             this.left = left;

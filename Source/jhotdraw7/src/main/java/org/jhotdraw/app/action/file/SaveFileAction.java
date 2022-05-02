@@ -13,6 +13,7 @@
  */
 package org.jhotdraw.app.action.file;
 
+import org.jhotdraw.gui.filechooser.ExtensionFileFilter;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -20,7 +21,6 @@ import java.io.*;
 import java.net.URI;
 import org.jhotdraw.app.*;
 import org.jhotdraw.app.action.AbstractViewAction;
-import org.jhotdraw.io.*;
 import org.jhotdraw.util.*;
 import org.jhotdraw.gui.*;
 import org.jhotdraw.gui.URIChooser;
@@ -40,7 +40,7 @@ import org.jhotdraw.net.URIUtil;
  * {@link ApplicationModel#initApplication}.
  *
  * @author  Werner Randelshofer
- * @version $Id: SaveFileAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: SaveFileAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class SaveFileAction extends AbstractViewAction {
 
@@ -70,6 +70,7 @@ public class SaveFileAction extends AbstractViewAction {
         labels.configureAction(this, ID);
     }
 
+    @Override
     public void actionPerformed(ActionEvent evt) {
         final View view = getActiveView();
         if (view.isEnabled()) {
@@ -83,6 +84,7 @@ public class SaveFileAction extends AbstractViewAction {
 
                 JSheet.showSaveSheet(fileChooser, view.getComponent(), new SheetListener() {
 
+                    @Override
                     public void optionSelected(final SheetEvent evt) {
                         if (evt.getOption() == JFileChooser.APPROVE_OPTION) {
                             final URI uri;
@@ -107,6 +109,7 @@ public class SaveFileAction extends AbstractViewAction {
     protected void saveViewToURI(final View view, final URI file, final URIChooser chooser) {
         view.execute(new Worker() {
 
+            @Override
             protected Object construct() throws IOException {
                 view.write(file, chooser);
                 return null;

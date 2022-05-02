@@ -14,23 +14,15 @@
 
 package org.jhotdraw.samples.odg;
 
-import org.jhotdraw.draw.BezierFigure;
 import org.jhotdraw.draw.tool.BezierTool;
-import javax.swing.undo.*;
 import org.jhotdraw.samples.svg.figures.*;
 import org.jhotdraw.draw.*;
-import org.jhotdraw.util.*;
-import org.jhotdraw.undo.*;
-import java.awt.*;
-import java.awt.geom.*;
-import java.awt.event.*;
 import java.util.*;
-import org.jhotdraw.geom.*;
 /**
  * Tool to scribble a ODGPath
  *
  * @author  Werner Randelshofer
- * @version $Id: PathTool.java 582 2009-10-24 08:00:49Z rawcoder $
+ * @version $Id: PathTool.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class PathTool extends BezierTool {
     /**

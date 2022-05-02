@@ -76,7 +76,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: TextAreaCreationTool.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: TextAreaCreationTool.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class TextAreaCreationTool extends CreationTool implements ActionListener {
 
@@ -273,6 +273,7 @@ public class TextAreaCreationTool extends CreationTool implements ActionListener
     //	        view().checkDamage();
     }
 
+    @Override
     public void actionPerformed(ActionEvent event) {
         endEdit();
         if (isToolDoneAfterCreation()) {

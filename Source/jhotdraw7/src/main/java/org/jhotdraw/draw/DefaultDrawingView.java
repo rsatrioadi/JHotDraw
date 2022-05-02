@@ -23,7 +23,6 @@ import org.jhotdraw.draw.event.FigureAdapter;
 import org.jhotdraw.draw.event.FigureEvent;
 import org.jhotdraw.draw.event.CompositeFigureListener;
 import org.jhotdraw.draw.event.CompositeFigureEvent;
-import javax.swing.event.*;
 import javax.swing.undo.*;
 import org.jhotdraw.util.*;
 import java.awt.*;
@@ -32,10 +31,9 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import javax.swing.*;
-import org.jhotdraw.app.EditableComponent;
+import org.jhotdraw.gui.EditableComponent;
 import static org.jhotdraw.draw.AttributeKeys.*;
 import java.awt.image.VolatileImage;
-import sun.swing.SwingUtilities2;
 
 /**
  * A default implementation of {@link DrawingView} suited for viewing drawings
@@ -45,7 +43,7 @@ import sun.swing.SwingUtilities2;
  * FIXME - Use double buffering for the drawing to improve performance.
  *
  * @author Werner Randelshofer
- * @version $Id: DefaultDrawingView.java 605 2010-01-10 11:14:33Z rawcoder $
+ * @version $Id: DefaultDrawingView.java 678 2010-08-01 10:53:17Z rawcoder $
  */
 public class DefaultDrawingView
         extends JComponent
@@ -109,6 +107,7 @@ public class DefaultDrawingView
         isWindows = b;
     }
 
+    @Override
     public void repaintHandles() {
         validateHandles();
         Rectangle r = null;
@@ -133,8 +132,40 @@ public class DefaultDrawingView
 
     /** Draws the background of the drawing view. */
     protected void drawBackground(Graphics2D g) {
-        g.setColor(getBackground());
-        g.fillRect(0, 0, getWidth(), getHeight());
+        if (drawing == null) {
+            // there is no drawing and thus no canvas
+            g.setColor(getBackground());
+            g.fillRect(0, 0, getWidth(), getHeight());
+        } else if (drawing.get(CANVAS_WIDTH) == null
+                || drawing.get(CANVAS_HEIGHT) == null) {
+            // the canvas is infinitely large
+            Color canvasColor = drawing.get(CANVAS_FILL_COLOR);
+            double canvasOpacity = drawing.get(CANVAS_FILL_OPACITY);
+            if (canvasColor != null) {
+                if (canvasOpacity == 1) {
+                    g.setColor(new Color(canvasColor.getRGB()));
+                    g.fillRect(0, 0, getWidth(), getHeight());
+                } else {
+                    Point r = drawingToView(new Point2D.Double(0, 0));
+                    g.setPaint(getBackgroundPaint(r.x, r.y));
+                    g.fillRect(0, 0, getWidth(), getHeight());
+                    g.setColor(new Color(canvasColor.getRGB() & 0xfffff | ((int) (canvasOpacity * 256) << 24), true));
+                    g.fillRect(0, 0, getWidth(), getHeight());
+                }
+            } else {
+                Point r = drawingToView(new Point2D.Double(0, 0));
+                g.setPaint(getBackgroundPaint(r.x, r.y));
+                g.fillRect(0, 0, getWidth(), getHeight());
+            }
+        } else {
+            // the canvas has a fixed size
+            g.setColor(getBackground());
+            g.fillRect(0, 0, getWidth(), getHeight());
+            Rectangle r = drawingToView(new Rectangle2D.Double(0, 0, drawing.get(CANVAS_WIDTH),
+                    drawing.get(CANVAS_HEIGHT)));
+            g.setPaint(getBackgroundPaint(r.x, r.y));
+            g.fillRect(r.x, r.y, r.width, r.height);
+        }
     }
 
     @Override
@@ -144,6 +175,7 @@ public class DefaultDrawingView
 
     private class EventHandler implements FigureListener, CompositeFigureListener, HandleListener, FocusListener {
 
+        @Override
         public void figureAdded(CompositeFigureEvent evt) {
             if (drawing.getChildCount() == 1 && getEmptyDrawingMessage() != null) {
                 repaint();
@@ -153,6 +185,7 @@ public class DefaultDrawingView
             invalidateDimension();
         }
 
+        @Override
         public void figureRemoved(CompositeFigureEvent evt) {
             if (drawing.getChildCount() == 0 && getEmptyDrawingMessage() != null) {
                 repaint();
@@ -163,16 +196,19 @@ public class DefaultDrawingView
             invalidateDimension();
         }
 
+        @Override
         public void areaInvalidated(FigureEvent evt) {
             repaintDrawingArea(evt.getInvalidatedArea());
             invalidateDimension();
         }
 
+        @Override
         public void areaInvalidated(HandleEvent evt) {
             repaint(evt.getInvalidatedArea());
             invalidateDimension();
         }
 
+        @Override
         public void handleRequestSecondaryHandles(HandleEvent e) {
             secondaryHandleOwner = e.getHandle();
             secondaryHandles.clear();
@@ -184,6 +220,7 @@ public class DefaultDrawingView
             repaint();
         }
 
+        @Override
         public void focusGained(FocusEvent e) {
             //   repaintHandles();
             if (editor != null) {
@@ -191,10 +228,12 @@ public class DefaultDrawingView
             }
         }
 
+        @Override
         public void focusLost(FocusEvent e) {
             //   repaintHandles();
         }
 
+        @Override
         public void handleRequestRemove(HandleEvent e) {
             selectionHandles.remove(e.getHandle());
             e.getHandle().dispose();
@@ -202,35 +241,44 @@ public class DefaultDrawingView
             repaint(e.getInvalidatedArea());
         }
 
+        @Override
         public void attributeChanged(FigureEvent e) {
             if (e.getSource() == drawing) {
                 AttributeKey a = e.getAttribute();
                 if (a.equals(CANVAS_HEIGHT) || a.equals(CANVAS_WIDTH)) {
                     validateViewTranslation();
-                    repaint();
-                } else if (a.equals(CANVAS_FILL_COLOR) || a.equals(CANVAS_FILL_OPACITY)) {
-                    repaint();
-                } else {
+                    repaint(); // must repaint everything
+                }
+                if (e.getInvalidatedArea() != null) {
                     repaintDrawingArea(e.getInvalidatedArea());
+                } else {
+                    repaintDrawingArea(viewToDrawing(getCanvasViewBounds()));
                 }
             } else {
-                repaintDrawingArea(e.getInvalidatedArea());
+                if (e.getInvalidatedArea() != null) {
+                    repaintDrawingArea(e.getInvalidatedArea());
+                }
             }
         }
 
+        @Override
         public void figureHandlesChanged(FigureEvent e) {
         }
 
+        @Override
         public void figureChanged(FigureEvent e) {
             repaintDrawingArea(e.getInvalidatedArea());
         }
 
+        @Override
         public void figureAdded(FigureEvent e) {
         }
 
+        @Override
         public void figureRemoved(FigureEvent e) {
         }
 
+        @Override
         public void figureRequestRemove(FigureEvent e) {
         }
     }
@@ -247,13 +295,6 @@ public class DefaultDrawingView
         setTransferHandler(new DefaultDrawingViewTransferHandler());
         setBackground(new Color(0xb0b0b0));
         setOpaque(true);
-    }
-
-    public void setBackground(Color c) {
-        super.setBackground(c);
-        if (c.getRGB() == 0xffffff || c.getRGB() == 0xffffffff) {
-            new Throwable().printStackTrace();
-        }
     }
 
     protected EventHandler createEventHandler() {
@@ -273,6 +314,7 @@ public class DefaultDrawingView
         setLayout(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    @Override
     public Drawing getDrawing() {
         return drawing;
     }
@@ -331,8 +373,8 @@ public class DefaultDrawingView
     protected void drawDrawingVolatileBuffered(Graphics2D g) {
         Rectangle vr = getVisibleRect();
         Point shift = new Point(0, 0);
-        if (bufferedArea.contains(vr) ||
-                bufferedArea.width >= vr.width && bufferedArea.height >= vr.height) {
+        if (bufferedArea.contains(vr)
+                || bufferedArea.width >= vr.width && bufferedArea.height >= vr.height) {
             // The visible rect fits into the buffered area, but may be shifted; shift the buffered area.
             shift.x = bufferedArea.x - vr.x;
             shift.y = bufferedArea.y - vr.y;
@@ -354,8 +396,8 @@ public class DefaultDrawingView
             bufferedArea.setBounds(vr);
             dirtyArea.setBounds(vr);
             if (drawingBufferV != null && //
-                    (drawingBufferV.getWidth() != vr.width ||
-                    drawingBufferV.getHeight() != vr.height)) {
+                    (drawingBufferV.getWidth() != vr.width
+                    || drawingBufferV.getHeight() != vr.height)) {
                 // The dimension of the drawing buffer does not fit into the visible rect;
                 // throw the buffer away.
                 drawingBufferV.flush();
@@ -435,8 +477,8 @@ public class DefaultDrawingView
     protected void drawDrawingNonvolatileBuffered(Graphics2D g) {
         Rectangle vr = getVisibleRect();
         Point shift = new Point(0, 0);
-        if (bufferedArea.contains(vr) ||
-                bufferedArea.width >= vr.width && bufferedArea.height >= vr.height) {
+        if (bufferedArea.contains(vr)
+                || bufferedArea.width >= vr.width && bufferedArea.height >= vr.height) {
             // The visible rect fits into the buffered area, but may be shifted; shift the buffered area.
             shift.x = bufferedArea.x - vr.x;
             shift.y = bufferedArea.y - vr.y;
@@ -458,8 +500,8 @@ public class DefaultDrawingView
             bufferedArea.setBounds(vr);
             dirtyArea.setBounds(vr);
             if (drawingBufferNV != null && //
-                    (drawingBufferNV.getWidth() != vr.width ||
-                    drawingBufferNV.getHeight() != vr.height)) {
+                    (drawingBufferNV.getWidth() != vr.width
+                    || drawingBufferNV.getHeight() != vr.height)) {
                 // The dimension of the drawing buffer does not fit into the visible rect;
                 // throw the buffer away.
                 drawingBufferNV.flush();
@@ -586,31 +628,18 @@ public class DefaultDrawingView
      * not fully opaque, the canvas area is filled with the background paint
      * before the {@code AttributeKeys.CANVAS_FILL_COLOR} is drawn.
      */
-    protected void drawCanvas(Graphics2D g) {
-        Rectangle cb = getCanvasViewBounds();
+    protected void drawCanvas(Graphics2D gr) {
+        if (drawing != null) {
+            Graphics2D g = (Graphics2D) gr.create();
+            AffineTransform tx = g.getTransform();
+            tx.translate(-translation.x, -translation.y);
+            tx.scale(scaleFactor, scaleFactor);
+            g.setTransform(tx);
 
-        // Retrieve the canvasColor color from the drawing
-        Color canvasColor;
-
-        if (drawing == null) {
-            canvasColor = CANVAS_FILL_COLOR.getDefaultValue();
-        } else {
-            canvasColor = drawing.get(CANVAS_FILL_COLOR);
-            if (canvasColor != null) {
-                canvasColor = new Color((canvasColor.getRGB() & 0xffffff) | ((int) (drawing.get(CANVAS_FILL_OPACITY) * 255) << 24), true);
-            }
-
+            drawing.setFontRenderContext(g.getFontRenderContext());
+            drawing.drawCanvas(g);
+            g.dispose();
         }
-        if (canvasColor == null || canvasColor.getAlpha() != 255) {
-            g.setPaint(getBackgroundPaint(cb.x, cb.y));
-            g.fillRect(cb.x, cb.y, cb.width, cb.height);
-        }
-
-        if (canvasColor != null) {
-            g.setColor(canvasColor);
-            g.fillRect(cb.x, cb.y, cb.width, cb.height);
-        }
-
     }
 
     protected void drawConstrainer(Graphics2D g) {
@@ -666,6 +695,7 @@ public class DefaultDrawingView
 
     }
 
+    @Override
     public void setDrawing(Drawing newValue) {
         Drawing oldValue = drawing;
         if (this.drawing != null) {
@@ -689,6 +719,7 @@ public class DefaultDrawingView
         paintEnabled = false;
         javax.swing.Timer t = new javax.swing.Timer(10, new ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 repaint();
                 paintEnabled = true;
@@ -698,6 +729,7 @@ public class DefaultDrawingView
         t.start();
     }
 
+    @Override
     public void paint(Graphics g) {
         if (paintEnabled) {
             super.paint(g);
@@ -734,6 +766,7 @@ public class DefaultDrawingView
     /**
      * Adds a figure to the current selection.
      */
+    @Override
     public void addToSelection(Figure figure) {
         if (DEBUG) {
             System.out.println("DefaultDrawingView" + ".addToSelection(" + figure + ")");
@@ -768,6 +801,7 @@ public class DefaultDrawingView
     /**
      * Adds a collection of figures to the current selection.
      */
+    @Override
     public void addToSelection(Collection<Figure> figures) {
         Set<Figure> oldSelection = new HashSet<Figure>(selectedFigures);
         Set<Figure> newSelection = new HashSet<Figure>(selectedFigures);
@@ -805,6 +839,7 @@ public class DefaultDrawingView
     /**
      * Removes a figure from the selection.
      */
+    @Override
     public void removeFromSelection(Figure figure) {
         Set<Figure> oldSelection = new HashSet<Figure>(selectedFigures);
         if (selectedFigures.remove(figure)) {
@@ -1101,8 +1136,8 @@ public class DefaultDrawingView
             Object[] listeners = listenerList.getListenerList();
             // Process the listeners last to first, notifying
             // those that are interested in this event
-            for (int i = listeners.length - 2; i >=
-                    0; i -=
+            for (int i = listeners.length - 2; i
+                    >= 0; i -=
                             2) {
                 if (listeners[i] == FigureSelectionListener.class) {
                     // Lazily create the event:
@@ -1131,7 +1166,7 @@ public class DefaultDrawingView
     @Override
     public Dimension getPreferredSize() {
         if (cachedPreferredSize == null) {
-            long start=System.currentTimeMillis();
+            long start = System.currentTimeMillis();
             Rectangle2D.Double r = getDrawingArea();
             Double cw = getDrawing() == null ? null : getDrawing().get(CANVAS_WIDTH);
             Double ch = getDrawing() == null ? null : getDrawing().get(CANVAS_HEIGHT);
@@ -1362,8 +1397,8 @@ public class DefaultDrawingView
 
         // Get z-indices of deleted figures
         final int[] deletedFigureIndices = new int[deletedFigures.size()];
-        for (int i = 0; i <
-                deletedFigureIndices.length; i++) {
+        for (int i = 0; i
+                < deletedFigureIndices.length; i++) {
             deletedFigureIndices[i] = drawing.indexOf(deletedFigures.get(i));
         }
 
@@ -1384,8 +1419,8 @@ public class DefaultDrawingView
                 clearSelection();
 
                 Drawing d = getDrawing();
-                for (int i = 0; i <
-                        deletedFigureIndices.length; i++) {
+                for (int i = 0; i
+                        < deletedFigureIndices.length; i++) {
                     d.add(deletedFigureIndices[i], deletedFigures.get(i));
                 }
 
@@ -1395,8 +1430,8 @@ public class DefaultDrawingView
             @Override
             public void redo() throws CannotRedoException {
                 super.redo();
-                for (int i = 0; i <
-                        deletedFigureIndices.length; i++) {
+                for (int i = 0; i
+                        < deletedFigureIndices.length; i++) {
                     drawing.remove(deletedFigures.get(i));
                 }
 

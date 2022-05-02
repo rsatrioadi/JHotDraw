@@ -42,7 +42,7 @@ import org.jhotdraw.gui.URIChooser;
  * A view for Pert diagrams.
  *
  * @author Werner Randelshofer
- * @version $Id: PertView.java 617 2010-01-17 10:10:48Z rawcoder $
+ * @version $Id: PertView.java 641 2010-01-23 12:53:28Z rawcoder $
  */
 public class PertView extends AbstractView {
 
@@ -186,7 +186,7 @@ public class PertView extends AbstractView {
     public void write(URI f, URIChooser chooser) throws IOException {
         Drawing drawing = view.getDrawing();
         OutputFormat outputFormat = drawing.getOutputFormats().get(0);
-        outputFormat.write(new File(f), drawing);
+        outputFormat.write(f, drawing);
     }
 
     /**
@@ -197,7 +197,7 @@ public class PertView extends AbstractView {
         try {
             final Drawing drawing = createDrawing();
             InputFormat inputFormat = drawing.getInputFormats().get(0);
-            inputFormat.read(new File(f), drawing, true);
+            inputFormat.read(f, drawing, true);
             SwingUtilities.invokeAndWait(new Runnable() {
 
                 @Override

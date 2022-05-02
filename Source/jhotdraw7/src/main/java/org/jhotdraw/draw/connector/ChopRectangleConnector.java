@@ -14,9 +14,7 @@
 
 package org.jhotdraw.draw.connector;
 
-import org.jhotdraw.draw.ConnectionFigure;
 import org.jhotdraw.draw.*;
-import org.jhotdraw.draw.connector.AbstractConnector;
 import java.awt.geom.*;
 import static org.jhotdraw.draw.AttributeKeys.*;
 import org.jhotdraw.geom.*;
@@ -27,7 +25,7 @@ import org.jhotdraw.geom.*;
  * @see Connector
  *
  * @author Werner Randelshofer
- * @version $Id: ChopRectangleConnector.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ChopRectangleConnector.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ChopRectangleConnector extends AbstractConnector {
     

@@ -25,7 +25,7 @@ import javax.swing.text.*;
  * PaletteFormattedTextFieldUI.
  *
  * @author Werner Randelshofer
- * @version $Id: PaletteFormattedTextFieldUI.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: PaletteFormattedTextFieldUI.java 651 2010-05-26 21:11:39Z rawcoder $
  */
 public class PaletteFormattedTextFieldUI extends BasicFormattedTextFieldUI {
     private Color errorIndicatorForeground;
@@ -222,7 +222,7 @@ public class PaletteFormattedTextFieldUI extends BasicFormattedTextFieldUI {
         Graphics2D g = (Graphics2D) gr;
 
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         super.paintSafely(g);

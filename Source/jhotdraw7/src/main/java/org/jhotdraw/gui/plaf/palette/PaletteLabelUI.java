@@ -23,7 +23,7 @@ import javax.swing.plaf.basic.*;
  * QuaquaLabelUI.
  *
  * @author  Werner Randelshofer
- * @version $Id: PaletteLabelUI.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: PaletteLabelUI.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class PaletteLabelUI extends BasicLabelUI {
 
@@ -66,6 +66,7 @@ public class PaletteLabelUI extends BasicLabelUI {
         }
     }
 
+    @Override
     public void paint(Graphics gr, JComponent c) {
         Graphics2D g = (Graphics2D) gr;
         Object oldHints = PaletteUtilities.beginGraphics(g);
@@ -94,6 +95,7 @@ public class PaletteLabelUI extends BasicLabelUI {
      * @see #paint
      * @see #paintEnabledText
      */
+    @Override
     protected void paintDisabledText(JLabel l, Graphics g, String s, int textX, int textY) {
         Color c = UIManager.getColor("Label.disabledForeground");
         g.setColor((c != null) ? c : l.getForeground());
@@ -104,6 +106,7 @@ public class PaletteLabelUI extends BasicLabelUI {
                 textX, textY);
     }
 
+    @Override
     protected void paintEnabledText(JLabel l, Graphics g, String s, int textX, int textY) {
         int mnemIndex = l.getDisplayedMnemonicIndex();
 
@@ -134,6 +137,7 @@ public class PaletteLabelUI extends BasicLabelUI {
      *
      * @see SwingUtilities#layoutCompoundLabel
      */
+    @Override
     protected String layoutCL(
             JLabel label,
             FontMetrics fontMetrics,
@@ -157,6 +161,7 @@ public class PaletteLabelUI extends BasicLabelUI {
                 label.getIconTextGap());
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         String name = evt.getPropertyName();
 

@@ -16,6 +16,7 @@ package org.jhotdraw.gui;
 
 import java.beans.PropertyChangeListener;
 import javax.swing.*;
+import org.jhotdraw.annotations.NotNull;
 
 /**
  * Interface for a field or any other kind of editor which can be used to edit
@@ -26,8 +27,9 @@ import javax.swing.*;
  * {@code AttributeFieldHandler}.
  *
  * @author Werner Randelshofer
- * @version $Id: AttributeEditor.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: AttributeEditor.java 654 2010-06-25 13:27:08Z rawcoder $
  */
+@NotNull
 public interface AttributeEditor<T> {
     public final static String ATTRIBUTE_VALUE_PROPERTY = "attributeValue";
     public final static String MULTIPLE_VALUES_PROPERTY = "multipleValues";

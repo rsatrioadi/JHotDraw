@@ -25,7 +25,7 @@ import org.jhotdraw.draw.*;
  * {@link EditorColorChooserAction }.
  * 
  * @author Werner Randelshofer
- * @version $Id: EditorColorIcon.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: EditorColorIcon.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class EditorColorIcon extends javax.swing.ImageIcon {
     private DrawingEditor editor;
@@ -60,6 +60,7 @@ public class EditorColorIcon extends javax.swing.ImageIcon {
         this.colorShape = colorShape;
     }
     
+    @Override
     public void paintIcon(java.awt.Component c, java.awt.Graphics gr, int x, int y) {
         Graphics2D g = (Graphics2D) gr;
         super.paintIcon(c, g, x, y);

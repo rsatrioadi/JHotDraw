@@ -34,7 +34,7 @@ import java.awt.image.*;
  * The inner area of the image is used to fill the inner area.
  *
  * @author  Werner Randelshofer
- * @version $Id: ImageBevelBorder.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ImageBevelBorder.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ImageBevelBorder implements Border {
     private final static boolean VERBOSE = false;
@@ -101,6 +101,7 @@ public class ImageBevelBorder implements Border {
      * Returns true if the border is opaque.
      * This implementation always returns false.
      */
+    @Override
     public boolean isBorderOpaque() {
         return false;
     }
@@ -109,6 +110,7 @@ public class ImageBevelBorder implements Border {
      * Returns the insets of the border.
      * @param c the component for which this border insets value applies
      */
+    @Override
     public Insets getBorderInsets(Component c) {
         return (Insets) borderInsets.clone();
     }
@@ -124,6 +126,7 @@ public class ImageBevelBorder implements Border {
      * @param width the width of the painted border
      * @param height the height of the painted border
      */
+    @Override
     public void paintBorder(Component c, Graphics gr, int x, int y, int width, int height) {
         if (image == null) return;
         

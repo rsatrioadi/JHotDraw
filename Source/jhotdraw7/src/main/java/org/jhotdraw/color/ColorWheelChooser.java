@@ -25,11 +25,11 @@ import javax.swing.plaf.*;
  * brightness slider.
  *
  * @author  Werner Randelshofer
- * @version $Id: ColorWheelChooser.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: ColorWheelChooser.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ColorWheelChooser extends AbstractColorChooserPanel implements UIResource {
     private JColorWheel colorWheel;
-    private ColorSliderModel ccModel = new DefaultColorSliderModel(new HSVRGBColorSystem());
+    private ColorSliderModel ccModel = new DefaultColorSliderModel(HSBColorSpace.getInstance());
 
     private int updatingChooser;
     
@@ -52,6 +52,7 @@ public class ColorWheelChooser extends AbstractColorChooserPanel implements UIRe
         colorWheel.setModel(ccModel);
         
         ccModel.addChangeListener(new ChangeListener() {
+            @Override
             public void stateChanged(ChangeEvent evt) {
                 setColorToModel(ccModel.getColor());
             }
@@ -75,21 +76,26 @@ public class ColorWheelChooser extends AbstractColorChooserPanel implements UIRe
 
     }//GEN-END:initComponents
 
+    @Override
     protected void buildChooser() {
     }    
     
+    @Override
     public String getDisplayName() {
         return UIManager.getString("ColorChooser.colorWheel");
     }    
     
+    @Override
     public javax.swing.Icon getLargeDisplayIcon() {
         return UIManager.getIcon("ColorChooser.colorWheelIcon");
     }
     
+    @Override
     public Icon getSmallDisplayIcon() {
         return getLargeDisplayIcon();
     }
     
+    @Override
     public void updateChooser() {
         updatingChooser++;
         ccModel.setColor(getColorFromModel());

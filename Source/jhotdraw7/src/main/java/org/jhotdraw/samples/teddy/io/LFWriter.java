@@ -22,7 +22,7 @@ import java.io.*;
  * followed immediately by a linefeed.
  *
  * @author  Werner Randelshofer
- * @version $Id: LFWriter.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: LFWriter.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class LFWriter extends FilterWriter {
     /**
@@ -60,6 +60,7 @@ public class LFWriter extends FilterWriter {
      *
      * @exception  IOException  If an I/O error occurs
      */
+    @Override
     public void write(int c) throws IOException {
         switch (c) {
             case '\r':
@@ -86,6 +87,7 @@ public class LFWriter extends FilterWriter {
      *
      * @exception  IOException  If an I/O error occurs
      */
+    @Override
     public void write(char cbuf[], int off, int len) throws IOException {
         int end = off + len;
         for (int i=off; i < end; i++) {

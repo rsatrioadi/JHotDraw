@@ -26,7 +26,7 @@ import java.awt.geom.*;
  * Subsequent iterations require a new iterator.
  *
  * @author Werner Randelshofer
- * @version $Id: BezierPathIterator.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: BezierPathIterator.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class BezierPathIterator implements PathIterator {
     /**
@@ -69,6 +69,7 @@ public class BezierPathIterator implements PathIterator {
      * @see PathIterator#WIND_EVEN_ODD
      * @see PathIterator#WIND_NON_ZERO
      */
+    @Override
     public int getWindingRule() {
         return path.getWindingRule();
     }
@@ -77,6 +78,7 @@ public class BezierPathIterator implements PathIterator {
      * Tests if there are more points to read.
      * @return true if there are more points to read
      */
+    @Override
     public boolean isDone() {
         return (index >= path.size() + (path.isClosed() ? 2 : 0));
     }
@@ -86,6 +88,7 @@ public class BezierPathIterator implements PathIterator {
      * along the primary direction of traversal as long as there are
      * more points in that direction.
      */
+    @Override
     public void next() {
         if (! isDone()) {
             index++;
@@ -110,6 +113,7 @@ public class BezierPathIterator implements PathIterator {
      * @see PathIterator#SEG_CUBICTO
      * @see PathIterator#SEG_CLOSE
      */
+    @Override
     public int currentSegment(float[] coords) {
         int numCoords = 0;
         int type = 0;
@@ -228,6 +232,7 @@ public class BezierPathIterator implements PathIterator {
      * @see PathIterator#SEG_CUBICTO
      * @see PathIterator#SEG_CLOSE
      */
+    @Override
     public int currentSegment(double[] coords) {
         int numCoords = 0;
         int type = 0;

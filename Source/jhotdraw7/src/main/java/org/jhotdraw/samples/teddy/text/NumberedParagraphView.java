@@ -20,7 +20,7 @@ import javax.swing.text.*;
  * NumberedParagraphView.
  *
  * @author Werner Randelshofer
- * @version $Id: NumberedParagraphView.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: NumberedParagraphView.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class NumberedParagraphView extends ParagraphView {
     public static short NUMBERS_WIDTH=30;
@@ -38,12 +38,14 @@ public class NumberedParagraphView extends ParagraphView {
      *
      * @return the inset >= 0
      */
+    @Override
     protected short getLeftInset() {
         short left = super.getLeftInset();
         return (viewFactory.isLineNumbersVisible()) ? (short) (left + NUMBERS_WIDTH) : left;
     }
     
     
+    @Override
     public void paintChild(Graphics g, Rectangle r, int n) {
         super.paintChild(g, r, n);
         if (viewFactory.isLineNumbersVisible()) {

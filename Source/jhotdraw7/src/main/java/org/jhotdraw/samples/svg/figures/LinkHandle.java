@@ -26,7 +26,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * The LinkHandle indicates when a figure has a link.
  *
  * @author Werner Randelshofer
- * @version $Id: LinkHandle.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: LinkHandle.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class LinkHandle extends AbstractHandle {
     
@@ -73,12 +73,15 @@ public class LinkHandle extends AbstractHandle {
         return r;
     }
     
+    @Override
     public void trackStart(Point anchor, int modifiersEx) {
     }
     
+    @Override
     public void trackStep(Point anchor, Point lead, int modifiersEx) {
     }
     
+    @Override
     public void trackEnd(Point anchor, Point lead, int modifiersEx) {
     }
     

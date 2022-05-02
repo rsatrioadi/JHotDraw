@@ -23,7 +23,7 @@ import java.awt.datatransfer.Transferable;
  * native JNI code.
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractClipboard.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: AbstractClipboard.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public abstract class AbstractClipboard extends Clipboard {
 
@@ -37,6 +37,7 @@ public abstract class AbstractClipboard extends Clipboard {
      *
      *    @return The current {@code Transferable} object on the clipboard.
      */
+    @Override
     public abstract Transferable getContents(Object requestor);
 
     /** Sets the current contents of the clipboard to the specified
@@ -45,5 +46,6 @@ public abstract class AbstractClipboard extends Clipboard {
      * @param contents The {@code Transferable} object representing clipboard
      * content.
      */
+    @Override
     public abstract void setContents(Transferable contents, ClipboardOwner owner);
 }

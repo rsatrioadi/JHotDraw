@@ -23,7 +23,7 @@ import org.jhotdraw.app.action.ActionUtil;
  * ToggleToolBarAction.
  * 
  * @author Werner Randelshofer
- * @version $Id: ToggleToolBarAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ToggleToolBarAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ToggleToolBarAction extends AbstractAction {
     private JToolBar toolBar;
@@ -34,6 +34,7 @@ public class ToggleToolBarAction extends AbstractAction {
         super(label);
         
         propertyHandler = new PropertyChangeListener() {
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 String name = evt.getPropertyName();
                 if (name.equals("visible")) {
@@ -46,6 +47,7 @@ public class ToggleToolBarAction extends AbstractAction {
         setToolBar(toolBar);
     }
     
+    @Override
     public void putValue(String key, Object newValue) {
         super.putValue(key, newValue);
         if (key == ActionUtil.SELECTED_KEY) {
@@ -68,6 +70,7 @@ public class ToggleToolBarAction extends AbstractAction {
         }
     }
     
+    @Override
     public void actionPerformed(ActionEvent e) {
         if (toolBar != null) {
             putValue(ActionUtil.SELECTED_KEY, ! toolBar.isVisible());

@@ -23,8 +23,7 @@ import java.beans.*;
 import java.io.Serializable;
 import javax.swing.undo.*;
 import org.jhotdraw.util.*;
-import java.util.*;
-import org.jhotdraw.beans.Disposable;
+import org.jhotdraw.app.Disposable;
 import org.jhotdraw.beans.WeakPropertyChangeListener;
 
 /**
@@ -43,7 +42,7 @@ import org.jhotdraw.beans.WeakPropertyChangeListener;
  * become garbage collected if it is not referenced by any other object.
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractSelectedAction.java 582 2009-10-24 08:00:49Z rawcoder $
+ * @version $Id: AbstractSelectedAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public abstract class AbstractSelectedAction
         extends AbstractAction implements Disposable {
@@ -55,6 +54,7 @@ public abstract class AbstractSelectedAction
 
     private class EventHandler implements PropertyChangeListener, FigureSelectionListener, Serializable {
 
+        @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if (evt.getPropertyName() == DrawingEditor.ACTIVE_VIEW_PROPERTY) {
                 if (activeView != null) {
@@ -77,6 +77,7 @@ public abstract class AbstractSelectedAction
             return AbstractSelectedAction.this + " " + this.getClass() + "@" + hashCode();
         }
 
+        @Override
         public void selectionChanged(FigureSelectionEvent evt) {
             updateEnabledState();
 
@@ -105,6 +106,7 @@ public abstract class AbstractSelectedAction
         }
     }
 
+    @Override
     public void dispose() {
         setEditor(null);
     }

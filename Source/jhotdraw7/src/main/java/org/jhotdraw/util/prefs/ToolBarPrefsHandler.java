@@ -25,7 +25,7 @@ import javax.swing.event.*;
  * ToolBarPrefsHandler.
  *
  * @author Werner Randelshofer
- * @version $Id: ToolBarPrefsHandler.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ToolBarPrefsHandler.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ToolBarPrefsHandler implements ComponentListener, AncestorListener {
     private JToolBar toolbar;
@@ -71,10 +71,12 @@ public class ToolBarPrefsHandler implements ComponentListener, AncestorListener 
         );
         window.toFront();
     }*/
+    @Override
     public void componentHidden(ComponentEvent e) {
         prefs.putBoolean(prefsPrefix+".visible", false);
     }
     
+    @Override
     public void componentMoved(ComponentEvent e) {
         locationChanged();
     }
@@ -116,18 +118,22 @@ public class ToolBarPrefsHandler implements ComponentListener, AncestorListener 
         }
     }
     
+    @Override
     public void componentResized(ComponentEvent e) {
         locationChanged();
     }
     
+    @Override
     public void componentShown(ComponentEvent e) {
         prefs.putBoolean(prefsPrefix+".visible", true);
     }
     
+    @Override
     public void ancestorAdded(AncestorEvent event) {
         locationChanged();
     }
     
+    @Override
     public void ancestorMoved(AncestorEvent event) {
         if (toolbar.getUI() instanceof BasicToolBarUI) {
             if (((BasicToolBarUI) toolbar.getUI()).isFloating()) {
@@ -136,6 +142,7 @@ public class ToolBarPrefsHandler implements ComponentListener, AncestorListener 
         }
     }
     
+    @Override
     public void ancestorRemoved(AncestorEvent event) {
         if (toolbar.getUI() instanceof BasicToolBarUI) {
             if (((BasicToolBarUI) toolbar.getUI()).isFloating()) {

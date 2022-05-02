@@ -19,27 +19,34 @@ package org.jhotdraw.draw.event;
  * exists as a convenience for creating {@link FigureListener} objects.
  * 
  * @author Werner Randelshofer
- * @version $Id: FigureAdapter.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: FigureAdapter.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class FigureAdapter implements FigureListener {
+    @Override
     public void areaInvalidated(FigureEvent e) {
     }
     
+    @Override
     public void attributeChanged(FigureEvent e) {
     }
     
+    @Override
     public void figureAdded(FigureEvent e) {
     }
     
+    @Override
     public void figureChanged(FigureEvent e) {
     }
     
+    @Override
     public void figureRemoved(FigureEvent e) {
     }
     
+    @Override
     public void figureRequestRemove(FigureEvent e) {
     }
 
+    @Override
     public void figureHandlesChanged(FigureEvent e) {
     }
     

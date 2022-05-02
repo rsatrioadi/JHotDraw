@@ -16,7 +16,6 @@
 package org.jhotdraw.gui;
 
 import javax.swing.*;
-import javax.swing.event.*;
 import java.awt.*;
 import java.beans.*;
 
@@ -33,7 +32,7 @@ import java.beans.*;
  * Original version by 
  * Wolfram Kaiser (adapted from an article in JavaWorld), 
  * C.L.Gilbert <dnoyeb@users.sourceforge.net>
- * @version $Id: JMDIDesktopPane.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: JMDIDesktopPane.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class JMDIDesktopPane extends JDesktopPane implements Arrangeable {
     private MDIDesktopManager manager;
@@ -45,6 +44,7 @@ public class JMDIDesktopPane extends JDesktopPane implements Arrangeable {
         setAlignmentX(JComponent.LEFT_ALIGNMENT);
     }
     
+    @Override
     public void setArrangement(Arrangeable.Arrangement newValue) {
         Arrangeable.Arrangement oldValue = getArrangement();
         switch (newValue) {
@@ -62,6 +62,7 @@ public class JMDIDesktopPane extends JDesktopPane implements Arrangeable {
     }
     
     
+    @Override
     public Arrangeable.Arrangement getArrangement() {
         // FIXME Check for the arrangement of the JInternalFrames here
         // and return the true value

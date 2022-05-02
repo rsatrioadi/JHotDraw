@@ -13,24 +13,16 @@
  */
 package org.jhotdraw.samples.svg;
 
-import org.jhotdraw.draw.BezierFigure;
 import org.jhotdraw.draw.tool.BezierTool;
-import javax.swing.undo.*;
 import org.jhotdraw.samples.svg.figures.*;
 import org.jhotdraw.draw.*;
-import org.jhotdraw.util.*;
-import org.jhotdraw.undo.*;
-import java.awt.*;
-import java.awt.geom.*;
-import java.awt.event.*;
 import java.util.*;
-import org.jhotdraw.geom.*;
 
 /**
  * Tool to scribble a SVGPath
  *
  * @author  Werner Randelshofer
- * @version $Id: PathTool.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: PathTool.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class PathTool extends BezierTool {
 

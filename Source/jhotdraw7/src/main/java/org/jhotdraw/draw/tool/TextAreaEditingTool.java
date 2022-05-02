@@ -53,7 +53,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: TextAreaEditingTool.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: TextAreaEditingTool.java 647 2010-01-24 22:52:59Z rawcoder $
  *
  * @see TextHolderFigure
  * @see FloatingTextArea
@@ -171,11 +171,13 @@ public class TextAreaEditingTool extends AbstractTool implements ActionListener 
     //	        view().checkDamage();
     }
 
+    @Override
     public void actionPerformed(ActionEvent event) {
         endEdit();
         fireToolDone();
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
         throw new UnsupportedOperationException("Not supported yet.");
     }

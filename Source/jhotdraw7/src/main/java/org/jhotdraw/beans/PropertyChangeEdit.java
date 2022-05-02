@@ -22,7 +22,7 @@ import javax.swing.undo.UndoableEdit;
  * An {@code UndoableEdit} event which can undo a change of a JavaBeans property.
  *
  * @author Werner Randelshofer
- * @version $Id: PropertyChangeEdit.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: PropertyChangeEdit.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class PropertyChangeEdit extends AbstractUndoableEdit {
 
@@ -167,6 +167,7 @@ public class PropertyChangeEdit extends AbstractUndoableEdit {
     }
 
     /** Returns a string representation of this object useful for debugging. */
+    @Override
     public String toString() {
         return super.toString() + " [" + propertyName + "," + oldValue + "," + newValue + "]";
     }

@@ -15,13 +15,12 @@
 package org.jhotdraw.app.action;
 
 import javax.swing.*;
-import java.beans.*;
 
 /**
  * Provides constants and static operations on <code>Action</code> objects.
  *
  * @author Werner Randelshofer
- * @version $Id: ActionUtil.java 613 2010-01-12 10:23:31Z rawcoder $
+ * @version $Id: ActionUtil.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ActionUtil {
     /**
@@ -57,7 +56,7 @@ public class ActionUtil {
      * Configures a JCheckBoxMenuItem for an Action.
      */
     public static void configureJCheckBoxMenuItem(final JCheckBoxMenuItem mi, final Action a) {
-        mi.setSelected((Boolean) a.getValue(ActionUtil.SELECTED_KEY));
+        /*mi.setSelected((Boolean) a.getValue(ActionUtil.SELECTED_KEY));
         PropertyChangeListener propertyHandler = new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals(ActionUtil.SELECTED_KEY)) {
@@ -67,16 +66,19 @@ public class ActionUtil {
         };
         a.addPropertyChangeListener(propertyHandler);
         mi.putClientProperty("actionPropertyHandler", propertyHandler);
+        */
+        mi.setAction(a);
     }
     
     /**
      * Unconfigures a JCheckBoxMenuItem for an Action.
      */
     public static void unconfigureJCheckBoxMenuItem(JCheckBoxMenuItem mi, Action a) {
-        PropertyChangeListener propertyHandler = (PropertyChangeListener) mi.getClientProperty("actionPropertyHandler");
+        /*PropertyChangeListener propertyHandler = (PropertyChangeListener) mi.getClientProperty("actionPropertyHandler");
         if (propertyHandler != null) {
             a.removePropertyChangeListener(propertyHandler);
         mi.putClientProperty("actionPropertyHandler", null);
-        }
+        }*/
+        mi.setAction(null);
     }
 }

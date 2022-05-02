@@ -25,7 +25,7 @@ import org.jhotdraw.xml.DOMOutput;
  * of a figure.
  *
  * @author Werner Randelshofer
- * @version $Id: RelativeLocator.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: RelativeLocator.java 626 2010-01-20 08:56:21Z rawcoder $
  */
 public class RelativeLocator extends AbstractLocator {
     /**
@@ -70,6 +70,7 @@ public class RelativeLocator extends AbstractLocator {
         this.isTransform = isTransform;
     }
     
+    @Override
     public java.awt.geom.Point2D.Double locate(Figure owner) {
         Rectangle2D.Double bounds = owner.getBounds();
         if ((owner instanceof DecoratedFigure) &&
@@ -243,11 +244,13 @@ public class RelativeLocator extends AbstractLocator {
         return new RelativeLocator(0.5, 0.5, isTransform);
     }
     
+    @Override
     public void write(DOMOutput out) {
         out.addAttribute("relativeX", relativeX, 0.5);
         out.addAttribute("relativeY", relativeY, 0.5);
     }
     
+    @Override
     public void read(DOMInput in) {
         relativeX = in.getAttribute("relativeX", 0.5);
         relativeY = in.getAttribute("relativeY", 0.5);

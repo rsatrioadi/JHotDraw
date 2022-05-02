@@ -17,7 +17,7 @@ import java.awt.Color;
 import javax.swing.*;
 import javax.swing.text.*;
 import org.jhotdraw.draw.*;
-import org.jhotdraw.gui.event.DrawingAttributeEditorHandler;
+import org.jhotdraw.draw.event.DrawingAttributeEditorHandler;
 import org.jhotdraw.gui.JAttributeSlider;
 import org.jhotdraw.text.JavaNumberFormatter;
 import org.jhotdraw.util.*;
@@ -29,7 +29,7 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * @see org.jhotdraw.draw.Drawing
  *
  * @author Werner Randelshofer
- * @version $Id: EditCanvasPanel.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: EditCanvasPanel.java 621 2010-01-17 13:43:26Z rawcoder $
  */
 @SuppressWarnings("unchecked")
 public class EditCanvasPanel extends javax.swing.JPanel {

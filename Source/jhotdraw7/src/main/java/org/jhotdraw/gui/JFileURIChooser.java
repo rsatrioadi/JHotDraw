@@ -22,7 +22,7 @@ import javax.swing.JFileChooser;
  * JFileURIChooser.
  *
  * @author Werner Randelshofer
- * @version 1.0 2009-12-16 Created.
+ * @version $Id: JFileURIChooser.java 666 2010-07-28 19:11:46Z rawcoder $
  */
 public class JFileURIChooser extends JFileChooser implements URIChooser {
 

@@ -14,7 +14,6 @@
 
 package org.jhotdraw.app.action.file;
 
-import org.jhotdraw.util.*;
 import org.jhotdraw.app.Application;
 
 /**
@@ -33,7 +32,7 @@ import org.jhotdraw.app.Application;
  * It should not be used together with {@link NewFileAction}.
  *
  * @author Werner Randelshofer
- * @version $Id: NewWindowAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: NewWindowAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class NewWindowAction extends NewFileAction {
     public final static String ID = "file.newWindow";

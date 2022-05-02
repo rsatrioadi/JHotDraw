@@ -1,4 +1,5 @@
 net.n3.nanoxml
+org.jhotdraw.annotations
 org.jhotdraw.app
 org.jhotdraw.app.action
 org.jhotdraw.app.action.app
@@ -26,9 +27,11 @@ org.jhotdraw.geom
 org.jhotdraw.gui
 org.jhotdraw.gui.datatransfer
 org.jhotdraw.gui.event
+org.jhotdraw.gui.filechooser
 org.jhotdraw.gui.fontchooser
 org.jhotdraw.gui.plaf
 org.jhotdraw.gui.plaf.palette
+org.jhotdraw.gui.plaf.palette.colorchooser
 org.jhotdraw.io
 org.jhotdraw.net
 org.jhotdraw.samples.color

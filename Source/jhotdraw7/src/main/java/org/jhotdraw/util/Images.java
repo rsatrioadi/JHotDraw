@@ -23,7 +23,7 @@ import javax.swing.*;
  * Image processing methods.
  *
  * @author  Werner Randelshofer
- * @version $Id: Images.java 600 2010-01-06 16:08:44Z rawcoder $
+ * @version $Id: Images.java 664 2010-07-19 21:21:44Z rawcoder $
  */
 public class Images {
 
@@ -41,6 +41,9 @@ public class Images {
     }
 
     public static Image createImage(URL resource) {
+        if (resource == null) {
+            throw new IllegalArgumentException("resource must not be null");
+        }
         Image image = Toolkit.getDefaultToolkit().createImage(resource);
         return image;
     }

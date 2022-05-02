@@ -24,7 +24,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * AttributeAction.
  *
  * @author Werner Randelshofer
- * @version $Id: DrawingAttributeAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: DrawingAttributeAction.java 660 2010-07-08 20:52:06Z rawcoder $
  */
 public class DrawingAttributeAction extends AbstractDrawingViewAction {
 
@@ -70,6 +70,7 @@ public class DrawingAttributeAction extends AbstractDrawingViewAction {
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent evt) {
         final ArrayList<Object> restoreData = new ArrayList<Object>();
         final Figure drawing = getView().getDrawing();
@@ -106,10 +107,10 @@ public class DrawingAttributeAction extends AbstractDrawingViewAction {
             }
 
             @Override
-    @SuppressWarnings("unchecked")
+            @SuppressWarnings("unchecked")
             public void redo() {
                 super.redo();
-                restoreData.add(drawing.getAttributesRestoreData());
+                //restoreData.add(drawing.getAttributesRestoreData());
                 drawing.willChange();
                 for (Map.Entry<AttributeKey, Object> entry : attributes.entrySet()) {
                     drawing.set(entry.getKey(), entry.getValue());

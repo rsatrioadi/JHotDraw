@@ -13,8 +13,8 @@
  */
 package org.jhotdraw.samples.svg.gui;
 
-import org.jhotdraw.gui.event.FigureAttributeEditorHandler;
-import org.jhotdraw.gui.event.SelectionComponentDisplayer;
+import org.jhotdraw.draw.event.FigureAttributeEditorHandler;
+import org.jhotdraw.draw.event.SelectionComponentDisplayer;
 import javax.swing.border.*;
 import org.jhotdraw.gui.*;
 import org.jhotdraw.util.*;
@@ -33,7 +33,7 @@ import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
  * LinkToolBar.
  * 
  * @author Werner Randelshofer
- * @version $Id: LinkToolBar.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: LinkToolBar.java 621 2010-01-17 13:43:26Z rawcoder $
  */
 public class LinkToolBar extends AbstractToolBar {
 

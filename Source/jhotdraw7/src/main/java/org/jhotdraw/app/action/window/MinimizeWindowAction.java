@@ -27,7 +27,7 @@ import org.jhotdraw.app.action.AbstractViewAction;
  * Minimizes the Frame of the current view.
  *
  * @author  Werner Randelshofer
- * @version $Id: MinimizeWindowAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: MinimizeWindowAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class MinimizeWindowAction extends AbstractViewAction {
     public final static String ID = "window.minimize";
@@ -44,6 +44,7 @@ public class MinimizeWindowAction extends AbstractViewAction {
                 getActiveView().getComponent()
                 );
     }
+    @Override
     public void actionPerformed(ActionEvent evt) {
         JFrame frame = getFrame();
         if (frame != null) {

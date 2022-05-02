@@ -14,7 +14,6 @@
 
 package org.jhotdraw.gui.event;
 
-import org.jhotdraw.gui.*;
 import java.util.*;
 import javax.swing.*;
 import org.jhotdraw.gui.URIChooser;
@@ -23,7 +22,7 @@ import org.jhotdraw.gui.JSheet;
  * SheetEvent.
  *
  * @author  Werner Randelshofer
- * @version $Id: SheetEvent.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: SheetEvent.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class SheetEvent extends EventObject {
     private Object pane;

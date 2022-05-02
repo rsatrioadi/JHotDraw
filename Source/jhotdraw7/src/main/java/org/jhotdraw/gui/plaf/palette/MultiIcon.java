@@ -24,7 +24,7 @@ import org.jhotdraw.util.Images;
  * MultiIcon can lazily create the icons from a tiled image.
  *
  * @author  Werner Randelshofer
- * @version $Id: MultiIcon.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: MultiIcon.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public abstract class MultiIcon implements Icon {
     /**
@@ -86,16 +86,19 @@ public abstract class MultiIcon implements Icon {
     }
     
     
+    @Override
     public int getIconHeight() {
         generateIconsFromTiledImage();
         return icons[0].getIconHeight();
     }
     
+    @Override
     public int getIconWidth() {
         generateIconsFromTiledImage();
         return icons[0].getIconWidth();
     }
     
+    @Override
     public void paintIcon(java.awt.Component c, java.awt.Graphics g, int x, int y) {
         generateIconsFromTiledImage();
         Icon icon = getIcon(c);

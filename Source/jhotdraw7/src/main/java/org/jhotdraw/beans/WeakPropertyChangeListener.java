@@ -60,7 +60,7 @@ import java.lang.ref.*;
  *  Design pattern: Proxy.
  *
  *  @author Paul Speed
- *  @version $Id: WeakPropertyChangeListener.java 604 2010-01-09 12:00:29Z rawcoder $
+ *  @version $Id: WeakPropertyChangeListener.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class WeakPropertyChangeListener implements PropertyChangeListener {
     private WeakReference<PropertyChangeListener> weakRef;
@@ -85,6 +85,7 @@ public class WeakPropertyChangeListener implements PropertyChangeListener {
         }
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent event) {
         PropertyChangeListener listener = (PropertyChangeListener) weakRef.get();
         if (listener == null) {
@@ -104,6 +105,7 @@ public class WeakPropertyChangeListener implements PropertyChangeListener {
         return weakRef.get();
     }
 
+    @Override
     public String toString() {
         return super.toString()+"["+weakRef.get()+"]";
     }

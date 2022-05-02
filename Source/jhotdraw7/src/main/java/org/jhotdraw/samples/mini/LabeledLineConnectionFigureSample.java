@@ -13,11 +13,8 @@
  */
 package org.jhotdraw.samples.mini;
 
-import org.jhotdraw.draw.RectangleFigure;
 import org.jhotdraw.draw.locator.BezierLabelLocator;
-import org.jhotdraw.draw.TextFigure;
 import org.jhotdraw.draw.layouter.LocatorLayouter;
-import org.jhotdraw.draw.LabeledLineConnectionFigure;
 import org.jhotdraw.draw.liner.ElbowLiner;
 import java.awt.geom.*;
 import javax.swing.*;
@@ -29,7 +26,7 @@ import org.jhotdraw.geom.*;
  * that has a labels at both ends.
  *
  * @author Werner Randelshofer
- * @version $Id: LabeledLineConnectionFigureSample.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: LabeledLineConnectionFigureSample.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class LabeledLineConnectionFigureSample {
 
@@ -40,6 +37,7 @@ public class LabeledLineConnectionFigureSample {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
 
+            @Override
             public void run() {
                 // Create the two rectangle figures
                 RectangleFigure ta = new RectangleFigure();

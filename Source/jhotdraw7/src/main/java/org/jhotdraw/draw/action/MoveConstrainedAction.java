@@ -22,7 +22,7 @@ import java.awt.geom.*;
  * Moves the selected figures by one constrained unit.
  *
  * @author  Werner Randelshofer
- * @version $Id: MoveConstrainedAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: MoveConstrainedAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public abstract class MoveConstrainedAction extends AbstractSelectedAction {
 
@@ -34,6 +34,7 @@ public abstract class MoveConstrainedAction extends AbstractSelectedAction {
         this.dir = dir;
     }
 
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {
         if (getView().getSelectionCount() > 0) {
         

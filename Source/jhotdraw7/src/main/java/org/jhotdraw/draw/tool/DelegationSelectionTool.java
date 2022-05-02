@@ -32,7 +32,7 @@ import org.jhotdraw.app.action.ActionUtil;
  * the figure which has been double clicked, provides a specialized tool.
  *
  * @author Werner Randelshofer
- * @version $Id: DelegationSelectionTool.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: DelegationSelectionTool.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class DelegationSelectionTool extends SelectionTool {
 
@@ -91,6 +91,7 @@ public class DelegationSelectionTool extends SelectionTool {
      * MouseListener method for mousePressed events. If the popup trigger has
      * been activated, then the appropriate hook method is called.
      */
+    @Override
     public void mousePressed(final MouseEvent evt) {
         if (popupTimer != null) {
             popupTimer.stop();
@@ -108,6 +109,7 @@ public class DelegationSelectionTool extends SelectionTool {
             super.mousePressed(evt);
             popupTimer = new javax.swing.Timer(1000, new ActionListener() {
 
+    @Override
                 public void actionPerformed(ActionEvent aevt) {
                     handlePopupMenu(evt);
                     popupTimer = null;
@@ -122,6 +124,7 @@ public class DelegationSelectionTool extends SelectionTool {
      * MouseListener method for mouseReleased events. If the popup trigger has
      * been activated, then the appropriate hook method is called.
      */
+    @Override
     public void mouseReleased(MouseEvent evt) {
         if (popupTimer != null) {
             popupTimer.stop();
@@ -139,6 +142,7 @@ public class DelegationSelectionTool extends SelectionTool {
         }
     }
 
+    @Override
     public void mouseDragged(MouseEvent evt) {
         if (popupTimer != null) {
             popupTimer.stop();
@@ -150,6 +154,7 @@ public class DelegationSelectionTool extends SelectionTool {
         }
     }
 
+    @Override
     public void mouseClicked(MouseEvent evt) {
         if (DEBUG) {
             System.out.println("DelegationSelectionTool.mouseClicked " + evt);

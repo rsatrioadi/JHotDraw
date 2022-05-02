@@ -38,7 +38,7 @@ import org.jhotdraw.net.URIUtil;
  * {@code OpenFileAction}.
  *
  * @author Werner Randelshofer.
- * @version $Id: OpenRecentFileAction.java 611 2010-01-11 21:18:29Z rawcoder $
+ * @version $Id: OpenRecentFileAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class OpenRecentFileAction extends AbstractApplicationAction {
 
@@ -98,6 +98,7 @@ public class OpenRecentFileAction extends AbstractApplicationAction {
         // Open the file
         view.execute(new Worker() {
 
+            @Override
             protected Object construct() throws IOException {
                 boolean exists = true;
                 try {
@@ -145,6 +146,7 @@ public class OpenRecentFileAction extends AbstractApplicationAction {
                         + (message == null ? "" : message),
                         JOptionPane.ERROR_MESSAGE, new SheetListener() {
 
+                    @Override
                     public void optionSelected(SheetEvent evt) {
                         view.setEnabled(true);
                     }

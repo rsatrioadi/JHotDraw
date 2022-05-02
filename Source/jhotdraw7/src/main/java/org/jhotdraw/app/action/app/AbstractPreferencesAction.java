@@ -28,7 +28,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * {@link org.jhotdraw.app.ApplicationModel#initApplication}.
  *
  * @author Werner Randelshofer
- * @version 1.0 2009-09-06 Created.
+ * @version $Id: AbstractPreferencesAction.java 666 2010-07-28 19:11:46Z rawcoder $
  */
 public abstract class AbstractPreferencesAction extends AbstractApplicationAction {
 

@@ -27,7 +27,7 @@ import org.jhotdraw.draw.*;
  * XXX - should listen to changes in the default attributes of its DrawingEditor.
  *
  * @author  Werner Randelshofer
- * @version $Id: DefaultAttributeAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: DefaultAttributeAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class DefaultAttributeAction extends AbstractSelectedAction {
     private AttributeKey[] keys;
@@ -68,6 +68,7 @@ public class DefaultAttributeAction extends AbstractSelectedAction {
         putValue(AbstractAction.SMALL_ICON, icon);
         setEnabled(true);
         editor.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals(DefaultAttributeAction.this.keys[0])) {
                     putValue("attribute_"+DefaultAttributeAction.this.keys[0], evt.getNewValue());
@@ -79,6 +80,7 @@ public class DefaultAttributeAction extends AbstractSelectedAction {
         this.fixedAttributes = fixedAttributes;
     }
     
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent evt) {
         if (getView() != null && getView().getSelectionCount() > 0) {
             CompositeEdit edit = new CompositeEdit(labels.getString("drawAttributeChange"));

@@ -16,21 +16,18 @@ package org.jhotdraw.samples.odg.figures;
 
 import org.jhotdraw.draw.handle.TransformHandleKit;
 import org.jhotdraw.draw.handle.Handle;
-import org.jhotdraw.draw.GroupFigure;
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
 import java.util.*;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.samples.odg.*;
-import org.jhotdraw.xml.*;
 import static org.jhotdraw.samples.odg.ODGAttributeKeys.*;
 /**
  * ODGGroupFigure.
  *
  * @author Werner Randelshofer
- * @version $Id: ODGGroupFigure.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ODGGroupFigure.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ODGGroupFigure extends GroupFigure implements ODGFigure {
     private HashMap<AttributeKey, Object> attributes = new HashMap<AttributeKey,Object>();
@@ -99,6 +96,7 @@ public class ODGGroupFigure extends GroupFigure implements ODGFigure {
         }
     }
     
+    @Override
     public Rectangle2D.Double getBounds() {
         if (cachedBounds == null) {
             if (getChildCount() == 0) {
@@ -128,16 +126,12 @@ public class ODGGroupFigure extends GroupFigure implements ODGFigure {
         return handles;
     }
     
-    @Override final public void write(DOMOutput out) throws IOException {
-        throw new UnsupportedOperationException("Use ODGStorableOutput to write this Figure.");
-    }
-    @Override final public void read(DOMInput in) throws IOException {
-        throw new UnsupportedOperationException("Use ODGStorableInput to read this Figure.");
-    }
+    @Override
     public boolean isEmpty() {
         return getChildCount() == 0;
     }
     
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append(getClass().getName().substring(getClass().getName().lastIndexOf('.')+1));

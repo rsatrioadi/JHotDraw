@@ -15,14 +15,13 @@
 package org.jhotdraw.draw.handle;
 
 import org.jhotdraw.draw.*;
-import org.jhotdraw.draw.handle.AbstractRotateHandle;
 import java.awt.geom.*;
 
 /**
  * A Handle to rotate a Figure.
  *
  * @author Werner Randelshofer.
- * @version $Id: RotateHandle.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: RotateHandle.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class RotateHandle extends AbstractRotateHandle {
 	
@@ -31,11 +30,13 @@ public class RotateHandle extends AbstractRotateHandle {
         super(owner);
     }
     
+    @Override
     protected Point2D.Double getCenter() {
         Rectangle2D.Double bounds = getTransformedBounds();
     	return new Point2D.Double(bounds.getCenterX(), bounds.getCenterY());
     }
 
+    @Override
     protected Point2D.Double getOrigin() {
         // This handle is placed above the figure.
         // We move it up by a handlesizes, so that it won't overlap with

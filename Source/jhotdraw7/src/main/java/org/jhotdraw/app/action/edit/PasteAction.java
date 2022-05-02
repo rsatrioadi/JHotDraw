@@ -17,14 +17,13 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
 import javax.swing.*;
-import org.jhotdraw.app.action.AbstractSelectionAction;
 import org.jhotdraw.gui.datatransfer.ClipboardUtil;
 import org.jhotdraw.util.*;
 
 /**
  * Pastes the contents of the system clipboard at the caret position.
  * <p>
- * This action acts on the last {@link org.jhotdraw.app.EditableComponent} /
+ * This action acts on the last {@link org.jhotdraw.gui.EditableComponent} /
  * {@code JTextComponent} which had the focus when the {@code ActionEvent}
  * was generated.
  * <p>
@@ -36,7 +35,7 @@ import org.jhotdraw.util.*;
  * {@link org.jhotdraw.app.ApplicationModel#initApplication}.
  *
  * @author Werner Randelshofer
- * @version $Id: PasteAction.java 605 2010-01-10 11:14:33Z rawcoder $
+ * @version $Id: PasteAction.java 633 2010-01-22 12:07:20Z rawcoder $
  */
 public class PasteAction extends AbstractSelectionAction {
 

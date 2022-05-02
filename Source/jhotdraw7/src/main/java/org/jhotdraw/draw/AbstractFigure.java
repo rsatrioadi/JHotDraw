@@ -38,7 +38,7 @@ import org.jhotdraw.geom.*;
  *
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractFigure.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: AbstractFigure.java 648 2010-03-21 12:55:45Z rawcoder $
  */
 public abstract class AbstractFigure
         extends AbstractBean
@@ -611,6 +611,9 @@ public abstract class AbstractFigure
         fireFigureRequestRemove();
     }
 
+    /** AbstractFigure always returns 0.
+     * Override this method if your figure needs to be on a different layer.
+     */
     @Override
     public int getLayer() {
         return 0;

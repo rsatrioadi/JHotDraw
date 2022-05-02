@@ -18,21 +18,17 @@ import java.awt.event.*;
 import java.awt.image.*;
 import javax.swing.*;
 import org.jhotdraw.draw.*;
-
 import java.awt.*;
 import java.awt.geom.*;
 import java.util.*;
-import java.io.*;
 import org.jhotdraw.samples.svg.*;
 import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
-import org.jhotdraw.geom.*;
 import org.jhotdraw.util.*;
-import org.jhotdraw.xml.*;
 /**
  * SVGAttributedFigure.
  *
  * @author Werner Randelshofer
- * @version $Id: SVGAttributedFigure.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: SVGAttributedFigure.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public abstract class SVGAttributedFigure extends AbstractAttributedFigure {
     
@@ -40,6 +36,7 @@ public abstract class SVGAttributedFigure extends AbstractAttributedFigure {
     public SVGAttributedFigure() {
     }
     
+    @Override
     public void draw(Graphics2D g)  {
         double opacity = get(OPACITY);
         opacity = Math.min(Math.max(0d, opacity), 1d);
@@ -114,6 +111,7 @@ public abstract class SVGAttributedFigure extends AbstractAttributedFigure {
         if (get(TRANSFORM) != null) {
             ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.samples.svg.Labels");
             actions.add(new AbstractAction(labels.getString("edit.removeTransform.text")) {
+                @Override
                 public void actionPerformed(ActionEvent evt) {
                     ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.samples.svg.Labels");
                     willChange();
@@ -125,11 +123,5 @@ public abstract class SVGAttributedFigure extends AbstractAttributedFigure {
             });
         }
         return actions;
-    }
-    @Override final public void write(DOMOutput out) throws IOException {
-        throw new UnsupportedOperationException("Use SVGStorableOutput to write this Figure.");
-    }
-    @Override final public void read(DOMInput in) throws IOException {
-        throw new UnsupportedOperationException("Use SVGStorableInput to read this Figure.");
     }
 }

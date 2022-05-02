@@ -21,7 +21,7 @@ import java.util.*;
  * <p>
  * Source:<br>
  * Phoenix: An Interactive Curve Design System Based on the Automatic Fitting
- * of Hand-Sketched Curves.
+ * of Hand-Sketched Curves.<br>
  * © Copyright by Philip J. Schneider 1988.<br>
  * A thesis submitted in partial fulfillment of the requirements for the degree
  * of Master of Science, University of Washington.
@@ -29,7 +29,7 @@ import java.util.*;
  * http://autotrace.sourceforge.net/Interactive_Curve_Design.ps.gz
  *
  * @author Werner Randelshofer
- * @version $Id: Bezier.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: Bezier.java 660 2010-07-08 20:52:06Z rawcoder $
  */
 public class Bezier {
 

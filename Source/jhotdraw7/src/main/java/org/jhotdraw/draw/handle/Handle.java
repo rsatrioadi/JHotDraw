@@ -20,6 +20,7 @@ import org.jhotdraw.draw.event.HandleListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import org.jhotdraw.annotations.NotNull;
 
 /**
  * A <em>handle</em> is used to change one aspect of a {@link Figure} by direct
@@ -70,8 +71,9 @@ import java.util.*;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: Handle.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: Handle.java 654 2010-06-25 13:27:08Z rawcoder $
  */
+@NotNull
 public interface Handle extends KeyListener {
     /**
      * Returns the owner of this handle.

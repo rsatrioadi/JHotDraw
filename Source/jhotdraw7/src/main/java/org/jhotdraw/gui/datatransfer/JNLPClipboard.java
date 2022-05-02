@@ -32,7 +32,7 @@ import java.awt.datatransfer.Transferable;
  * </hr>
  *
  * @author Werner Randelshofer
- * @version $Id: JNLPClipboard.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: JNLPClipboard.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class JNLPClipboard extends AbstractClipboard {
 
@@ -55,6 +55,7 @@ public class JNLPClipboard extends AbstractClipboard {
         return target;
     }
 
+    @Override
     public Transferable getContents(Object requestor) {
         try {
             return (Transferable) target.getClass().getMethod("getContents").invoke(target);
@@ -65,6 +66,7 @@ public class JNLPClipboard extends AbstractClipboard {
         }
     }
 
+    @Override
     public void setContents(Transferable contents, ClipboardOwner owner) {
         try {
             target.getClass().getMethod("setContents", Transferable.class).invoke(target, contents);

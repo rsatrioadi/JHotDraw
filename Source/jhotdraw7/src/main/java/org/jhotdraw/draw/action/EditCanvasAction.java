@@ -30,7 +30,7 @@ import org.jhotdraw.util.prefs.PreferencesUtil;
  * from within the drawing framework.
  *
  * @author Werner Randelshofer
- * @version $Id: EditCanvasAction.java 529 2009-06-08 21:12:23Z rawcoder $
+ * @version $Id: EditCanvasAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class EditCanvasAction extends AbstractDrawingViewAction {
     public final static String ID = "view.editCanvas";
@@ -47,6 +47,7 @@ public class EditCanvasAction extends AbstractDrawingViewAction {
         labels.configureAction(this, ID);
     }
     
+    @Override
     public void actionPerformed(ActionEvent e) {
         getFrame().setVisible(true);
     }

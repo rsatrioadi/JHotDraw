@@ -20,7 +20,7 @@ import java.awt.datatransfer.*;
  * Base class for transferable objects.
  *
  * @author Werner Randelshofer
- * @version $Id: AbstractTransferable.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: AbstractTransferable.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public abstract class AbstractTransferable implements Transferable {
     private DataFlavor[] flavors;
@@ -34,10 +34,12 @@ public abstract class AbstractTransferable implements Transferable {
         this.flavors = flavors;
     }
 
+    @Override
     public DataFlavor[] getTransferDataFlavors() {
         return flavors.clone();
     }
 
+    @Override
     public boolean isDataFlavorSupported(DataFlavor flavor) {
         for (DataFlavor f : flavors) {
             if (f.equals(flavor)) {

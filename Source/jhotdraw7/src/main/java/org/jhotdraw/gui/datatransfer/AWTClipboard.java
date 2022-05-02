@@ -17,7 +17,6 @@ package org.jhotdraw.gui.datatransfer;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
-import java.util.Arrays;
 
 /**
  * {@code AWTClipboard} acts as a proxy to an AWT {@code Clipboard} object.
@@ -31,7 +30,7 @@ import java.util.Arrays;
  * </hr>
  *
  * @author Werner Randelshofer
- * @version $Id: AWTClipboard.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: AWTClipboard.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class AWTClipboard extends AbstractClipboard {
     /** The proxy target. */
@@ -51,6 +50,7 @@ public class AWTClipboard extends AbstractClipboard {
         return target;
     }
 
+    @Override
     public Transferable getContents(Object requestor) {
         return target.getContents(requestor);
     }

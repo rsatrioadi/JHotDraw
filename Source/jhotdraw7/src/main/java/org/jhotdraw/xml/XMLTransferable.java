@@ -21,7 +21,7 @@ import java.io.*;
  * drag and drop. 
  *
  * @author  Werner Randelshofer
- * @version $Id: XMLTransferable.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: XMLTransferable.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class XMLTransferable implements java.awt.datatransfer.Transferable, java.awt.datatransfer.ClipboardOwner {
     private byte[] data;
@@ -39,6 +39,7 @@ public class XMLTransferable implements java.awt.datatransfer.Transferable, java
      * @param clipboard the clipboard that is no longer owned
      * @param contents the contents which this owner had placed on the clipboard
      */
+    @Override
     public void lostOwnership(Clipboard clipboard, Transferable contents) {
         
     }
@@ -54,6 +55,7 @@ public class XMLTransferable implements java.awt.datatransfer.Transferable, java
      * @exception UnsupportedFlavorException if the requested data flavor is
      *             not supported.
      */
+    @Override
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
         if (this.flavor.equals(flavor)) {
             return new ByteArrayInputStream(data);
@@ -68,6 +70,7 @@ public class XMLTransferable implements java.awt.datatransfer.Transferable, java
      * for providing the data (from most richly descriptive to least descriptive).
      * @return an array of data flavors in which this data can be transferred
      */
+    @Override
     public DataFlavor[] getTransferDataFlavors() {
         return new DataFlavor[] {flavor};
     }
@@ -78,6 +81,7 @@ public class XMLTransferable implements java.awt.datatransfer.Transferable, java
      * @param flavor the requested flavor for the data
      * @return boolean indicating wjether or not the data flavor is supported
      */
+    @Override
     public boolean isDataFlavorSupported(DataFlavor flavor) {
         return this.flavor.equals(flavor);
     }

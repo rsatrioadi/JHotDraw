@@ -29,13 +29,14 @@ import org.jhotdraw.util.*;
  * views.
  *
  * @author Werner Randelshofer
- * @version $Id: DnDMultiEditorSample.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: DnDMultiEditorSample.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class DnDMultiEditorSample {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
 
+            @Override
             public void run() {
                 ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
 

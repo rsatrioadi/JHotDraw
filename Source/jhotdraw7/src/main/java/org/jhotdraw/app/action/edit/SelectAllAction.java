@@ -18,13 +18,12 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.text.*;
 import org.jhotdraw.util.*;
-import org.jhotdraw.app.EditableComponent;
-import org.jhotdraw.app.action.AbstractSelectionAction;
+import org.jhotdraw.gui.EditableComponent;
 
 /**
  * Selects all items.
  * <p>
- * This action acts on the last {@link org.jhotdraw.app.EditableComponent} /
+ * This action acts on the last {@link org.jhotdraw.gui.EditableComponent} /
  * {@code JTextComponent} which had the focus when the {@code ActionEvent}
  * was generated.
  * <p>
@@ -35,8 +34,22 @@ import org.jhotdraw.app.action.AbstractSelectionAction;
  * with this ID and put it in your {@code ApplicationModel} in method
  * {@link org.jhotdraw.app.ApplicationModel#initApplication}.
  *
+ * <hr>
+ * <b>Design Patterns</b>
+ *
+ * <p><em>Framework</em><br>
+ * The interfaces and classes listed below work together:
+ * <br>
+ * Contract: {@link org.jhotdraw.gui.EditableComponent}, {@code JTextComponent}.<br>
+ * Client: {@link org.jhotdraw.app.action.edit.AbstractSelectionAction},
+ * {@link org.jhotdraw.app.action.edit.DeleteAction},
+ * {@link org.jhotdraw.app.action.edit.DuplicateAction},
+ * {@link org.jhotdraw.app.action.edit.SelectAllAction},
+ * {@link org.jhotdraw.app.action.edit.ClearSelectionAction}.
+ * <hr>
+ *
  * @author Werner Randelshofer.
- * @version $Id: SelectAllAction.java 605 2010-01-10 11:14:33Z rawcoder $
+ * @version $Id: SelectAllAction.java 633 2010-01-22 12:07:20Z rawcoder $
  */
 public class SelectAllAction extends AbstractSelectionAction {
 

@@ -22,7 +22,7 @@ import javax.swing.plaf.*;
  * QuaquaLazyActionMap.
  *
  * @author Werner Randelshofer
- * @version $Id: PaletteLazyActionMap.java 573 2009-10-13 05:59:20Z rawcoder $
+ * @version $Id: PaletteLazyActionMap.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class PaletteLazyActionMap extends ActionMapUIResource {
     /**
@@ -85,41 +85,49 @@ public class PaletteLazyActionMap extends ActionMapUIResource {
         put(action.getValue(Action.NAME), action);
     }
 
+    @Override
     public void put(Object key, Action action) {
         loadIfNecessary();
         super.put(key, action);
     }
 
+    @Override
     public Action get(Object key) {
         loadIfNecessary();
         return super.get(key);
     }
 
+    @Override
     public void remove(Object key) {
         loadIfNecessary();
         super.remove(key);
     }
 
+    @Override
     public void clear() {
         loadIfNecessary();
         super.clear();
     }
 
+    @Override
     public Object[] keys() {
         loadIfNecessary();
         return super.keys();
     }
 
+    @Override
     public int size() {
         loadIfNecessary();
         return super.size();
     }
 
+    @Override
     public Object[] allKeys() {
         loadIfNecessary();
         return super.allKeys();
     }
 
+    @Override
     public void setParent(ActionMap map) {
         loadIfNecessary();
         super.setParent(map);

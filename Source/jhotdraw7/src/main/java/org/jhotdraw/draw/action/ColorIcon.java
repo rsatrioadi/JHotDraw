@@ -22,7 +22,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * ColorIcon.
  *
  * @author  Werner Randelshofer
- * @version $Id: ColorIcon.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ColorIcon.java 660 2010-07-08 20:52:06Z rawcoder $
  */
 public class ColorIcon implements javax.swing.Icon {
 
@@ -67,17 +67,20 @@ public class ColorIcon implements javax.swing.Icon {
         return name;
     }
 
+    @Override
     public int getIconWidth() {
         return width;
     }
 
+    @Override
     public int getIconHeight() {
         return height;
     }
 
+    @Override
     public void paintIcon(Component c, Graphics g, int x, int y) {
         //Graphics2D g = (Graphics2D) gr;
-        if (fillColor == null) {
+        if (fillColor == null||fillColor.getAlpha()==0) {
             if (width == noColorImage.getWidth() && height == noColorImage.getHeight()) {
                 g.drawImage(noColorImage, x, y, c);
             } else {

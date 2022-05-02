@@ -22,7 +22,7 @@ import java.util.*;
  * SelectSameAction.
  *
  * @author  Werner Randelshofer
- * @version $Id: SelectSameAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: SelectSameAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class SelectSameAction extends AbstractSelectedAction {
     public final static String ID = "edit.selectSame";
@@ -32,6 +32,7 @@ public class SelectSameAction extends AbstractSelectedAction {
         labels.configureAction(this, ID);
     }
     
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {
         selectSame();
     }

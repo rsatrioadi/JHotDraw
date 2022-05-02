@@ -19,7 +19,7 @@ import java.util.*;
  * A {@code Comparator} used to sort figures by their layer property.
  *
  * @author  Werner Randelshofer
- * @version $Id: FigureLayerComparator.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: FigureLayerComparator.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class FigureLayerComparator implements Comparator<Figure> {
     public final static FigureLayerComparator INSTANCE = new FigureLayerComparator();
@@ -28,6 +28,7 @@ public class FigureLayerComparator implements Comparator<Figure> {
     private FigureLayerComparator() {
     }
     
+    @Override
     public int compare(Figure f1, Figure f2) {
         return f1.getLayer() - f2.getLayer();
     }

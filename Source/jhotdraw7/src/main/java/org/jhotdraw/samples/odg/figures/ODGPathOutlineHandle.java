@@ -23,7 +23,7 @@ import static org.jhotdraw.samples.odg.ODGAttributeKeys.*;
  * {@link ODGPathFigure} to make adjustments easier.
  * 
  * @author Werner Randelshofer
- * @version $Id: ODGPathOutlineHandle.java 582 2009-10-24 08:00:49Z rawcoder $
+ * @version $Id: ODGPathOutlineHandle.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ODGPathOutlineHandle extends AbstractHandle {
     private final static Color HANDLE_FILL_COLOR = new Color(0x00a8ff);
@@ -34,10 +34,12 @@ public class ODGPathOutlineHandle extends AbstractHandle {
         super(owner);
     }
     
+    @Override
     public ODGPathFigure getOwner() {
         return (ODGPathFigure) super.getOwner();
     }
     
+    @Override
     protected Rectangle basicGetBounds() {
         return view.drawingToView(getOwner().getDrawingArea());
     }
@@ -45,9 +47,11 @@ public class ODGPathOutlineHandle extends AbstractHandle {
         return false;
     }
     
+    @Override
     public void trackStart(Point anchor, int modifiersEx) {
     }
     
+    @Override
     public void trackStep(Point anchor, Point lead, int modifiersEx) {
     }
     

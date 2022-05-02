@@ -14,15 +14,13 @@
 
 package org.jhotdraw.samples.teddy;
 
-import org.jhotdraw.samples.teddy.text.*;
-import java.awt.*;
 import javax.swing.*;
 import javax.swing.text.*;
 /**
  * A happy marriage between JTextArea and JEditorPane.
  *
  * @author Werner Randelshofer
- * @version $Id: JEditorArea.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: JEditorArea.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class JEditorArea extends JEditorPane {
     private boolean wrap;
@@ -80,6 +78,7 @@ public class JEditorArea extends JEditorPane {
      * @return true if a viewport should force the Scrollables width
      * to match its own.
      */
+    @Override
     public boolean getScrollableTracksViewportWidth() {
         return wrap;
     }

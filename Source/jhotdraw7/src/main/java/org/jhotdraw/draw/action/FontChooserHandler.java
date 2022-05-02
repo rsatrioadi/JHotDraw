@@ -13,7 +13,6 @@
  */
 package org.jhotdraw.draw.action;
 
-import org.jhotdraw.draw.TextHolderFigure;
 import javax.swing.undo.*;
 import javax.swing.*;
 import java.util.*;
@@ -26,7 +25,7 @@ import org.jhotdraw.gui.JFontChooser;
  * FontChooserHandler.
  *
  * @author Werner Randelshofer
- * @version $Id: FontChooserHandler.java 582 2009-10-24 08:00:49Z rawcoder $
+ * @version $Id: FontChooserHandler.java 660 2010-07-08 20:52:06Z rawcoder $
  */
 public class FontChooserHandler extends AbstractSelectedAction
         implements PropertyChangeListener {
@@ -49,6 +48,7 @@ public class FontChooserHandler extends AbstractSelectedAction
         updateEnabledState();
     }
 
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent evt) {
         if (evt.getActionCommand() == JFontChooser.APPROVE_SELECTION) {
             applySelectedFontToFigures();
@@ -100,7 +100,7 @@ public class FontChooserHandler extends AbstractSelectedAction
             public void redo() {
                 super.redo();
                 for (Figure figure : selectedFigures) {
-                    restoreData.add(figure.getAttributesRestoreData());
+                    //restoreData.add(figure.getAttributesRestoreData());
                     figure.willChange();
                     figure.set(key, undoValue);
                     figure.changed();
@@ -130,6 +130,7 @@ public class FontChooserHandler extends AbstractSelectedAction
         }
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (isUpdating++ == 0) {
             if (evt.getPropertyName() == JFontChooser.SELECTED_FONT_PROPERTY) {

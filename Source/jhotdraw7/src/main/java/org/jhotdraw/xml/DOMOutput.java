@@ -20,13 +20,23 @@ import java.io.IOException;
 /**
  * DOMOutput.
  * <p>
- * Design pattern:<br>
- * Name: Abstract Factory.<br>
- * Role: Client.<br>
- * Partners: {@link DOMFactory} as the Abstract Factory of the Abstract Factory,.
+ * <hr>
+ * <b>Design Patterns</b>
+ *
+ * <p><em>Abstract Factory</em><br>
+ * {@code DOMFactory} is used by {@code DOMInput} and {@code DOMOutput} for
+ * creating Java objects and DOM elements.
+ * Abstract Factory: {@link DOMFactory}<br>
+ * Client: {@link DOMInput}, {@link DOMOutput}.
+ *
+ * <p><em>Strategy</em><br>
+ * {@code DOMFactory} is used by {@code DOMInput} and {@code DOMOutput} for
+ * reading and writing objects.
+ * Client: {@link DOMInput}, {@link DOMOutput}.<br>
+ * Strategy: {@link DOMFactory}.<br>
  *
  * @author  Werner Randelshofer
- * @version $Id: DOMOutput.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: DOMOutput.java 626 2010-01-20 08:56:21Z rawcoder $
  */
 public interface DOMOutput {
     /**

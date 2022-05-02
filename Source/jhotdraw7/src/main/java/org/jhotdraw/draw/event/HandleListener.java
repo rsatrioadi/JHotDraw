@@ -16,6 +16,7 @@
 package org.jhotdraw.draw.event;
 
 import java.util.*;
+import org.jhotdraw.annotations.NotNull;
 /**
  * Interface implemented by observers of {@link org.jhotdraw.draw.handle.Handle}s.
  * <hr>
@@ -32,8 +33,9 @@ import java.util.*;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: HandleListener.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: HandleListener.java 654 2010-06-25 13:27:08Z rawcoder $
  */
+@NotNull
 public interface HandleListener extends EventListener {
     /**
      * Sent when an area of the drawing view needs to be repainted.

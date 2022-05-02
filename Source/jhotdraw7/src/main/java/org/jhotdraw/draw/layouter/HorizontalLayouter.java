@@ -15,7 +15,6 @@ package org.jhotdraw.draw.layouter;
 
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.CompositeFigure;
-import org.jhotdraw.draw.layouter.AbstractLayouter;
 import java.awt.geom.*;
 import org.jhotdraw.geom.*;
 import static org.jhotdraw.draw.AttributeKeys.*;
@@ -35,10 +34,11 @@ import static org.jhotdraw.draw.AttributeKeys.*;
  * 
  * 
  * @author Werner Randelshofer
- * @version $Id: HorizontalLayouter.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: HorizontalLayouter.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class HorizontalLayouter extends AbstractLayouter {
 
+    @Override
     public Rectangle2D.Double calculateLayout(CompositeFigure compositeFigure, Point2D.Double anchor, Point2D.Double lead) {
         Insets2D.Double layoutInsets = compositeFigure.get(LAYOUT_INSETS);
 
@@ -57,6 +57,7 @@ public class HorizontalLayouter extends AbstractLayouter {
         return layoutBounds;
     }
 
+    @Override
     public Rectangle2D.Double layout(CompositeFigure compositeFigure, Point2D.Double anchor, Point2D.Double lead) {
         Insets2D.Double layoutInsets = compositeFigure.get(LAYOUT_INSETS);
         Alignment compositeAlignment = compositeFigure.get(COMPOSITE_ALIGNMENT);

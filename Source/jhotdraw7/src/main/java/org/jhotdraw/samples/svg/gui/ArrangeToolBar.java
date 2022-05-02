@@ -13,7 +13,7 @@
  */
 package org.jhotdraw.samples.svg.gui;
 
-import org.jhotdraw.gui.event.SelectionComponentDisplayer;
+import org.jhotdraw.draw.event.SelectionComponentDisplayer;
 import javax.swing.border.*;
 import org.jhotdraw.util.*;
 
@@ -27,7 +27,7 @@ import org.jhotdraw.gui.plaf.palette.*;
  * ArrangeToolBar.
  *
  * @author Werner Randelshofer
- * @version $Id: ArrangeToolBar.java 549 2009-08-12 07:46:31Z rawcoder $
+ * @version $Id: ArrangeToolBar.java 621 2010-01-17 13:43:26Z rawcoder $
  */
 public class ArrangeToolBar extends AbstractToolBar {
 

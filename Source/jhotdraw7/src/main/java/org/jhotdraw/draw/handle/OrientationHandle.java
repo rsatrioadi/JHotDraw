@@ -15,8 +15,6 @@
 package org.jhotdraw.draw.handle;
 
 import org.jhotdraw.draw.*;
-import org.jhotdraw.draw.handle.Handle;
-import org.jhotdraw.draw.handle.AbstractHandle;
 import org.jhotdraw.draw.event.AttributeChangeEdit;
 import java.awt.*;
 import java.awt.geom.*;
@@ -30,7 +28,7 @@ import org.jhotdraw.geom.*;
  *
  * @author Werner Randelshofer.
  *         Original code by Doug Lea  (dl at gee, Sun Mar 2 19:15:28 1997)
- * @version $Id: OrientationHandle.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: OrientationHandle.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class OrientationHandle extends AbstractHandle {
     private Rectangle centerBox;
@@ -42,6 +40,7 @@ public class OrientationHandle extends AbstractHandle {
         super(owner);
     }
     
+    @Override
     public boolean isCombinableWith(Handle h) {
         return false;
     }
@@ -81,6 +80,7 @@ public class OrientationHandle extends AbstractHandle {
         return p;
     }
     
+    @Override
     protected Rectangle basicGetBounds() {
         Point p = view.drawingToView(getLocation());
         Rectangle r = new Rectangle(p);
@@ -91,6 +91,7 @@ public class OrientationHandle extends AbstractHandle {
         return r;
     }
     
+    @Override
     public void trackStart(Point anchor, int modifiersEx) {
         oldValue = getOwner().get(ORIENTATION);
         
@@ -98,6 +99,7 @@ public class OrientationHandle extends AbstractHandle {
         centerBox.grow(centerBox.width / -3, centerBox.height / -3);
     }
     
+    @Override
     public void trackStep(Point anchor, Point lead, int modifiersEx) {
         Rectangle leadRect = new Rectangle(lead);
         
@@ -141,6 +143,7 @@ public class OrientationHandle extends AbstractHandle {
                 );
     }
     
+    @Override
     public void trackEnd(Point anchor, Point lead, int modifiersEx) {
         if (newValue != oldValue) {
             fireUndoableEditHappened(

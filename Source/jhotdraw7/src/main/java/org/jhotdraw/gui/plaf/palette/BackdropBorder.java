@@ -22,7 +22,7 @@ import javax.swing.border.Border;
  * BackdropBorder.
  *
  * @author Werner Randelshofer
- * @version $Id: BackdropBorder.java 527 2009-06-07 14:28:19Z rawcoder $
+ * @version $Id: BackdropBorder.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class BackdropBorder implements Border {
 
@@ -42,12 +42,14 @@ public class BackdropBorder implements Border {
         return backgroundBorder;
     }
 
+    @Override
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
         if (foregroundBorder != null) {
             foregroundBorder.paintBorder(c, g, x, y, width, height);
         }
     }
 
+    @Override
     public Insets getBorderInsets(Component c) {
         if (foregroundBorder != null) {
             return foregroundBorder.getBorderInsets(c);
@@ -56,6 +58,7 @@ public class BackdropBorder implements Border {
         }
     }
 
+    @Override
     public boolean isBorderOpaque() {
         return backgroundBorder.isBorderOpaque();
     }

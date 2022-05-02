@@ -14,7 +14,6 @@
 
 package org.jhotdraw.samples.mini;
 
-import org.jhotdraw.draw.RectangleFigure;
 import org.jhotdraw.draw.*;
 import java.awt.*;
 import javax.swing.*;
@@ -26,7 +25,7 @@ import javax.swing.border.*;
  * @deprecated This class should be in one of the samples package
  *
  * @author  Werner Randelshofer
- * @version $Id: BorderRectangleFigure.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: BorderRectangleFigure.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class BorderRectangleFigure extends RectangleFigure {
     protected Border border;

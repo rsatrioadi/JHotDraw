@@ -25,7 +25,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * the current {@code DrawingView} of a {@code DrawingEditor}.
  *
  * @author Werner Randelshofer
- * @version $Id: AttributeAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: AttributeAction.java 660 2010-07-08 20:52:06Z rawcoder $
  */
 public class AttributeAction extends AbstractSelectedAction {
 
@@ -71,6 +71,7 @@ public class AttributeAction extends AbstractSelectedAction {
         updateEnabledState();
     }
 
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent evt) {
         applyAttributesTo(attributes, getView().getSelectedFigures());
     }
@@ -128,7 +129,7 @@ public class AttributeAction extends AbstractSelectedAction {
             public void redo() {
                 super.redo();
                 for (Figure figure : selectedFigures) {
-                    restoreData.add(figure.getAttributesRestoreData());
+                    //restoreData.add(figure.getAttributesRestoreData());
                     figure.willChange();
                     for (Map.Entry<AttributeKey, Object> entry : a.entrySet()) {
                         figure.set(entry.getKey(), entry.getValue());

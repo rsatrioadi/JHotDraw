@@ -13,7 +13,6 @@
  */
 package org.jhotdraw.samples.odg.action;
 
-import org.jhotdraw.draw.CompositeFigure;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.action.*;
 import org.jhotdraw.samples.odg.figures.*;
@@ -24,7 +23,7 @@ import java.util.*;
  * CombinePathsAction.
  *
  * @author  Werner Randelshofer
- * @version $Id: CombineAction.java 582 2009-10-24 08:00:49Z rawcoder $
+ * @version $Id: CombineAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class CombineAction extends GroupAction {
 

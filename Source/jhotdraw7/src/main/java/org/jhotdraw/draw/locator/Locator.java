@@ -17,6 +17,7 @@ package org.jhotdraw.draw.locator;
 
 import org.jhotdraw.draw.*;
 import java.awt.geom.*;
+import org.jhotdraw.annotations.NotNull;
 
 /**
  * A <em>locator</em> encapsulates a strategy for locating a point on a
@@ -32,8 +33,9 @@ import java.awt.geom.*;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: Locator.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: Locator.java 654 2010-06-25 13:27:08Z rawcoder $
  */
+@NotNull
 public interface Locator {
 
 	/**

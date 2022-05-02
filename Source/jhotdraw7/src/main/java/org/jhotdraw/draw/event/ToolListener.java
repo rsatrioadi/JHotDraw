@@ -16,6 +16,7 @@
 package org.jhotdraw.draw.event;
 
 import java.util.*;
+import org.jhotdraw.annotations.NotNull;
 
 /**
  * Interface implemented by observers of {@link org.jhotdraw.draw.tool.Tool}s.
@@ -33,8 +34,9 @@ import java.util.*;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: ToolListener.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ToolListener.java 654 2010-06-25 13:27:08Z rawcoder $
  */
+@NotNull
 public interface ToolListener extends EventListener {
     /**
      * Informs the listener that a tool has starteds interacting with a 

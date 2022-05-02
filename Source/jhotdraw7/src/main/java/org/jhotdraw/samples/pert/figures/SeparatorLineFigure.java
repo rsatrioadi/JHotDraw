@@ -14,31 +14,41 @@
 
 package org.jhotdraw.samples.pert.figures;
 
-import org.jhotdraw.util.*;
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.geom.*;
+import org.jhotdraw.draw.AttributeKeys;
 import static org.jhotdraw.draw.AttributeKeys.*;
-import org.jhotdraw.draw.LineFigure;
+import org.jhotdraw.draw.RectangleFigure;
 import org.jhotdraw.geom.*;
 /**
  * A horizontal line with a preferred size of 1,1.
  *
  * @author  Werner Randelshofer
- * @version $Id: SeparatorLineFigure.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: SeparatorLineFigure.java 648 2010-03-21 12:55:45Z rawcoder $
  */
 public class SeparatorLineFigure 
-extends LineFigure {
-    
+extends RectangleFigure {
+
     /** Creates a new instance. */
     public SeparatorLineFigure() {
     }
 
-    public void setBounds(Point2D.Double anchor, Point2D.Double lead) {
-        setPoint(0, 0, anchor);
-        setPoint(getNodeCount() - 1, 0, new Point2D.Double(lead.x, anchor.y));
-    }
+    @Override
     public Dimension2DDouble getPreferredSize() {
-        double width = Math.ceil(get(STROKE_WIDTH));
+        double width = Math.ceil(STROKE_WIDTH.get(this));
         return new Dimension2DDouble(width, width);
+    }
+
+    @Override
+    protected void drawFill(Graphics2D g) {
+        // no fill
+    }
+    @Override
+    protected void drawStroke(Graphics2D g) {
+        Rectangle2D.Double r = (Rectangle2D.Double) rectangle.clone();
+        double grow = AttributeKeys.getPerpendicularDrawGrowth(this);
+       Geom.grow(r, grow, grow);
+
+        g.draw(new Line2D.Double(r.x,r.y,r.x+r.width-1,r.y));
     }
 }

@@ -16,13 +16,6 @@ package org.jhotdraw.draw.tool;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.handle.Handle;
 import org.jhotdraw.draw.event.ToolEvent;
-import org.jhotdraw.draw.event.ToolListener;
-import org.jhotdraw.draw.tool.SelectAreaTracker;
-import org.jhotdraw.draw.tool.HandleTracker;
-import org.jhotdraw.draw.tool.DragTracker;
-import org.jhotdraw.draw.tool.DefaultSelectAreaTracker;
-import org.jhotdraw.draw.tool.DefaultHandleTracker;
-import org.jhotdraw.draw.tool.DefaultDragTracker;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
@@ -58,7 +51,7 @@ import org.jhotdraw.draw.event.ToolAdapter;
  * <hr>
  *
  * @author Werner Randelshofer
- * @version $Id: SelectionTool.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: SelectionTool.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class SelectionTool extends AbstractTool {
 
@@ -161,46 +154,54 @@ public class SelectionTool extends AbstractTool {
         tracker.activate(editor);
     }
 
+    @Override
     public void deactivate(DrawingEditor editor) {
         super.deactivate(editor);
         tracker.deactivate(editor);
     }
 
+    @Override
     public void keyPressed(KeyEvent e) {
         if (getView() != null && getView().isEnabled()) {
             tracker.keyPressed(e);
         }
     }
 
+    @Override
     public void keyReleased(KeyEvent evt) {
         if (getView() != null && getView().isEnabled()) {
             tracker.keyReleased(evt);
         }
     }
 
+    @Override
     public void keyTyped(KeyEvent evt) {
         if (getView() != null && getView().isEnabled()) {
             tracker.keyTyped(evt);
         }
     }
 
+    @Override
     public void mouseClicked(MouseEvent evt) {
         if (getView() != null && getView().isEnabled()) {
             tracker.mouseClicked(evt);
         }
     }
 
+    @Override
     public void mouseDragged(MouseEvent evt) {
         if (getView() != null && getView().isEnabled()) {
             tracker.mouseDragged(evt);
         }
     }
 
+    @Override
     public void mouseEntered(MouseEvent evt) {
         super.mouseEntered(evt);
         tracker.mouseEntered(evt);
     }
 
+    @Override
     public void mouseExited(MouseEvent evt) {
         super.mouseExited(evt);
         tracker.mouseExited(evt);

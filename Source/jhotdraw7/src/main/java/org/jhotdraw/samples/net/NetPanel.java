@@ -20,26 +20,21 @@ import org.jhotdraw.app.action.edit.DuplicateAction;
 import org.jhotdraw.app.action.edit.CopyAction;
 import org.jhotdraw.app.action.edit.SelectAllAction;
 import org.jhotdraw.draw.tool.TextCreationTool;
-import org.jhotdraw.draw.LineConnectionFigure;
 import org.jhotdraw.draw.tool.ConnectionTool;
 import org.jhotdraw.gui.JPopupButton;
 import org.jhotdraw.samples.net.figures.*;
 import org.jhotdraw.undo.*;
 import org.jhotdraw.util.*;
-
 import java.awt.*;
-import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import org.jhotdraw.app.action.*;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.action.*;
 /**
  * NetPanel.
  * 
  * @author Werner Randelshofer
- * @version $Id: NetPanel.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: NetPanel.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class NetPanel extends JPanel  {
     private UndoRedoManager undoManager;

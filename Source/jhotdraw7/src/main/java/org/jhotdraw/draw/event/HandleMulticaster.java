@@ -18,7 +18,6 @@ package org.jhotdraw.draw.event;
 import org.jhotdraw.draw.handle.Handle;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.util.*;
-import org.jhotdraw.undo.*;
 import java.awt.*;
 import java.util.*;
 
@@ -26,7 +25,7 @@ import java.util.*;
  * Forwards events to one or many handles.
  *
  * @author Werner Randelshofer
- * @version $Id: HandleMulticaster.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: HandleMulticaster.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class HandleMulticaster {
     LinkedList<Handle> handles;

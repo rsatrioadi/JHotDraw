@@ -24,8 +24,8 @@ import java.util.Vector;
  * The handling of numeric data is also different: a single dot
  * '.' and minus dot '-.' are not treated as numbers.
  *
- * @author  Werner Randelshofer, Staldenmattweg 2, Immensee, CH-6405, Switzerland
- * @version $Id: StreamPosTokenizer.java 559 2009-09-08 12:43:57Z rawcoder $
+ * @author  Werner Randelshofer, Hausmatt 10, Immensee, CH-6405, Switzerland
+ * @version $Id: StreamPosTokenizer.java 648 2010-03-21 12:55:45Z rawcoder $
  */
 
 public class StreamPosTokenizer
@@ -1077,6 +1077,7 @@ public class StreamPosTokenizer
      * @see     java.io.StreamTokenizer#sval
      * @see     java.io.StreamTokenizer#ttype
      */
+    @Override
     public String toString() {
         String ret;
         switch (ttype) {

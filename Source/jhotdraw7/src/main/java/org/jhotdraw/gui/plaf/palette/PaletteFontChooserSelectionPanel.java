@@ -14,6 +14,7 @@
 
 package org.jhotdraw.gui.plaf.palette;
 
+import java.awt.Color;
 import java.awt.Font;
 import javax.swing.*;
 import org.jhotdraw.util.ResourceBundleUtil;
@@ -22,7 +23,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * PaletteFontChooserSelectionPanel.
  *
  * @author Werner Randelshofer
- * @version $Id: PaletteFontChooserSelectionPanel.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: PaletteFontChooserSelectionPanel.java 652 2010-05-27 13:19:16Z rawcoder $
  */
 public class PaletteFontChooserSelectionPanel extends javax.swing.JPanel {
 private ResourceBundleUtil labels;
@@ -34,11 +35,21 @@ private ResourceBundleUtil labels;
         familyList.setModel(new DefaultListModel());
         faceList.setModel(new DefaultListModel());
         
-        // Customiziation of Quaqua Look and Feel: Set small scroll bars
-        Font smallSystemFont = new Font("Dialog", Font.PLAIN, 11);
-        collectionsScrollPane.setFont(smallSystemFont);
-        familiesScrollPane.setFont(smallSystemFont);
-        facesScrollPane.setFont(smallSystemFont);
+        // Customization of Quaqua Look and Feel: Set small scroll bars
+        collectionsScrollPane.putClientProperty("JComponent.sizeVariant", "small");
+        familiesScrollPane.putClientProperty("JComponent.sizeVariant", "small");
+        facesScrollPane.putClientProperty("JComponent.sizeVariant", "small");
+
+        // Customization of Nimbus Look and Feel: Set small scroll bars
+        collectionsScrollPane.getVerticalScrollBar().putClientProperty("JComponent.sizeVariant", "small");
+        familiesScrollPane.getVerticalScrollBar().putClientProperty("JComponent.sizeVariant", "small");
+        facesScrollPane.getVerticalScrollBar().putClientProperty("JComponent.sizeVariant", "small");
+        collectionsScrollPane.getVerticalScrollBar().updateUI();
+        familiesScrollPane.updateUI();
+        facesScrollPane.getVerticalScrollBar().updateUI();
+
+        setOpaque(true);
+        setBackground(new Color(0xededed));
     }
     
     public JList getCollectionList() {

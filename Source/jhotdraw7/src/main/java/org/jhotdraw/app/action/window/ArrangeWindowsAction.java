@@ -32,7 +32,7 @@ import javax.swing.*;
  * FIXME - Register as PropertyChangeListener on Arrangeable.
  *
  * @author Werner Randelshofer
- * @version $Id: ArrangeWindowsAction.java 604 2010-01-09 12:00:29Z rawcoder $
+ * @version $Id: ArrangeWindowsAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class ArrangeWindowsAction extends AbstractAction {
     public final static String VERTICAL_ID = "window.arrangeVertical";
@@ -57,6 +57,7 @@ public class ArrangeWindowsAction extends AbstractAction {
         labels.configureAction(this, labelID);
     }
     
+    @Override
     public void actionPerformed(ActionEvent e) {
             arrangeable.setArrangement(arrangement);
     }

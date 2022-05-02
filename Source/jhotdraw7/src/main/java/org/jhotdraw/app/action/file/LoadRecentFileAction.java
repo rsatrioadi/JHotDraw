@@ -36,7 +36,7 @@ import org.jhotdraw.util.ResourceBundleUtil;
  *
  *
  * @author Werner Randelshofer.
- * @version $Id: LoadRecentFileAction.java 609 2010-01-11 19:06:35Z rawcoder $
+ * @version $Id: LoadRecentFileAction.java 647 2010-01-24 22:52:59Z rawcoder $
  */
 public class LoadRecentFileAction extends AbstractSaveUnsavedChangesAction {
 
@@ -50,6 +50,7 @@ public class LoadRecentFileAction extends AbstractSaveUnsavedChangesAction {
         putValue(Action.NAME, URIUtil.getName(uri));
     }
 
+    @Override
     public void doIt(final View view) {
         final Application app = getApplication();
         app.setEnabled(true);
@@ -69,6 +70,7 @@ public class LoadRecentFileAction extends AbstractSaveUnsavedChangesAction {
         // Open the file
         view.execute(new Worker() {
 
+            @Override
             protected Object construct() throws IOException {
                 boolean exists = true;
                 try {
@@ -114,6 +116,7 @@ public class LoadRecentFileAction extends AbstractSaveUnsavedChangesAction {
                         error,
                         JOptionPane.ERROR_MESSAGE, new SheetListener() {
 
+                    @Override
                     public void optionSelected(SheetEvent evt) {
                         // app.dispose(view);
                     }
